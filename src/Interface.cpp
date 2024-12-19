@@ -1,33 +1,41 @@
 #include "Interface.h"
 
-Interface::Interface(float KW, int time = 0): maximumKW{KW}, t{time}//, devicesCP{new CicloPreImpostatoDevice[5]}, devicesM{new ManualDevice[5]}
-{}
+Interface::Interface(float KW, int time): maximumKW{KW}, t{time}
+{
 
-Interface::~Interface() {
-    //delete[] devicesCP;
-    //delete[] devicesM;
+}
+void Interface::turnOn(int id) {        //! Provvisorio, controllare il comportamento CP/M
+    if (id > 0 && id <= 5) {
+        devicesCP[id-1].turnOn();
+    } else if (id >= 6 && id <= 10) {
+        devicesM[id-6].turnOn();
+    } else {
+        throw DeviceIDOutOfBoundException();
+    }
 };
 
-void Interface::turnOn() {
-
+void Interface::turnOff(int id) {        //! Provvisorio, controllare il comportamento CP/M
+    if (id > 0 && id <= 5) {
+        devicesCP[id-1].turnOff();
+    } else if (id >= 6 && id <= 10) {
+        devicesM[id-6].turnOff();
+    } else {
+        throw DeviceIDOutOfBoundException();
+    }
 };
 
-void Interface::turnOff() {
-
+void Interface::removeTimer(int id) {
+    return;
 };
 
-void Interface::removeTimer() {
-
-};
-
-void Interface::setTime() {
-
+void Interface::setTime(int time) {
+    return;
 };
 
 void Interface::resetTime() {
-
+    t = 0;
 };
 
-void Interface::show(int id = 0){
-    
+void Interface::show(int id){
+    return;
 };

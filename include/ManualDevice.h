@@ -11,7 +11,7 @@ private:
     int orarioDiSpegnimento; //orario in cui si deve  spegnere, si imposta dall'interfaccia  
 
 public:
-    ManualDevice(std::string nome = "", int ID = 1, double consumo = 0, bool stato = false) {
+    ManualDevice(std::string nome, int ID, double consumo, bool stato = false) {
         this->nome = nome;
         this->ID = ID;
         this->consumo = consumo;

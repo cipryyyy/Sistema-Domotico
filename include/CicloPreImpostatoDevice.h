@@ -11,7 +11,7 @@ private:
     int orarioAccensioneAutomatica;
 
 public:
-    CicloPreImpostatoDevice(std::string nome = "", int ID = 1, double consumo = 0, bool stato = false, double durataCiclo = 0) {
+    CicloPreImpostatoDevice(std::string nome, int ID, double consumo, int durataCiclo, bool stato = false) {
         this->nome = nome;
         this->ID = ID;
         this->consumo = consumo;
