@@ -1,3 +1,5 @@
+//Autore: Buso Riccardo
+
 #ifndef MANUALDEVICE_H
 #define MANUALDEVICE_H
 
@@ -9,7 +11,7 @@ private:
     int orarioDiSpegnimento; //orario in cui si deve  spegnere, si imposta dall'interfaccia  
 
 public:
-    ManualDevice(std::string nome, int ID, int consumo, bool stato) {
+    ManualDevice(std::string nome = "", int ID = 1, double consumo = 0, bool stato = false) {
         this->nome = nome;
         this->ID = ID;
         this->consumo = consumo;
@@ -17,7 +19,6 @@ public:
         this->tempoDiEsecuzione = 0;
         this->orarioDiSpegnimento = -1; //non è stato impostato
     }
-
 
     int getOrarioDiSpegnimento();
 

@@ -1,3 +1,5 @@
+//Autore: Buso Riccardo
+
 #ifndef CICLOPREIMPOSTATODEVICE_H
 #define CICLOPREIMPOSTATODEVICE_H
 
@@ -9,7 +11,7 @@ private:
     int orarioAccensioneAutomatica;
 
 public:
-     CicloPreImpostatoDevice(std::string nome, int ID, int consumo, bool stato, int durataCiclo) {
+    CicloPreImpostatoDevice(std::string nome = "", int ID = 1, double consumo = 0, bool stato = false, double durataCiclo = 0) {
         this->nome = nome;
         this->ID = ID;
         this->consumo = consumo;
