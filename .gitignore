@@ -11,3 +11,4 @@ CTestTestfile.cmake
 _deps
 CMakeUserPresets.json
 build/sistema_controllo_domotico
+.vscode/settings.json

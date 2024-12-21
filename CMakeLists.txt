@@ -10,7 +10,7 @@ set(CMAKE_BUILD_TYPE Debug)     # Da levare
 include_directories(include)
 include_directories(exceptions)
 
-add_executable(sistema_controllo_domotico
+add_executable(SCD
     src/main.cpp
     src/CicloPreImpostato.cpp
     src/Device.cpp

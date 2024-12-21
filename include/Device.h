@@ -23,27 +23,27 @@ public:
 protected:
     // attributi 
     
-    std::string nome;
+    std::string nome;    
     int ID; 
     int consumo; //consumo specifico del device
-    bool stato; //0 spento 1 accesso
+    bool stato; //false spento, true accesso
     int tempoDiEsecuzione; //da quanto tempo è accesso
 
-
+public:             //! Lo ho messo un attimo public che i getter mi servono in Interface.h
     // Getter and Setter for nome
     std::string getNome() const;
-    void setNome(const std::string& nome);
+    void setNome(const std::string& nome);  //! Non serve
 
     // Getter and Setter for ID
     int getID() const;
-    void setID(int ID);
+    void setID(int ID);         //! Non serve
 
     // Getter and Setter for consumo
     int getConsumo() const;
-    void setConsumo(int consumo);
+    void setConsumo(int consumo);   //! Non serve
 
     // Getter and Setter for stato
-    bool getStato() const;
+    bool getStato() const;      //! ci sono già turnOn, turnOff e isOn, non penso servano
     void setStato(bool stato);
 
     // Getter and Setter for tempoDiEsecuzione

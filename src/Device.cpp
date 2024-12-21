@@ -4,7 +4,7 @@
 
 Device::Device() {
 
-};
+}
 Device::~Device() {
 
 }
@@ -14,3 +14,9 @@ void Device::turnOn() {
 void Device::turnOff() {
     return;
 };
+std::string Device::getNome() const{
+    return "";
+}
+int Device::getConsumo() const {
+    return 0;
+}
