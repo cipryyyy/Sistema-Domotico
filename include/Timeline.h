@@ -112,7 +112,7 @@ public:
         return KWs;
     }
 
-    void forget(int id, int begin) {
+    void forget(int id, int begin = 0, int end = 1439) {
         for (int i = 0; i < t.size(); i++) {
             if (t[i] >= begin && (d[i] == id || d[i] == id+10)) {
                 t.erase(t.begin() + i);

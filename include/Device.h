@@ -4,6 +4,7 @@
 #define DEVICE_H
 
 #include <string>
+#include "Timeline.h"       //Serve per regolare il flusso del tempo, sennò esce un macello
 
 class Device {
 public:
