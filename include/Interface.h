@@ -12,7 +12,7 @@ Con le funzioni show si mostrano le statistichen di uno o tutti i dispositivi
 
 #include <iostream>
 #include "InterfaceExceptions.h"
-#include "CicloPreImpostatoDevice.h"
+#include "CPDevice.h"
 #include "ManualDevice.h"
 #include "Timeline.h"
 
@@ -22,19 +22,19 @@ private:
     Timeline timeline;              //timeline degli eventi
     const double maximumKW;         //KW massimi dell'impianto
     double KW;                      //KW attualmente in uso
-    void updateKW() noexcept;                           //Aggiorna il numero di KW utilizzati ad ogni chiamata
+    void updateKW() noexcept;                  //Aggiorna il numero di KW utilizzati ad ogni chiamata
     bool Check();                              //Controlla i requisiti per le accensioni programmate
     std::string m2h(int minute) noexcept;      //Converte da minuti in formato hh::mm
 
-    CicloPreImpostatoDevice devicesCP[5] = {
-        CicloPreImpostatoDevice("Lavatrice", 1, 2, 110),
-        CicloPreImpostatoDevice("Lavastoviglie", 2, 1.5, 195),
-        CicloPreImpostatoDevice("Forno a microonde", 3, 0.8, 2),
-        CicloPreImpostatoDevice("Asciugatrice", 4, 0.5, 60),
-        CicloPreImpostatoDevice("Televisore", 5, 0.2, 60)
+    CPDevice devicesCP[5] = {
+        CPDevice("Lavatrice", 1, 2, 110),
+        CPDevice("Lavastoviglie", 2, 1.5, 195),
+        CPDevice("Forno a microonde", 3, 0.8, 2),
+        CPDevice("Asciugatrice", 4, 0.5, 60),
+        CPDevice("Televisore", 5, 0.2, 60)
     };
     ManualDevice devicesM[5] = {
-        ManualDevice("Impianto fotovoltaico", 6, -1.5),     //Pannello al contrario perché contribuisce
+        ManualDevice("Impianto fotovoltaico", 6, -1.5),     //Pannello al contrario perché aumenta la soglia di KW disponibili
         ManualDevice("Pompa di calore", 7, 2),
         ManualDevice("Tapparelle", 8, 0.3),
         ManualDevice("Scaldabagno", 9, 1),
@@ -44,16 +44,16 @@ private:
 public:
     Interface(double KW, int time = 0);
 
-    void turnOn(int id);          //Chiamato con 'set ${DEVICENAME} on'
-    void turnOn(int id, int start);          //Chiamato con 'set ${DEVICENAME} on'
-    void turnOn(int id, int start, int end);          //Chiamato con 'set ${DEVICENAME} on'
-    void turnOff(int id);          //TODO Chiamato con 'set ${DEVICENAME} off'
-    void removeTimer(int id);     //Chiamato con rm
+    void turnOn(int id);                        //Chiamato con 'set ${DEVICENAME} on'
+    void turnOn(int id, int start);             //Chiamato con 'set ${DEVICENAME} [start] on'
+    void turnOn(int id, int start, int end);    //Chiamato con 'set ${DEVICENAME} [start]-[end]on'
+    void turnOff(int id);                       //Chiamato con 'set ${DEVICENAME} off'
+    void removeTimer(int id);                   //Chiamato con 'rm ${DEVICENAME}' 
 
-    void setTime(int time);     //TODO Passa il tempo in minuti
-    void resetTime();   //Imposta t a 0
+    void setTime(int time);                     //Fa scorrere il tempo, chiamato con 'set time ${TIME}'
+    void resetTime();                           //Imposta t a 0, chiamato con 'reset time'
 
-    void show();      //TODO Mostra la lista di tutti i dispositivi
-    void show(int id);    //TODO Mostra lista di dispositivi @riccardoBuso5 buttami tutti i getter, tipo id e cacate varie
+    void show();                                //Mostra lo stato di tutti i dispositivi
+    void show(int id);                          //Mostra lo stato di un singolo dispositivo
 };
 #endif

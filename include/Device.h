@@ -6,6 +6,26 @@
 #include <string>
 #include "Timeline.h"       //Serve per regolare il flusso del tempo, sennò esce un macello
 
+/*
+! Leggimi please. 
+
+Fammi dei getter per tutti i dati da mettere sul comando show (nome, consumo totale nella giornata, quante ore è stato acceso e blablabla)
+Nel file timeline.h ho già scritto come funziona, come capire se un device è attivo in un dato momento e tutto il resto
+
+Nel costruttore aggiungi un argomento passato per riferimento di timeline, in maniera tale che dall'interfaccia
+creo una timeline, tutti i device si sincronizzano su di quella, così riesci a fare tutte le funzioni.
+Se vuoi aggiungi anche un argomento per il tempo, passato per riferimento, così direttamente sono tutti collegati alla stessa variabile &t
+Tipo:
+
+CPDevice(timeline& timeline, int& t, std::string nome, int ID, double consumo, int durataCiclo, bool stato = false)
+
+Il resto vedi te come fare, l'unica roba il tempo segnalo in minuti, quindi un'ora di esecuzione scrivi segna 60(minuti)
+Per il resto l'interfaccia è già pronta praticamente, una volta che hai fatto i metodi ricontrollo che tutto funzioni correttamente
+al massimo dai un occhiata al mio file, se ci sono problemi insultami.
+
+Comunque sei proprio brutto <3
+*/
+
 class Device {
 public:
     // Constructor

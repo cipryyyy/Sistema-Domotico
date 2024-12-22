@@ -1,22 +1,26 @@
 /*
 Autore: Cipriani Andrea
 Questa libreria di supporto serve per generare una timeline
-in grado di salvare gli eventi del sistema, con il relativo orario.
+in grado di salvare gli eventi del sistema, con il relativo orario e tutti i metadati necessari.
 
 Il vector time può contenere valori in un range 0 (00:00) - 1439 (23:59)
 ovvero il tempo del giorno convertito in minuti, con ID che ha fatto la richiesta e la variazione di KW
+Nel vettore 'e' viene data una breve descrizione dell'evento per il front end
 
-Per quanto riguarda gli id:
 I dispositivi hanno ID da 1 a 10, se un device in un dato momento sarà acceso il suo id sarà ID+10
-Quindi se trovo ID 12 vuol dire che l'ID è acceso.
+Quindi se trovo 'ID 12' vuol dire che l'ID 2 è stato acceso, mentre se trovo 'ID 2' vuol dire che è stato spento.
+Può sembrare una boiata però è utile e risparmia memoria per segnalare se un dispositivo è acceso o spento.
+Per ottenere l'ID del device in sé o fai un IF oppure (ID-1)%10+1.
 
 I metodi della libreria sono: 
-* addEvent   aggiungere eventi
-* print      per stampare a schermo gli eventi in un range start - end
-* get[...]    ritorna un vettore con orari/eventi/id/kw in un range start - end
-* clear      elimina tutti gli eventi
+* addEvent      aggiungere eventi
+* print         per stampare a schermo gli eventi in un range start - end
+* get[...]      ritorna un vettore con orari/eventi/id/kw in un range start - end
+* clear         elimina tutti gli eventi
+* forget        elimina gli eventi di un dispositivo in un lasso di tempo
 
-L'unico errore è per l'input errato, lanciato con invalid_argument
+L'unico errore è per l'input errato, lanciato con invalid_argument, in realtà questa eccezione
+è già coperta in interface.h, ma non si sa mai.
 */
 
 #ifndef TIMELINE_H
@@ -39,13 +43,14 @@ public:
         if (time < 0 || time > 1439) {
             throw std::invalid_argument("Il tempo deve essere compreso tra 0 e 1439 minuti");
         }
+        //Salvo tutti i dati
         t.push_back(time);
         e.push_back(event);
         d.push_back(ID);
         k.push_back(KW);
     }
 
-    void print(int start = 0, int end = 1439) {
+    void print(int start = 0, int end = 1439) {                         //! Meglio usare i get, così si accede più facilmente ai dati di un device.
         if (end > start || start < 0 || end > 1439) {
             throw std::invalid_argument("Valori inseriti non validi");
         }
@@ -60,7 +65,7 @@ public:
         }
     }
 
-    std::vector<int>& getTime(int start = 0, int end = 1439) {
+    std::vector<int>& getTimes(int start = 0, int end = 1439) {
         if (end > start || start < 0 || end > 1439) {
             throw std::invalid_argument("Valori inseriti non validi");
         }

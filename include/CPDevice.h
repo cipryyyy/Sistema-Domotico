@@ -1,17 +1,17 @@
 //Autore: Buso Riccardo
 
-#ifndef CICLOPREIMPOSTATODEVICE_H
-#define CICLOPREIMPOSTATODEVICE_H
+#ifndef CPDEVICE_H
+#define CPDEVICE_H
 
 #include "Device.h"
 
-class CicloPreImpostatoDevice : public Device {
+class CPDevice : public Device {
 private:
     int durataCiclo;
     int orarioAccensioneAutomatica;
 
 public:
-    CicloPreImpostatoDevice(std::string nome, int ID, double consumo, int durataCiclo, bool stato = false) {
+    CPDevice(std::string nome, int ID, double consumo, int durataCiclo, bool stato = false) {
         this->nome = nome;
         this->ID = ID;
         this->consumo = consumo;
@@ -32,4 +32,4 @@ public:
     void setOrarioAccensioneAutomatica(int orario);
 };
 
-#endif // CICLOPREIMPOSTATODEVICE_H
+#endif // CPDEVICE_H

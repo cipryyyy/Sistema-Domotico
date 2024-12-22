@@ -15,7 +15,7 @@ void Interface::updateKW() noexcept{        //Sommo tutte le variazioni dei Kilo
     }
 }
 bool Interface::Check() {
-    return true;                //TODO
+    throw RoooooonfMiMiMiException();                //TODO
 }
 std::string Interface::m2h(int m) noexcept {
     //I casi in cui m va fuori dal range 0-1440 sono già coperti dalla timeline
@@ -55,9 +55,8 @@ void Interface::turnOn(int id) {        //Accensione manuale del device
 }
 void Interface::turnOn(int id, int start) {         //Accensione programamta
     updateKW();     //Aggiorno il numero di KW usati
-    if (start < t) {
-        throw NotATimeMachineException();
-    }
+    if (start < t) throw NotATimeMachineException();
+    if (start < 0 || start > 1439) throw InvalidTimeException();
     //Ci possono essere più richieste di timer, quindi controllo se, in base alle richieste future
     //avrò abbastanza KW disponibili per far andare il dispositivo
     double temp = KW;
@@ -108,9 +107,8 @@ void Interface::turnOn(int id, int start) {         //Accensione programamta
 }
 void Interface::turnOn(int id, int start, int end) {        //Accensione programmata con spegnimento, solo M
     updateKW();     //Aggiorno il numero di KW usati
-    if (start < t || end >= start) {
-        throw NotATimeMachineException();
-    }
+    if (start < t || end >= start) throw NotATimeMachineException();
+    if ((start < 0 || start > 1439) || (end < 0 || end > 1439)) throw InvalidTimeException();
     double temp = KW;
     std::vector<double> programmedKW = timeline.getKWs(t, start);   //Richiedo tutti i ΔKW da ora fino al momento dell'accensione
     for (double requestedKW : programmedKW) {
@@ -162,24 +160,43 @@ void Interface::removeTimer(int id) {
 }
 
 void Interface::setTime(int time) {
-    if (time < t) {
-        throw NotATimeMachineException();
+    if (time < t) throw NotATimeMachineException();                 //Controllo che i dati siano corretti
+    if (time < 0 || time > 1439) throw InvalidTimeException();
+
+    std::vector<int> timestamp = timeline.getTimes(t,time);             //Vector con gli orari
+    std::vector<std::string> events = timeline.getEvents(t,time);       //Vector con gli eventi
+
+    //Stampo tutti gli eventi che sono accaduti in questo lasso di tempo
+    for (int i = 0; i < timestamp.size(); i++) {
+        std::cout << "[" << m2h(timestamp[i]) << "]: " << events[i] << std::endl;
     }
-    /* 
-    Modificare il valore di t
-    verificare nel lasso di tempo old_t - new_t cos'è successo con le funzioni di timeline
-    */
-    return;
+    //Aggiorno l'orario
+    t = time;
 }
 
 void Interface::resetTime() {
-    t = 0;
-    timeline.clear();
+    t = 0;                  //Ritorno con il tempo a 0
+    timeline.clear();       //Elimino tutto dalla timeline
+    //? Spegno tutti i dispositivi? Boh, da valutare
 }
 
-//TODO alla fine
+//TODO Penso faccia abbastanza schifo per ora
 void Interface::show() {
+    std::cout << "[" << m2h(t) << "]: Stato dei device manuali:" << std::endl;
+    for (int i = 0; i < 5; i++) {
+        std::cout << devicesCP[i].getNome()<< "[" << (devicesCP[i].isOn()? "acceso" : "spento") << "]" << " ha consumato " << devicesCP[i].getConsumo() << ", oggi e' stato usato per " << devicesCP[i].getTempoDiEsecuzione();
+    }
+    for (int i = 0; i < 5; i++) {
+        std::cout << devicesM[i].getNome()<< "[" << (devicesM[i].isOn()? "acceso" : "spento") << "]" << " ha consumato " << devicesM[i].getConsumo() << ", oggi e' stato usato per " << devicesM[i].getTempoDiEsecuzione();
+    }
 }
-//TODO alla fine
+//TODO Stesso discorso qua
 void Interface::show(int id) {
+    if (id >= 1 && id <= 5) {
+        std::cout << devicesCP[id].getNome()<< "[" << (devicesCP[id].isOn()? "acceso" : "spento") << "]" << " ha consumato " << devicesCP[id].getConsumo() << ", oggi e' stato usato per " << devicesCP[id].getTempoDiEsecuzione();
+    } else if (id >= 6 && id <= 10) {
+        std::cout << devicesM[id].getNome()<< "[" << (devicesM[id].isOn()? "acceso" : "spento") << "]" << " ha consumato " << devicesM[id].getConsumo() << ", oggi e' stato usato per " << devicesM[id].getTempoDiEsecuzione();
+    } else {
+        throw DeviceIDOutOfBoundException();
+    }
 }
