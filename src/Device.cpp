@@ -1,6 +1,7 @@
 #include "Device.h"
 
-//Non ho fatto niente, ho buttato giù un attimo per vedere se tutto si importava per bene <3
+//Sono tutte dummy, non fanno una sega
+//Le ho scritte solo per vedere se almeno compila la parte interface
 
 Device::Device() {
 
@@ -18,5 +19,14 @@ std::string Device::getNome() const{
     return "";
 }
 int Device::getConsumo() const {
+    return 0;
+}
+bool Device::isOn() const {
+    return false;
+}
+int Device::getID() const {
+    return 0;
+}
+int Device::getTempoDiEsecuzione() const {
     return 0;
 }

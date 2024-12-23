@@ -1,0 +1,3 @@
+/Users/macbook/Documents/Github/Sistema-Domotico/build/CMakeFiles/SCD.dir
+/Users/macbook/Documents/Github/Sistema-Domotico/build/CMakeFiles/edit_cache.dir
+/Users/macbook/Documents/Github/Sistema-Domotico/build/CMakeFiles/rebuild_cache.dir

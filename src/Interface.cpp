@@ -3,11 +3,24 @@
 /* 
 Robe che potrebbero essere funzioni:
 
-* turnOn e turnOff, controlli per i cicli
+? boh
 */ 
 
-//Funzioni helper
-void Lid(int sum) {
+//Funzioni ci controllo
+
+bool isCP(int id) noexcept{
+    return (id >= 0 && id <= 5);
+}
+bool isM(int id) noexcept{
+    return (id >= 6 && id <= 10);
+}
+void timeCheck(int t) {
+    if (t < 0 || t > 1439) throw InvalidTimeException();
+}
+
+//Funzioni grafiche
+
+void Lid(int sum) noexcept{
     for (int i = 0; i < sum; i++) {
         std::cout << "-";           //Ciclo di apertura e chiusura della tabella
     }
@@ -77,7 +90,7 @@ Interface::Interface(double KW, int time): maximumKW{KW}, t{time}
 }
 void Interface::turnOn(int id) {        //Accensione manuale del device
     updateKW();     //Aggiorno il numero di KW usati
-    if (id > 0 && id <= 5) {                                    //id 1-5 per i dispositivi a ciclo programmato
+    if (isCP(id)) {                                    //id 1-5 per i dispositivi a ciclo programmato
         if (KW + devicesCP[id-1].getConsumo() > maximumKW) {    //Se supero i KW lancio l'eccezione
             throw OverKWException();
         }
@@ -87,7 +100,7 @@ void Interface::turnOn(int id) {        //Accensione manuale del device
         //Aggiornamento timeline (con anche lo spegnimento)
         timeline.addEvent(t, devicesCP[id-1].getNome() + " acceso", devicesCP[id-1].getID()+10, devicesCP[id-1].getConsumo());
         timeline.addEvent(t+devicesCP[id-1].getDurataCiclo(), devicesCP[id-1].getNome() + " spento", devicesCP[id-1].getID(), -devicesCP[id-1].getConsumo());
-    } else if (id >= 6 && id <= 10) {                           //id 6-10 per i dispositivi manuali
+    } else if (isM(id)) {                           //id 6-10 per i dispositivi manuali
         if (KW + devicesM[id-1].getConsumo() > maximumKW) {     //Se supero i KW lancio l'eccezione
             throw OverKWException();
         }
@@ -102,7 +115,7 @@ void Interface::turnOn(int id) {        //Accensione manuale del device
 void Interface::turnOn(int id, int start) {         //Accensione programamta
     updateKW();     //Aggiorno il numero di KW usati
     if (start < t) throw NotATimeMachineException();
-    if (start < 0 || start > 1439) throw InvalidTimeException();
+    timeCheck(start);
     //Ci possono essere più richieste di timer, quindi controllo se, in base alle richieste future
     //avrò abbastanza KW disponibili per far andare il dispositivo
     double temp = KW;
@@ -110,7 +123,7 @@ void Interface::turnOn(int id, int start) {         //Accensione programamta
     for (double requestesKW : programmedKW) {
         temp += requestesKW;                        //Sommo il tutto, dopo devo controllare di averne abbastanza liberi
     }
-    if (id >= 1 && id <= 5) {   //CP
+    if (isCP(id)) {   //CP
         std::vector<int> idRequest = timeline.getIDs(0,start);
         for (int i = idRequest.size() - 1; i > 0; i--) {    //Controllo che il device non sia già attivo al lancio
             if (idRequest[i] == id+10) {
@@ -132,7 +145,7 @@ void Interface::turnOn(int id, int start) {         //Accensione programamta
         //Ora ho tutti i requisiti per impostare la programmazione
         timeline.addEvent(start, devicesCP[id-1].getNome() + " acceso", devicesCP[id-1].getID()+10, devicesCP[id-1].getConsumo());
         timeline.addEvent(start+devicesCP[id-1].getDurataCiclo(), devicesCP[id-1].getNome() + " spento", devicesCP[id-1].getID(), -devicesCP[id-1].getConsumo());
-    } else if (id >= 6 && id <= 10) {
+    } else if (isM(id)) {
         std::vector<int> idRequest = timeline.getIDs(0,start);
         for (int i = idRequest.size() - 1; i > 0; i--) {    //Controllo che il device non sia già attivo al lancio
             if (idRequest[i] == id+10) {
@@ -154,15 +167,16 @@ void Interface::turnOn(int id, int start) {         //Accensione programamta
 void Interface::turnOn(int id, int start, int end) {        //Accensione programmata con spegnimento, solo M
     updateKW();     //Aggiorno il numero di KW usati
     if (start < t || end >= start) throw NotATimeMachineException();
-    if ((start < 0 || start > 1439) || (end < 0 || end > 1439)) throw InvalidTimeException();
+    timeCheck(start);
+    timeCheck(end);
     double temp = KW;
     std::vector<double> programmedKW = timeline.getKWs(t, start);   //Richiedo tutti i ΔKW da ora fino al momento dell'accensione
     for (double requestedKW : programmedKW) {
         temp += requestedKW;                        //Sommo il tutto         
     }
-    if (id >= 1 && id <= 5) {
+    if (isCP(id)) {
         throw CPIllegalInstructionException();
-    } else if (id >= 6 && id <= 10) {
+    } else if (isM(id)) {
         std::vector<int> idRequest = timeline.getIDs(0, start);
         for (int i = idRequest.size() - 1; i > 0; i--) {    //Controllo che il device non sia già attivo al lancio
             if (idRequest[i] == id+10) {
@@ -191,9 +205,9 @@ void Interface::turnOn(int id, int start, int end) {        //Accensione program
 
 void Interface::turnOff(int id) {       //Spegnimento manuale dei dispositivi, solo M
     updateKW();     //Aggiorno il numero di KW usati
-    if (id > 0 && id <= 5) {
+    if (isCP(id)) {
         throw CPIllegalInstructionException();  //Se il dispositivo è a ciclo prefissato non si può spegnere manualmente
-    } else if (id >= 6 && id <= 10) {
+    } else if (isM(id)) {
         timeline.forget(id, t);     //Cancello eventuali programmazioni future
         timeline.addEvent(t, devicesM[id-6].getNome() + " spento", devicesM[id-6].getID()+10, -devicesM[id-6].getConsumo());
     } else {
@@ -207,7 +221,7 @@ void Interface::removeTimer(int id) {
 
 void Interface::setTime(int time) {
     if (time < t) throw NotATimeMachineException();                 //Controllo che i dati siano corretti
-    if (time < 0 || time > 1439) throw InvalidTimeException();
+    timeCheck(t);
 
     std::vector<int> timestamp = timeline.getTimes(t,time);             //Vector con gli orari
     std::vector<std::string> events = timeline.getEvents(t,time);       //Vector con gli eventi
@@ -240,9 +254,9 @@ void Interface::show() {
 }
 //TODO Stesso discorso qua
 void Interface::show(int id) {
-    if (id >= 1 && id <= 5) {
+    if (isCP(id)) {
         std::cout << devicesCP[id].getNome()<< "[" << (devicesCP[id].isOn()? "acceso" : "spento") << "]" << " ha consumato " << devicesCP[id].getConsumo() << ", oggi e' stato usato per " << devicesCP[id].getTempoDiEsecuzione();
-    } else if (id >= 6 && id <= 10) {
+    } else if (isM(id)) {
         std::cout << devicesM[id].getNome()<< "[" << (devicesM[id].isOn()? "acceso" : "spento") << "]" << " ha consumato " << devicesM[id].getConsumo() << ", oggi e' stato usato per " << devicesM[id].getTempoDiEsecuzione();
     } else {
         throw DeviceIDOutOfBoundException();

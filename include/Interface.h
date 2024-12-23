@@ -23,7 +23,7 @@ private:
     const double maximumKW;         //KW massimi dell'impianto
     double KW;                      //KW attualmente in uso
     void updateKW() noexcept;                  //Aggiorna il numero di KW utilizzati ad ogni chiamata
-    void BeautyTable(Device *devicelist);
+    void BeautyTable(Device *devicelist) noexcept;
 //? bool Check();                              //Controlla i requisiti per le accensioni programmate
     std::string m2h(int minute) noexcept;      //Converte da minuti in formato hh::mm
 

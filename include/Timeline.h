@@ -65,7 +65,7 @@ public:
         }
     }
 
-    std::vector<int>& getTimes(int start = 0, int end = 1439) {
+    std::vector<int> getTimes(int start = 0, int end = 1439) {
         if (end > start || start < 0 || end > 1439) {
             throw std::invalid_argument("Valori inseriti non validi");
         }
@@ -78,7 +78,7 @@ public:
         return times;
     }
 
-    std::vector<std::string>& getEvents(int start = 0, int end = 1439) {
+    std::vector<std::string> getEvents(int start = 0, int end = 1439) {
         if (end > start || start < 0 || end > 1439) {
             throw std::invalid_argument("Valori inseriti non validi");
         }
@@ -91,7 +91,7 @@ public:
         return events;
     }
 
-    std::vector<int>& getIDs(int start = 0, int end = 1439) {
+    std::vector<int> getIDs(int start = 0, int end = 1439) {
         if (end > start || start < 0 || end > 1439) {
             throw std::invalid_argument("Valori inseriti non validi");
         }
@@ -104,7 +104,7 @@ public:
         return IDs;
     }
 
-    std::vector<double>& getKWs(int start = 0, int end = 1439) {
+    std::vector<double> getKWs(int start = 0, int end = 1439) {
         if (end > start || start < 0 || end > 1439) {
             throw std::invalid_argument("Valori inseriti non validi");
         }
