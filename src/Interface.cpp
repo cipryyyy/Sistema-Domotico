@@ -1,21 +1,67 @@
 #include "Interface.h"
 
-/*Azioni ripetute
+/* 
+Robe che potrebbero essere funzioni:
 
-turnOn e turnOff, controlli per i cicli
-convertitore minuti->24hr
+* turnOn e turnOff, controlli per i cicli
 */ 
 
 //Funzioni helper
+void Lid(int sum) {
+    for (int i = 0; i < sum; i++) {
+        std::cout << "-";           //Ciclo di apertura e chiusura della tabella
+    }
+}
+void Interface::BeautyTable(Device *devicelist) noexcept {          //!In test
+    int cols = 4;
+    int nameCol = 21;
+    int statusCol = 6;
+    int usageCol = 5;
+    int runningCol = 4;
+    int sum = nameCol + statusCol + usageCol + runningCol + 3 * cols + 1;    //Numero di spazi totali
+    //Struttura | COL | COL | COL | COL |
+    Lid(sum);
+    for (int i = -1; i < 5; i++) {
+        if (i < 0) {
+            int diff;
+            std::string headers[5] = {"Nome Device", "Stato ", "KW", "Ore "};
+            std::string emptyspaces1;
+            std::string emptyspaces2;
+
+            diff = nameCol - headers[0].size();
+            for (int i = 0; i < diff; i++) {
+                emptyspaces1 += " ";
+            }
+            diff = usageCol - headers[2].size();
+            for (int i = 0; i < diff; i++) {
+                emptyspaces2 += " ";
+            }
+            std::cout << "| " << headers[0] << emptyspaces1 << " | " << headers[1] << " | " << headers[2] << emptyspaces2 << " | " << headers[3] << " |";
+            Lid(sum);
+        } else {        
+            int diff;
+            std::string emptyspaces1;
+            std::string emptyspaces2;
+
+            diff = nameCol - devicelist[i].getNome().size();
+            for (int i = 0; i < diff; i++) {
+                emptyspaces1 += " ";
+            }
+            diff = usageCol - std::to_string(devicelist[i].getConsumo()).size();
+            for (int i = 0; i < diff; i++) {
+                emptyspaces2 += " ";
+            }
+            std::cout << "| " << devicelist[i].getNome() << emptyspaces1 << " | " << (devicelist[i].isOn()? "acceso" : "spento") << " | " << devicelist[i].getConsumo() << emptyspaces2 << " | " << m2h(devicelist[i].getTempoDiEsecuzione()) << " |";
+        }
+    }
+    Lid(sum);
+}
 void Interface::updateKW() noexcept{        //Sommo tutte le variazioni dei Kilowatt dal tempo 0 fino ad ora
     KW = 0;
     std::vector<double> delta = timeline.getKWs(0, t);
     for (double d : delta) {
         KW += d;
     }
-}
-bool Interface::Check() {
-    throw RoooooonfMiMiMiException();                //TODO
 }
 std::string Interface::m2h(int m) noexcept {
     //I casi in cui m va fuori dal range 0-1440 sono già coperti dalla timeline
@@ -167,9 +213,11 @@ void Interface::setTime(int time) {
     std::vector<std::string> events = timeline.getEvents(t,time);       //Vector con gli eventi
 
     //Stampo tutti gli eventi che sono accaduti in questo lasso di tempo
+    std::cout << "[" << m2h(t) << "]: L'orario attuale e' " << m2h(t) << std::endl;
     for (int i = 0; i < timestamp.size(); i++) {
         std::cout << "[" << m2h(timestamp[i]) << "]: " << events[i] << std::endl;
     }
+    std::cout << "[" << m2h(time) << "]: L'orario attuale e' " << m2h(time) << std::endl;
     //Aggiorno l'orario
     t = time;
 }

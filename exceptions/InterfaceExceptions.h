@@ -33,14 +33,6 @@ struct OverKWException : public std::exception {
     }
 };
 
-//Richiesta di variazione temporale negativa:
-//! Lanciata da: turnOn(id, start), turnOn(id, start, end), setTime(time)
-struct NotATimeMachineException : public std::exception {
-    const char* what() const noexcept override {
-        return "Impossibile variare il tempo in negativo.";
-    }
-};
-
 //Richiesta programmazione duplicata:
 //! Lanciata da: turnOn(id, start), turnOn(id, start, end)
 struct TimerAlreadySetException : public std::exception {
@@ -57,9 +49,17 @@ struct InvalidTimeException : public std::exception {
     }
 };
 
+//Richiesta di variazione temporale negativa:
+//! Lanciata da: turnOn(id, start), turnOn(id, start, end), setTime(time)
+struct NotATimeMachineException : public std::exception {
+    const char* what() const noexcept override {
+        return "Impossibile variare il tempo in negativo.";
+    }
+};
+
 //Non ho ancora finito il metodo:
 //! Lanciata da: i metodi che non ho finito
-struct RoooooonfMiMiMiException : public std::exception {
+struct Error404FunctionNotFound : public std::exception {
     const char* what() const noexcept override {
         return "Passa più tardi, non ho ancora finito di fare questa funzione :3";
     }
