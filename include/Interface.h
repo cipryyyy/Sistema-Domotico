@@ -1,10 +1,16 @@
 /*
 Autore: Cipriani Andrea
-Questa classe importa i device a ciclo programmato e a controllo manuale
-Si deve occupare di accendere e spegnere i dispositivi, salvando gli orari di accensione e spegnimento
-Inoltre, se viene superato il valore massimo di KW del sistema, il sistema blocca la richiesta (per ora)
-Con le funzioni di cambio del tempo vengono mostrati gli eventi impostati
-Con le funzioni show si mostrano le statistichen di uno o tutti i dispositivi
+
+L'interfaccia si pone tra la parte di parsing (main.cpp) e i gestori del singolo device.
+Si occupa di;
+Accendere/Spegnere dispositivi
+Creare/Rimuovere delle routine di accensione e spegnimento
+Far scorrere il tempo
+Mostrare i dati e i consumi
+Installare devices
+Rimuovere devices 
+
+Non si occupa di gestire la politica di spegnimenti in caso di OverKWException, manda solo un errore Runtime.
 */
 
 #ifndef INTERFACE_H
@@ -18,43 +24,40 @@ Con le funzioni show si mostrano le statistichen di uno o tutti i dispositivi
 
 class Interface {
 private:
-    int t;                          //tempo in minuti
-    Timeline timeline;              //timeline degli eventi
+    const int maximumDV;     //Numero massimo di device dell'impianto
     const double maximumKW;         //KW massimi dell'impianto
     double KW;                      //KW attualmente in uso
+    int Mcounter;               //Numero di device M
+    int CPcounter;              //Numero di device CP
+    int t;                          //tempo in minuti
+    Timeline timeline;              //timeline degli eventi
+
     void updateKW() noexcept;                  //Aggiorna il numero di KW utilizzati ad ogni chiamata
     void BeautyTable(Device *devicelist) noexcept;
-//? bool Check();                              //Controlla i requisiti per le accensioni programmate
     std::string m2h(int minute) noexcept;      //Converte da minuti in formato hh::mm
 
-    CPDevice devicesCP[5] = {
-        CPDevice("Lavatrice", 1, 2, 110),
-        CPDevice("Lavastoviglie", 2, 1.5, 195),
-        CPDevice("Forno a microonde", 3, 0.8, 2),
-        CPDevice("Asciugatrice", 4, 0.5, 60),
-        CPDevice("Televisore", 5, 0.2, 60)
-    };
-    ManualDevice devicesM[5] = {
-        ManualDevice("Impianto fotovoltaico", 6, -1.5),     //Pannello al contrario perché aumenta la soglia di KW disponibili
-        ManualDevice("Pompa di calore", 7, 2),
-        ManualDevice("Tapparelle", 8, 0.3),
-        ManualDevice("Scaldabagno", 9, 1),
-        ManualDevice("Frigorifero", 10, 0.4)
-    };
+    std::vector<CPDevice> devicesCP;
+    std::vector<ManualDevice> devicesM;
 
 public:
-    Interface(double KW, int time = 0);
+    Interface(double KW, bool init = true, int maxDV = 1024, int time = 0);
 
-    void turnOn(int id);                        //Chiamato con 'set ${DEVICENAME} on'
-    void turnOn(int id, int start);             //Chiamato con 'set ${DEVICENAME} [start] on'
-    void turnOn(int id, int start, int end);    //Chiamato con 'set ${DEVICENAME} [start]-[end]on'
-    void turnOff(int id);                       //Chiamato con 'set ${DEVICENAME} off'
-    void removeTimer(int id);                   //Chiamato con 'rm ${DEVICENAME}' 
+    //! Tutto questo blocco va adattato alle nuove specifiche
+    void turnOn(int id);                        //! Chiamato con 'set ${DEVICENAME} on'
+    void turnOn(int id, int start);             //! Chiamato con 'set ${DEVICENAME} [start] on'
+    void turnOn(int id, int start, int end);    //! Chiamato con 'set ${DEVICENAME} [start]-[end]on'
+    void turnOff(int id);                       //! Chiamato con 'set ${DEVICENAME} off'
+    void removeTimer(int id);                   //! Chiamato con 'rm ${DEVICENAME}' 
 
     void setTime(int time);                     //Fa scorrere il tempo, chiamato con 'set time ${TIME}'
     void resetTime();                           //Imposta t a 0, chiamato con 'reset time'
 
     void show();                                //Mostra lo stato di tutti i dispositivi
     void show(int id);                          //Mostra lo stato di un singolo dispositivo
+
+    //! Sperimentali
+    void installM(std::string name, int id, double consumo, int isOn = false);
+    void installCP(std::string name, int id, double consumo, int durataCiclo, int isOn = false);
+    void uninstall(int id);             //! Da migliorare
 };
 #endif

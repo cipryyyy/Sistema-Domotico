@@ -14,7 +14,7 @@ Nel file timeline.h ho già scritto come funziona, come capire se un device è a
 
 Nel costruttore aggiungi un argomento passato per riferimento di timeline, in maniera tale che dall'interfaccia
 creo una timeline, tutti i device si sincronizzano su di quella, così riesci a fare tutte le funzioni.
-Se vuoi aggiungi anche un argomento per il tempo, passato per riferimento, così direttamente sono tutti collegati alla stessa variabile &t
+Non so se serva, ma se vuoi aggiungi anche un argomento per il tempo, passato per riferimento, così direttamente sono tutti collegati alla stessa variabile &t
 Tipo:
 
 CPDevice(timeline& timeline, int& t, std::string nome, int ID, double consumo, int durataCiclo, bool stato = false)

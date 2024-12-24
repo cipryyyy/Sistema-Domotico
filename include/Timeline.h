@@ -5,12 +5,11 @@ in grado di salvare gli eventi del sistema, con il relativo orario e tutti i met
 
 Il vector time può contenere valori in un range 0 (00:00) - 1439 (23:59)
 ovvero il tempo del giorno convertito in minuti, con ID che ha fatto la richiesta e la variazione di KW
-Nel vettore 'e' viene data una breve descrizione dell'evento per il front end
+Nel vettore 'e' viene data una breve descrizione dell'evento per il front end.
 
-I dispositivi hanno ID da 1 a 10, se un device in un dato momento sarà acceso il suo id sarà ID+10
-Quindi se trovo 'ID 12' vuol dire che l'ID 2 è stato acceso, mentre se trovo 'ID 2' vuol dire che è stato spento.
-Può sembrare una boiata però è utile e risparmia memoria per segnalare se un dispositivo è acceso o spento.
-Per ottenere l'ID del device in sé o fai un IF oppure (ID-1)%10+1.
+L'ID salvato è uguale a quello del dispositivo se viene spento, mentre sarà ID+1024 se viene acceso
+Questo perché il sistema supporta fino a 1024 dispositivi
+il numero dei device è arbitrario, comunque numero difficile da raggiungere e in caso modificabile in inizializzazione.
 
 I metodi della libreria sono: 
 * addEvent      aggiungere eventi
@@ -39,7 +38,7 @@ private:
     std::vector<double>      k;     //ΔKW
 
 public:
-    void addEvent(int time, std::string event, int ID, double KW) {
+    void addEvent(int time, std::string event, int ID, double KW) {         //Aggiunge un evento
         if (time < 0 || time > 1439) {
             throw std::invalid_argument("Il tempo deve essere compreso tra 0 e 1439 minuti");
         }
@@ -65,7 +64,7 @@ public:
         }
     }
 
-    std::vector<int> getTimes(int start = 0, int end = 1439) {
+    std::vector<int> getTimes(int start = 0, int end = 1439) {      //Ritorna i timestamp in un lasso di tempo
         if (end > start || start < 0 || end > 1439) {
             throw std::invalid_argument("Valori inseriti non validi");
         }
@@ -78,7 +77,7 @@ public:
         return times;
     }
 
-    std::vector<std::string> getEvents(int start = 0, int end = 1439) {
+    std::vector<std::string> getEvents(int start = 0, int end = 1439) {     //Ritorna gli eventi in un lasso di tempo
         if (end > start || start < 0 || end > 1439) {
             throw std::invalid_argument("Valori inseriti non validi");
         }
@@ -91,7 +90,7 @@ public:
         return events;
     }
 
-    std::vector<int> getIDs(int start = 0, int end = 1439) {
+    std::vector<int> getIDs(int start = 0, int end = 1439) {        //Ritorna gli id agenti in un lasso di tempo
         if (end > start || start < 0 || end > 1439) {
             throw std::invalid_argument("Valori inseriti non validi");
         }
@@ -104,7 +103,7 @@ public:
         return IDs;
     }
 
-    std::vector<double> getKWs(int start = 0, int end = 1439) {
+    std::vector<double> getKWs(int start = 0, int end = 1439) {     //Ritorna le variazioni in un lasso di tempo
         if (end > start || start < 0 || end > 1439) {
             throw std::invalid_argument("Valori inseriti non validi");
         }
@@ -117,7 +116,7 @@ public:
         return KWs;
     }
 
-    void forget(int id, int begin = 0, int end = 1439) {
+    void forget(int id, int begin = 0, int end = 1439) {        //Elimina gli eventi di un device in un lasso di tempo
         for (int i = 0; i < t.size(); i++) {
             if (t[i] >= begin && (d[i] == id || d[i] == id+10)) {
                 t.erase(t.begin() + i);
@@ -128,7 +127,7 @@ public:
         }
     }
 
-    void clear() {
+    void clear() {          //Cancella tutto dalla timeline
         t.clear();
         e.clear();
         d.clear();

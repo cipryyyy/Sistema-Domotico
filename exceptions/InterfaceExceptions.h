@@ -49,6 +49,14 @@ struct InvalidTimeException : public std::exception {
     }
 };
 
+//Numero di devices superiore al limite
+//! Lanciata da: installM, installCP
+struct DeviceLimitException : public std::exception {
+    const char* what() const noexcept override {
+        return "Hai raggiunto il numero massimo di devices su questa interfaccia";
+    }
+};
+
 //Richiesta di variazione temporale negativa:
 //! Lanciata da: turnOn(id, start), turnOn(id, start, end), setTime(time)
 struct NotATimeMachineException : public std::exception {

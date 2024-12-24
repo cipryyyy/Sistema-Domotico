@@ -4,14 +4,15 @@
 Robe che potrebbero essere funzioni:
 
 ? boh
+! Riscrivere tutti i turnOn, turnOff, ricontrollare il fetch degli id
 */ 
 
 //Funzioni ci controllo
 
-bool isCP(int id) noexcept{
+bool isCP(int id) noexcept{             //! Da risolvere
     return (id >= 0 && id <= 5);
 }
-bool isM(int id) noexcept{
+bool isM(int id) noexcept{              //! Da risolvere
     return (id >= 6 && id <= 10);
 }
 void timeCheck(int t) {
@@ -84,11 +85,31 @@ std::string Interface::m2h(int m) noexcept {
 }
 
 //Funzioni membro
-Interface::Interface(double KW, int time): maximumKW{KW}, t{time}
+Interface::Interface(double KW, bool init, int maxDV, int time): maximumKW{KW}, maximumDV{maxDV}, t{time}
 {
     KW = 0;     //KW utilizzati, all'inizio sono 0
+    if (init) {
+        Mcounter = 5;
+        CPcounter = 5;
+
+        std::vector<CPDevice> devicesCP = {
+            CPDevice("Lavatrice", 0, 2, 110),
+            CPDevice("Lavastoviglie", 1, 1.5, 195),
+            CPDevice("Forno a microonde", 2, 0.8, 2),
+            CPDevice("Asciugatrice", 3, 0.5, 60),
+            CPDevice("Televisore", 4, 0.2, 60)
+        };
+        std::vector<ManualDevice> devicesM = {
+            ManualDevice("Impianto fotovoltaico", 5, -1.5),     //Pannello al contrario perché aumenta la soglia di KW disponibili
+            ManualDevice("Pompa di calore", 6, 2),
+            ManualDevice("Tapparelle", 7, 0.3),
+            ManualDevice("Scaldabagno", 8, 1),
+            ManualDevice("Frigorifero", 9, 0.4)
+        };
+    }
 }
-void Interface::turnOn(int id) {        //Accensione manuale del device
+void Interface::turnOn(int id) {        //! Da risolvere con la nuova struttura
+    throw Error404FunctionNotFound();   //!
     updateKW();     //Aggiorno il numero di KW usati
     if (isCP(id)) {                                    //id 1-5 per i dispositivi a ciclo programmato
         if (KW + devicesCP[id-1].getConsumo() > maximumKW) {    //Se supero i KW lancio l'eccezione
@@ -98,7 +119,7 @@ void Interface::turnOn(int id) {        //Accensione manuale del device
         KW += devicesCP[id-1].getConsumo();
 
         //Aggiornamento timeline (con anche lo spegnimento)
-        timeline.addEvent(t, devicesCP[id-1].getNome() + " acceso", devicesCP[id-1].getID()+10, devicesCP[id-1].getConsumo());
+        timeline.addEvent(t, devicesCP[id-1].getNome() + " acceso", devicesCP[id-1].getID()+maximumDV, devicesCP[id-1].getConsumo());
         timeline.addEvent(t+devicesCP[id-1].getDurataCiclo(), devicesCP[id-1].getNome() + " spento", devicesCP[id-1].getID(), -devicesCP[id-1].getConsumo());
     } else if (isM(id)) {                           //id 6-10 per i dispositivi manuali
         if (KW + devicesM[id-1].getConsumo() > maximumKW) {     //Se supero i KW lancio l'eccezione
@@ -106,13 +127,14 @@ void Interface::turnOn(int id) {        //Accensione manuale del device
         }
         devicesM[id-6].turnOn();                    //Altrimenti lo accendo
         KW += devicesM[id-6].getConsumo();
-        timeline.addEvent(t, devicesM[id-6].getNome() + " acceso", devicesM[id-6].getID()+10, devicesM[id-6].getConsumo());
+        timeline.addEvent(t, devicesM[id-6].getNome() + " acceso", devicesM[id-6].getID()+maximumDV, devicesM[id-6].getConsumo());
     
     } else {
         throw DeviceIDOutOfBoundException();        //ID non presente tra i dispositivi.
     }
 }
-void Interface::turnOn(int id, int start) {         //Accensione programamta
+void Interface::turnOn(int id, int start) {         //! Da risolvere con la nuova struttura
+    throw Error404FunctionNotFound();       //!
     updateKW();     //Aggiorno il numero di KW usati
     if (start < t) throw NotATimeMachineException();
     timeCheck(start);
@@ -126,7 +148,7 @@ void Interface::turnOn(int id, int start) {         //Accensione programamta
     if (isCP(id)) {   //CP
         std::vector<int> idRequest = timeline.getIDs(0,start);
         for (int i = idRequest.size() - 1; i > 0; i--) {    //Controllo che il device non sia già attivo al lancio
-            if (idRequest[i] == id+10) {
+            if (idRequest[i] == id+maximumDV) {
                 throw TimerAlreadySetException();
             }
             if (idRequest[i] == id) {
@@ -135,7 +157,7 @@ void Interface::turnOn(int id, int start) {         //Accensione programamta
         }
         idRequest = timeline.getIDs(start,start+devicesCP[id-1].getDurataCiclo());
         for (int i = idRequest.size() - 1; i > 0; i--) {    //Controllo che il device non sia già attivo nella finestra temporale
-            if (idRequest[i] == id+10) {
+            if (idRequest[i] == id+maximumDV) {
                 throw TimerAlreadySetException();
             }
         }
@@ -143,12 +165,12 @@ void Interface::turnOn(int id, int start) {         //Accensione programamta
         if (temp + devicesCP[id-1].getConsumo() > maximumKW) throw OverKWException();
 
         //Ora ho tutti i requisiti per impostare la programmazione
-        timeline.addEvent(start, devicesCP[id-1].getNome() + " acceso", devicesCP[id-1].getID()+10, devicesCP[id-1].getConsumo());
+        timeline.addEvent(start, devicesCP[id-1].getNome() + " acceso", devicesCP[id-1].getID()+maximumDV, devicesCP[id-1].getConsumo());
         timeline.addEvent(start+devicesCP[id-1].getDurataCiclo(), devicesCP[id-1].getNome() + " spento", devicesCP[id-1].getID(), -devicesCP[id-1].getConsumo());
     } else if (isM(id)) {
         std::vector<int> idRequest = timeline.getIDs(0,start);
         for (int i = idRequest.size() - 1; i > 0; i--) {    //Controllo che il device non sia già attivo al lancio
-            if (idRequest[i] == id+10) {
+            if (idRequest[i] == id+maximumDV) {
                 throw TimerAlreadySetException();
             }
             if (idRequest[i] == id) {               //Se l'ultimo comando mandato era di spegnimento: OK
@@ -159,12 +181,13 @@ void Interface::turnOn(int id, int start) {         //Accensione programamta
         if (temp + devicesM[id-6].getConsumo() > maximumKW) throw OverKWException();
         //Se nel mentre erano già presenti delle programmazioni non mi interessa, le cancello tutte direttamente
         timeline.forget(id, start);
-        timeline.addEvent(t, devicesM[id-6].getNome() + " acceso", devicesM[id-6].getID()+10, devicesM[id-6].getConsumo());
+        timeline.addEvent(t, devicesM[id-6].getNome() + " acceso", devicesM[id-6].getID()+maximumDV, devicesM[id-6].getConsumo());
     } else {
         throw DeviceIDOutOfBoundException();
     }
 }
-void Interface::turnOn(int id, int start, int end) {        //Accensione programmata con spegnimento, solo M
+void Interface::turnOn(int id, int start, int end) {        //! Da risolvere con la nuova struttura
+    throw Error404FunctionNotFound();                   //!
     updateKW();     //Aggiorno il numero di KW usati
     if (start < t || end >= start) throw NotATimeMachineException();
     timeCheck(start);
@@ -179,7 +202,7 @@ void Interface::turnOn(int id, int start, int end) {        //Accensione program
     } else if (isM(id)) {
         std::vector<int> idRequest = timeline.getIDs(0, start);
         for (int i = idRequest.size() - 1; i > 0; i--) {    //Controllo che il device non sia già attivo al lancio
-            if (idRequest[i] == id+10) {
+            if (idRequest[i] == id+maximumDV) {
                 throw TimerAlreadySetException();
             }
             if (idRequest[i] == id) {               //Se l'ultimo comando mandato era di spegnimento: OK
@@ -189,27 +212,27 @@ void Interface::turnOn(int id, int start, int end) {        //Accensione program
         idRequest = timeline.getIDs(start, end);  //Controllo che non inizino altri timer senza concludersi
         int count = 0;
         for (int i : idRequest) {
-            if (i == id+10) count++;            //Conto che il numero di accensioni sia uguale a quello di spegnimenti
+            if (i == id+maximumDV) count++;            //Conto che il numero di accensioni sia uguale a quello di spegnimenti
             if (i == id) count--;
         }
         if (count != 0) throw TimerAlreadySetException();
         timeline.forget(id, start, end);        //Cancello queste programmazioni più corte
         //Controllo di avere abbastanza KW al momento del lancio, in tal caso, imposto il programma
         if (temp + devicesM[id-6].getConsumo() > maximumKW) throw OverKWException();
-        timeline.addEvent(start, devicesM[id-6].getNome() + " acceso", devicesM[id-6].getID()+10, devicesM[id-6].getConsumo());
-        timeline.addEvent(end, devicesM[id-6].getNome() + " spento", devicesM[id-6].getID()+10, -devicesM[id-6].getConsumo());
+        timeline.addEvent(start, devicesM[id-6].getNome() + " acceso", devicesM[id-6].getID()+maximumDV, devicesM[id-6].getConsumo());
+        timeline.addEvent(end, devicesM[id-6].getNome() + " spento", devicesM[id-6].getID()+maximumDV, -devicesM[id-6].getConsumo());
     } else {
         throw DeviceIDOutOfBoundException();
     }
 }
 
-void Interface::turnOff(int id) {       //Spegnimento manuale dei dispositivi, solo M
+void Interface::turnOff(int id) {       //! Da risolvere con la nuova struttura
     updateKW();     //Aggiorno il numero di KW usati
     if (isCP(id)) {
         throw CPIllegalInstructionException();  //Se il dispositivo è a ciclo prefissato non si può spegnere manualmente
     } else if (isM(id)) {
         timeline.forget(id, t);     //Cancello eventuali programmazioni future
-        timeline.addEvent(t, devicesM[id-6].getNome() + " spento", devicesM[id-6].getID()+10, -devicesM[id-6].getConsumo());
+        timeline.addEvent(t, devicesM[id-6].getNome() + " spento", devicesM[id-6].getID()+maximumDV, -devicesM[id-6].getConsumo());
     } else {
         throw DeviceIDOutOfBoundException();        //ID non presente tra i dispositivi.
     }
@@ -261,4 +284,33 @@ void Interface::show(int id) {
     } else {
         throw DeviceIDOutOfBoundException();
     }
+}
+
+void Interface::installM(std::string name, int id, double consumo, int isOn = false) {
+    if (Mcounter + CPcounter == maximumDV) throw DeviceLimitException();
+    Mcounter++;
+    devicesM.push_back(ManualDevice(name, Mcounter+CPcounter, consumo, isOn));
+
+}
+void Interface::installCP(std::string name, int id, double consumo, int durataCiclo, int isOn = false) {
+    if (Mcounter + CPcounter == maximumDV) throw DeviceLimitException();
+    CPcounter++;
+    devicesCP.push_back(CPDevice(name, Mcounter+CPcounter, consumo, durataCiclo, isOn));
+}
+void Interface::uninstall(int id) {
+    //! Da migliorare, se arrivo a 1024 come somma dei counter succede un macello
+    //! Devo segnalare / controllare quali id sono liberi
+    for (int i = 0; i < CPcounter; i++) {
+        if (devicesCP[i].getID() == id) {
+            devicesCP.erase(devicesCP.begin() + id);
+            return;
+        }
+    }
+    for (int i = 0; i < Mcounter; i++) {
+        if (devicesM[i].getID() == id) {
+            devicesM.erase(devicesM.begin() + id);
+            return;
+        }
+    }
+    throw DeviceIDOutOfBoundException();
 }
