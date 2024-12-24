@@ -32,12 +32,14 @@ L'unico errore è per l'input errato, lanciato con invalid_argument, in realtà 
 
 class Timeline{
 private:
+    int M;
     std::vector<int>         t;     //Salva il tempo
     std::vector<std::string> e;     //Testo che spiega cosa è successo
     std::vector<int>         d;     //ID del dispositivo che ha fatto la richiesta
     std::vector<double>      k;     //ΔKW
 
 public:
+    Timeline(int MaxID = 0) : M{MaxID} {}
     void addEvent(int time, std::string event, int ID, double KW) {         //Aggiunge un evento
         if (time < 0 || time > 1439) {
             throw std::invalid_argument("Il tempo deve essere compreso tra 0 e 1439 minuti");
@@ -74,7 +76,7 @@ public:
                 times.push_back(t[i]);
             }
         }
-        return times;
+        return std::move(times);
     }
 
     std::vector<std::string> getEvents(int start = 0, int end = 1439) {     //Ritorna gli eventi in un lasso di tempo
@@ -118,7 +120,7 @@ public:
 
     void forget(int id, int begin = 0, int end = 1439) {        //Elimina gli eventi di un device in un lasso di tempo
         for (int i = 0; i < t.size(); i++) {
-            if (t[i] >= begin && (d[i] == id || d[i] == id+10)) {
+            if (t[i] >= begin && (d[i] == id || d[i] == id+M)) {
                 t.erase(t.begin() + i);
                 e.erase(e.begin() + i);
                 d.erase(d.begin() + i);
@@ -132,6 +134,10 @@ public:
         e.clear();
         d.clear();
         k.clear();
+    }
+
+    void setMID(int mid) {
+        M = mid;
     }
 };
 

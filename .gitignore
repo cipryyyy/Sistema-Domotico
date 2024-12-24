@@ -1,2 +1,3 @@
 .vscode/settings.json
 build/SCD
+src/zen.cpp

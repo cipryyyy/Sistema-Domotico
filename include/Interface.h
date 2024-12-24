@@ -32,10 +32,15 @@ private:
     int t;                          //tempo in minuti
     Timeline timeline;              //timeline degli eventi
 
+    bool isCP(int id) noexcept;
+    bool isM(int M) noexcept;
+    int searchCP(int id) noexcept;
+    int searchM(int M) noexcept;
     void updateKW() noexcept;                  //Aggiorna il numero di KW utilizzati ad ogni chiamata
     void BeautyTable(Device *devicelist) noexcept;
     std::string m2h(int minute) noexcept;      //Converte da minuti in formato hh::mm
 
+    std::vector<int> freeID;
     std::vector<CPDevice> devicesCP;
     std::vector<ManualDevice> devicesM;
 

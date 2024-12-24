@@ -9,16 +9,31 @@ Robe che potrebbero essere funzioni:
 
 //Funzioni ci controllo
 
-bool isCP(int id) noexcept{             //! Da risolvere
-    return (id >= 0 && id <= 5);
+bool Interface::isCP(int id) noexcept {
+    for (int i = 0; i < CPcounter; i++) {
+        if (id == devicesCP[i].getID()) return true;
+    }
+    return false;
 }
-bool isM(int id) noexcept{              //! Da risolvere
-    return (id >= 6 && id <= 10);
+bool Interface::isM(int id) noexcept {
+    for (int i = 0; i < Mcounter; i++) {
+        if (id == devicesM[i].getID()) return true;
+    }
+    return false;
 }
 void timeCheck(int t) {
     if (t < 0 || t > 1439) throw InvalidTimeException();
 }
-
+int Interface::searchCP(int id) noexcept {
+    for (int i = 0; i < CPcounter; i++) {
+        if (id == devicesCP[i].getID()) return i;
+    }
+}
+int Interface::searchM(int id) noexcept {
+    for (int i = 0; i < Mcounter; i++) {
+        if (id == devicesM[i].getID()) return i;
+    }
+}
 //Funzioni grafiche
 
 void Lid(int sum) noexcept{
@@ -88,6 +103,8 @@ std::string Interface::m2h(int m) noexcept {
 Interface::Interface(double KW, bool init, int maxDV, int time): maximumKW{KW}, maximumDV{maxDV}, t{time}
 {
     KW = 0;     //KW utilizzati, all'inizio sono 0
+    timeline.setMID(maximumDV);
+
     if (init) {
         Mcounter = 5;
         CPcounter = 5;
@@ -109,32 +126,31 @@ Interface::Interface(double KW, bool init, int maxDV, int time): maximumKW{KW}, 
     }
 }
 void Interface::turnOn(int id) {        //! Da risolvere con la nuova struttura
-    throw Error404FunctionNotFound();   //!
     updateKW();     //Aggiorno il numero di KW usati
     if (isCP(id)) {                                    //id 1-5 per i dispositivi a ciclo programmato
-        if (KW + devicesCP[id-1].getConsumo() > maximumKW) {    //Se supero i KW lancio l'eccezione
+        id = searchCP(id);
+        if (KW + devicesCP[id].getConsumo() > maximumKW) {    //Se supero i KW lancio l'eccezione
             throw OverKWException();
         }
-        devicesCP[id-1].turnOn();                       //Altrimenti lo accendo
-        KW += devicesCP[id-1].getConsumo();
+        devicesCP[id].turnOn();                       //Altrimenti lo accendo
+        KW += devicesCP[id].getConsumo();
 
         //Aggiornamento timeline (con anche lo spegnimento)
-        timeline.addEvent(t, devicesCP[id-1].getNome() + " acceso", devicesCP[id-1].getID()+maximumDV, devicesCP[id-1].getConsumo());
-        timeline.addEvent(t+devicesCP[id-1].getDurataCiclo(), devicesCP[id-1].getNome() + " spento", devicesCP[id-1].getID(), -devicesCP[id-1].getConsumo());
+        timeline.addEvent(t, devicesCP[id].getNome() + " acceso", devicesCP[id].getID()+maximumDV, devicesCP[id].getConsumo());
+        timeline.addEvent(t+devicesCP[id].getDurataCiclo(), devicesCP[id].getNome() + " spento", devicesCP[id].getID(), -devicesCP[id].getConsumo());
     } else if (isM(id)) {                           //id 6-10 per i dispositivi manuali
-        if (KW + devicesM[id-1].getConsumo() > maximumKW) {     //Se supero i KW lancio l'eccezione
+        id = searchM(id);
+        if (KW + devicesM[id].getConsumo() > maximumKW) {     //Se supero i KW lancio l'eccezione
             throw OverKWException();
         }
-        devicesM[id-6].turnOn();                    //Altrimenti lo accendo
-        KW += devicesM[id-6].getConsumo();
-        timeline.addEvent(t, devicesM[id-6].getNome() + " acceso", devicesM[id-6].getID()+maximumDV, devicesM[id-6].getConsumo());
-    
+        devicesM[id].turnOn();                    //Altrimenti lo accendo
+        KW += devicesM[id].getConsumo();
+        timeline.addEvent(t, devicesM[id].getNome() + " acceso", devicesM[id].getID()+maximumDV, devicesM[id].getConsumo());
     } else {
         throw DeviceIDOutOfBoundException();        //ID non presente tra i dispositivi.
     }
 }
-void Interface::turnOn(int id, int start) {         //! Da risolvere con la nuova struttura
-    throw Error404FunctionNotFound();       //!
+void Interface::turnOn(int id, int start) {
     updateKW();     //Aggiorno il numero di KW usati
     if (start < t) throw NotATimeMachineException();
     timeCheck(start);
@@ -146,6 +162,7 @@ void Interface::turnOn(int id, int start) {         //! Da risolvere con la nuov
         temp += requestesKW;                        //Sommo il tutto, dopo devo controllare di averne abbastanza liberi
     }
     if (isCP(id)) {   //CP
+        id = searchCP(id);
         std::vector<int> idRequest = timeline.getIDs(0,start);
         for (int i = idRequest.size() - 1; i > 0; i--) {    //Controllo che il device non sia già attivo al lancio
             if (idRequest[i] == id+maximumDV) {
@@ -155,19 +172,20 @@ void Interface::turnOn(int id, int start) {         //! Da risolvere con la nuov
                 break;
             }
         }
-        idRequest = timeline.getIDs(start,start+devicesCP[id-1].getDurataCiclo());
+        idRequest = timeline.getIDs(start,start+devicesCP[id].getDurataCiclo());
         for (int i = idRequest.size() - 1; i > 0; i--) {    //Controllo che il device non sia già attivo nella finestra temporale
             if (idRequest[i] == id+maximumDV) {
                 throw TimerAlreadySetException();
             }
         }
         // Il dispositivo non sarà attivo nella finestra di tempo, ora controllo che non passi i KW
-        if (temp + devicesCP[id-1].getConsumo() > maximumKW) throw OverKWException();
+        if (temp + devicesCP[id].getConsumo() > maximumKW) throw OverKWException();
 
         //Ora ho tutti i requisiti per impostare la programmazione
-        timeline.addEvent(start, devicesCP[id-1].getNome() + " acceso", devicesCP[id-1].getID()+maximumDV, devicesCP[id-1].getConsumo());
-        timeline.addEvent(start+devicesCP[id-1].getDurataCiclo(), devicesCP[id-1].getNome() + " spento", devicesCP[id-1].getID(), -devicesCP[id-1].getConsumo());
+        timeline.addEvent(start, devicesCP[id].getNome() + " acceso", devicesCP[id].getID()+maximumDV, devicesCP[id].getConsumo());
+        timeline.addEvent(start+devicesCP[id].getDurataCiclo(), devicesCP[id].getNome() + " spento", devicesCP[id].getID(), -devicesCP[id].getConsumo());
     } else if (isM(id)) {
+        id = searchM(id);
         std::vector<int> idRequest = timeline.getIDs(0,start);
         for (int i = idRequest.size() - 1; i > 0; i--) {    //Controllo che il device non sia già attivo al lancio
             if (idRequest[i] == id+maximumDV) {
@@ -178,16 +196,16 @@ void Interface::turnOn(int id, int start) {         //! Da risolvere con la nuov
             }
         }
         //Controllo di avere abbastanza KW disponibili
-        if (temp + devicesM[id-6].getConsumo() > maximumKW) throw OverKWException();
+        if (temp + devicesM[id].getConsumo() > maximumKW) throw OverKWException();
         //Se nel mentre erano già presenti delle programmazioni non mi interessa, le cancello tutte direttamente
         timeline.forget(id, start);
-        timeline.addEvent(t, devicesM[id-6].getNome() + " acceso", devicesM[id-6].getID()+maximumDV, devicesM[id-6].getConsumo());
+        timeline.addEvent(t, devicesM[id].getNome() + " acceso", devicesM[id].getID()+maximumDV, devicesM[id].getConsumo());
     } else {
         throw DeviceIDOutOfBoundException();
     }
 }
-void Interface::turnOn(int id, int start, int end) {        //! Da risolvere con la nuova struttura
-    throw Error404FunctionNotFound();                   //!
+void Interface::turnOn(int id, int start, int end) {
+    throw Error404FunctionNotFound();
     updateKW();     //Aggiorno il numero di KW usati
     if (start < t || end >= start) throw NotATimeMachineException();
     timeCheck(start);
@@ -200,6 +218,7 @@ void Interface::turnOn(int id, int start, int end) {        //! Da risolvere con
     if (isCP(id)) {
         throw CPIllegalInstructionException();
     } else if (isM(id)) {
+        id = searchM(id);
         std::vector<int> idRequest = timeline.getIDs(0, start);
         for (int i = idRequest.size() - 1; i > 0; i--) {    //Controllo che il device non sia già attivo al lancio
             if (idRequest[i] == id+maximumDV) {
@@ -218,21 +237,22 @@ void Interface::turnOn(int id, int start, int end) {        //! Da risolvere con
         if (count != 0) throw TimerAlreadySetException();
         timeline.forget(id, start, end);        //Cancello queste programmazioni più corte
         //Controllo di avere abbastanza KW al momento del lancio, in tal caso, imposto il programma
-        if (temp + devicesM[id-6].getConsumo() > maximumKW) throw OverKWException();
-        timeline.addEvent(start, devicesM[id-6].getNome() + " acceso", devicesM[id-6].getID()+maximumDV, devicesM[id-6].getConsumo());
-        timeline.addEvent(end, devicesM[id-6].getNome() + " spento", devicesM[id-6].getID()+maximumDV, -devicesM[id-6].getConsumo());
+        if (temp + devicesM[id].getConsumo() > maximumKW) throw OverKWException();
+        timeline.addEvent(start, devicesM[id].getNome() + " acceso", devicesM[id].getID()+maximumDV, devicesM[id].getConsumo());
+        timeline.addEvent(end, devicesM[id].getNome() + " spento", devicesM[id].getID()+maximumDV, -devicesM[id].getConsumo());
     } else {
         throw DeviceIDOutOfBoundException();
     }
 }
 
-void Interface::turnOff(int id) {       //! Da risolvere con la nuova struttura
+void Interface::turnOff(int id) {
     updateKW();     //Aggiorno il numero di KW usati
     if (isCP(id)) {
         throw CPIllegalInstructionException();  //Se il dispositivo è a ciclo prefissato non si può spegnere manualmente
     } else if (isM(id)) {
+        id = searchM(id);
         timeline.forget(id, t);     //Cancello eventuali programmazioni future
-        timeline.addEvent(t, devicesM[id-6].getNome() + " spento", devicesM[id-6].getID()+maximumDV, -devicesM[id-6].getConsumo());
+        timeline.addEvent(t, devicesM[id].getNome() + " spento", devicesM[id].getID()+maximumDV, -devicesM[id].getConsumo());
     } else {
         throw DeviceIDOutOfBoundException();        //ID non presente tra i dispositivi.
     }
@@ -262,7 +282,6 @@ void Interface::setTime(int time) {
 void Interface::resetTime() {
     t = 0;                  //Ritorno con il tempo a 0
     timeline.clear();       //Elimino tutto dalla timeline
-    //? Spegno tutti i dispositivi? Boh, da valutare
 }
 
 //TODO Penso faccia abbastanza schifo per ora
@@ -289,26 +308,39 @@ void Interface::show(int id) {
 void Interface::installM(std::string name, int id, double consumo, int isOn = false) {
     if (Mcounter + CPcounter == maximumDV) throw DeviceLimitException();
     Mcounter++;
-    devicesM.push_back(ManualDevice(name, Mcounter+CPcounter, consumo, isOn));
+    if (freeID.size() > 0) {
+        id = freeID[0];
+        freeID.erase(freeID.begin());
+    } else {
+        id = Mcounter+CPcounter;
+    }
+    devicesM.push_back(ManualDevice(name, id, consumo, isOn));
 
 }
 void Interface::installCP(std::string name, int id, double consumo, int durataCiclo, int isOn = false) {
+    int id;
     if (Mcounter + CPcounter == maximumDV) throw DeviceLimitException();
     CPcounter++;
-    devicesCP.push_back(CPDevice(name, Mcounter+CPcounter, consumo, durataCiclo, isOn));
+    if (freeID.size() > 0) {
+        id = freeID[0];
+        freeID.erase(freeID.begin());
+    } else {
+        id = Mcounter+CPcounter;
+    }
+    devicesCP.push_back(CPDevice(name, id, consumo, durataCiclo, isOn));
 }
 void Interface::uninstall(int id) {
-    //! Da migliorare, se arrivo a 1024 come somma dei counter succede un macello
-    //! Devo segnalare / controllare quali id sono liberi
     for (int i = 0; i < CPcounter; i++) {
         if (devicesCP[i].getID() == id) {
             devicesCP.erase(devicesCP.begin() + id);
+            freeID.push_back(id);
             return;
         }
     }
     for (int i = 0; i < Mcounter; i++) {
         if (devicesM[i].getID() == id) {
             devicesM.erase(devicesM.begin() + id);
+            freeID.push_back(id);
             return;
         }
     }
