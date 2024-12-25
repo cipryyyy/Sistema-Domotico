@@ -1,27 +1,18 @@
-# Sistema domotico
-
-ᕙ(⇀‸↼‶)ᕗ
-
-*Andreose merda durante la foto di gruppo*
-
-**P.S. Non consegnare questo README porcodio!**
+# Progetto finale - sistema domotico
 
 ## Suddivisione progetto
 
-**Riccardo**: Device.h e le classi derivate.
+**Buso Riccardo**: `Device.h` e le classi derivate `ManualDevice.h`e `CPDevice.h`
 
-**Andrea**: Interface.h e tutta quella roba lì.
+**Cipriani Andrea**: `Interface.h` e `Timeline.h`
 
-**Giacomo**: main.cpp, parte di test e robe varie.
-
-**Riccavdo Andveose e Massimo Sturato**: Bocchini sottobanco e botte.
+**Giorgi Giacomo**: `main.cpp`, parte di test, registrazione dei log
 
 ## Passaggio di dati tra moduli
 * Il tempo lo passiamo per **minuti**, quindi `set time 8:30` chiamatelo con `setTime(510)`, che è più comodo per fare il delta del tempo trascorso. Stessa roba per il cronometro di `Driver`, durata del ciclo e blablabla.
 
 * Per accendere/spegnere i dispositivi usiamo l'**ID**, per esempio per spegnere la pompa si va `turnOff(4)`.
 
-* Gli **ID** li ho messi a partire da 1, un po' perché sono stronzo, un po' perché è più bello sul frontend (forse). L'ordine degli ID è quello del file, prima i device CP e poi quelli manuli, in caso:
 
 | **Elettrodomestico**        | **ID** |
 |-----------------------------|--------|

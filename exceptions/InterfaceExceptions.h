@@ -58,6 +58,15 @@ struct DeviceLimitException : public std::exception {
 };
 
 //Richiesta di variazione temporale negativa:
+//! Lanciata da: searchID
+struct NameNotFoundException : public std::exception {
+    const char* what() const noexcept override {
+        return "Nome non presente tra i dispositivi.";
+    }
+};
+
+
+//Richiesta di variazione temporale negativa:
 //! Lanciata da: turnOn(id, start), turnOn(id, start, end), setTime(time)
 struct NotATimeMachineException : public std::exception {
     const char* what() const noexcept override {
