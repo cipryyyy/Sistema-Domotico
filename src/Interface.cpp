@@ -11,7 +11,7 @@ TODO list:
 */ 
 
 //Funzioni helper
-bool Interface::isCP(int id) noexcept {
+bool Interface::isCP(int id) noexcept {		// Controllare su un device è CP/M :ᓚᘏᗢ
     for (int i = 0; i < CPcounter; i++) {
         if (id == devicesCP[i].getID()) return true;
     }
@@ -23,24 +23,34 @@ bool Interface::isM(int id) noexcept {
     }
     return false;
 }
-int Interface::searchCP(int id) noexcept {
+int Interface::searchCP(int id) noexcept {		//In caso di isM/CP, ritorna l'indice
     for (int i = 0; i < CPcounter; i++) {
         if (id == devicesCP[i].getID()) return i;
     }
+	return -1;	//Non serve a nulla, solo che dopo il compilatore lancia un warning :3
 }
 int Interface::searchM(int id) noexcept {
     for (int i = 0; i < Mcounter; i++) {
         if (id == devicesM[i].getID()) return i;
     }
+	return -1;		//Stesso discorso ^w^
 }
-void timeCheck(int t, int start = -1, int end = -1) {     //TODO utilizzare anche il begin e end
-    if (t < 0 || t > 1439) throw InvalidTimeException();
+void timeCheck(int t, int start = INT_MIN, int end = INT_MIN) {     //TODO da testare per bene ^w^
+    if (t < 0 || t > 1439) throw InvalidTimeException();				//Tempo base
+	if (start != INT_MIN) {												//check di inizio routine
+    	if (start < 0 || start > 1439) throw InvalidTimeException();
+		if (start < t) throw NotATimeMachineException();
+	}
+	if (end != INT_MIN) {												//check di termine routine
+    	if (end < 0 || end > 1439) throw InvalidTimeException();
+		if (end < start) throw NotATimeMachineException();
+	}
 }
-void Interface::updateKW() noexcept{        //Sommo tutte le variazioni dei Kilowatt dal tempo 0 fino ad ora
-    KW = 0;
+void Interface::updateKW() noexcept{        			//Sommo tutte le variazioni dei Kilowatt dal tempo 0 fino ad ora
+    KW = 0;												//Con le programmazioni esce un casino per il calcolo :3
     std::vector<double> delta = timeline.getKWs(0, t);
     for (double d : delta) {
-        KW += d;
+        KW += d;				//Aggiorna direttamente la variabile
     }
 }
 
@@ -116,7 +126,7 @@ Interface::Interface(double KW, bool init, int maxDV, int time): maximumKW{KW}, 
             CPDevice("Lavastoviglie", 1, 1.5, 195),
             CPDevice("Forno microonde", 2, 0.8, 2),
             CPDevice("Asciugatrice", 3, 0.5, 60),
-            CPDevice("Tapparelle", 7, 1, 0.3),
+            CPDevice("Tapparelle", 7, 0.3, 1),
             CPDevice("Televisore", 4, 0.2, 60)
         };
         std::vector<ManualDevice> devicesM = {
@@ -154,8 +164,7 @@ void Interface::turnOn(int id) {    //! Da testare
 }
 void Interface::turnOn(int id, int start) {    //! Da testare
     updateKW();     //Aggiorno il numero di KW usati
-    if (start < t) throw NotATimeMachineException();
-    timeCheck(start);
+    timeCheck(t, start);
     //Ci possono essere più richieste di timer, quindi controllo se, in base alle richieste future
     //avrò abbastanza KW disponibili per far andare il dispositivo
     double temp = KW;
@@ -209,9 +218,7 @@ void Interface::turnOn(int id, int start) {    //! Da testare
 void Interface::turnOn(int id, int start, int end) {    //! Da testare
     throw Error404FunctionNotFound();
     updateKW();     //Aggiorno il numero di KW usati
-    if (start < t || end >= start) throw NotATimeMachineException();
-    timeCheck(start);
-    timeCheck(end);
+    timeCheck(t, start, end);
     double temp = KW;
     std::vector<double> programmedKW = timeline.getKWs(t, start);   //Richiedo tutti i ΔKW da ora fino al momento dell'accensione
     for (double requestedKW : programmedKW) {
@@ -265,8 +272,7 @@ void Interface::removeTimer(int id) {
 }
 
 void Interface::setTime(int time) {
-    if (time < t) throw NotATimeMachineException();                 //Controllo che i dati siano corretti
-    timeCheck(t);
+    timeCheck(t, time);
 
     std::vector<int> timestamp = timeline.getTimes(t,time);             //Vector con gli orari
     std::vector<std::string> events = timeline.getEvents(t,time);       //Vector con gli eventi
@@ -306,7 +312,7 @@ void Interface::show(int id) { //TODO Stesso discorso qua
     }
 }
 
-void Interface::installM(std::string name, double consumo, int isOn = false) {
+void Interface::installM(std::string name, double consumo, bool isOn) {
     int id;
     if (Mcounter + CPcounter == maximumDV) throw DeviceLimitException();
     Mcounter++;
@@ -319,7 +325,7 @@ void Interface::installM(std::string name, double consumo, int isOn = false) {
     devicesM.push_back(ManualDevice(name, id, consumo, isOn));
 
 }
-void Interface::installCP(std::string name, double consumo, int durataCiclo, int isOn = false) {
+void Interface::installCP(std::string name, double consumo, int durataCiclo, bool isOn) {
     int id;
     if (Mcounter + CPcounter == maximumDV) throw DeviceLimitException();
     CPcounter++;

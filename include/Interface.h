@@ -60,8 +60,8 @@ public:
     void show();                                        //Mostra lo stato di tutti i dispositivi
     void show(int id);                                  //Mostra lo stato di un singolo dispositivo
 
-    void installM(std::string name, double consumo, int isOn = false);                      //Installa un dispositivo manuale
-    void installCP(std::string name, double consumo, int durataCiclo, int isOn = false);    //Installa un dispositivo CP
+    void installM(std::string name, double consumo, bool isOn = false);                      //Installa un dispositivo manuale
+    void installCP(std::string name, double consumo, int durataCiclo, bool isOn = false);    //Installa un dispositivo CP
     void uninstall(int id);                                                                 //Rimuove un dispositivo
 
     int searchID(std::string name);                     //Ritorna l'ID di un dispositivo dato il nome       
