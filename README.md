@@ -13,7 +13,6 @@
 
 * Per accendere/spegnere i dispositivi usiamo l'**ID**, per esempio per spegnere la pompa si va `turnOff(4)`.
 
-
 | **Elettrodomestico**        | **ID** |
 |-----------------------------|--------|
 | Lavatrice                   | 1      |
@@ -27,4 +26,8 @@
 | Scaldabagno                 | 9      |
 | Frigorifero                 | 10     |
 
-* Nella cartella exceptions metteremo (indovinate) le classi di errore. Poi boh le importiamo e via
+* Gli ID si possono recuperare dal nome
+
+* Nella cartella exceptions metteremo (indovinate) le classi di errore
+
+* La classe timeline.h simula una linea temporale.

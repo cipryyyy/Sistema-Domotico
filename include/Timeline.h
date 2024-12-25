@@ -12,11 +12,13 @@ Questo perché il sistema supporta fino a 1024 dispositivi
 il numero dei device è arbitrario, comunque numero difficile da raggiungere e in caso modificabile in inizializzazione.
 
 I metodi della libreria sono: 
-* addEvent      aggiungere eventi
-* print         per stampare a schermo gli eventi in un range start - end
-* get[...]      ritorna un vettore con orari/eventi/id/kw in un range start - end
-* clear         elimina tutti gli eventi
-* forget        elimina gli eventi di un dispositivo in un lasso di tempo
+* addEvent      Aggiungere eventi
+* print         Per stampare a schermo gli eventi in un range start - end
+* get[...]      Ritorna un vettore con orari/eventi/id/kw in un range start - end
+* clear         Elimina tutti gli eventi
+* forget        Elimina gli eventi di un dispositivo in un lasso di tempo
+* setRange      Imposta il valore massimo degli ID per segnalare quando è acceso o spento il device
+* getRange      Ottieni il valore massimo degli ID per segnalare quando è acceso o spento il device
 
 L'unico errore è per l'input errato, lanciato con invalid_argument, in realtà questa eccezione
 è già coperta in interface.h, ma non si sa mai.
@@ -32,14 +34,14 @@ L'unico errore è per l'input errato, lanciato con invalid_argument, in realtà 
 
 class Timeline{
 private:
-    int M;
+    int range;
     std::vector<int>         t;     //Salva il tempo
     std::vector<std::string> e;     //Testo che spiega cosa è successo
     std::vector<int>         d;     //ID del dispositivo che ha fatto la richiesta
     std::vector<double>      k;     //ΔKW
 
 public:
-    Timeline(int MaxID = 0) : M{MaxID} {}
+    Timeline(int MaxID = 0) : range{MaxID} {}
     void addEvent(int time, std::string event, int ID, double KW) {         //Aggiunge un evento
         if (time < 0 || time > 1439) {
             throw std::invalid_argument("Il tempo deve essere compreso tra 0 e 1439 minuti");
@@ -120,7 +122,7 @@ public:
 
     void forget(int id, int begin = 0, int end = 1439) {        //Elimina gli eventi di un device in un lasso di tempo
         for (int i = 0; i < t.size(); i++) {
-            if (t[i] >= begin && (d[i] == id || d[i] == id+M)) {
+            if (t[i] >= begin && (d[i] == id || d[i] == id+range)) {
                 t.erase(t.begin() + i);
                 e.erase(e.begin() + i);
                 d.erase(d.begin() + i);
@@ -136,8 +138,11 @@ public:
         k.clear();
     }
 
-    void setMID(int mid) {
-        M = mid;
+    void setRange(int mid) {
+        range = mid;
+    }
+    int getRange() const noexcept {
+        return range;
     }
 };
 

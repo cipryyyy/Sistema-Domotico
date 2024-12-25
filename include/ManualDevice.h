@@ -1,5 +1,7 @@
 //Autore: Buso Riccardo
 
+//LEGGI IL COMMENTO IN DEVICE.H
+
 #ifndef MANUALDEVICE_H
 #define MANUALDEVICE_H
 

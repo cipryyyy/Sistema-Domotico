@@ -9,21 +9,26 @@
 /*
 ! Leggimi please. 
 
-Fammi dei getter per tutti i dati da mettere sul comando show (nome, consumo totale nella giornata, quante ore è stato acceso e blablabla)
-Nel file timeline.h ho già scritto come funziona, come capire se un device è attivo in un dato momento e tutto il resto
+Migliora i costruttori, che per ora non CPDevice e ManualDevice sono trattati come classi indipendenti (che l'uomo sesso
+valuta anche ste boiate sicuro), tanto MDevice rimane identico, CPDevice chiama il costruttore device ed aggiunge il tempo
+di esecuzione, nulla di più
 
-Nel costruttore aggiungi un argomento passato per riferimento di timeline, in maniera tale che dall'interfaccia
-creo una timeline, tutti i device si sincronizzano su di quella, così riesci a fare tutte le funzioni.
-Non so se serva, ma se vuoi aggiungi anche un argomento per il tempo, passato per riferimento, così direttamente sono tutti collegati alla stessa variabile &t
-Tipo:
+Aggiungi il passaggio di una timeline per riferimento e del tempo t, sempre per riferimento. Tipo:
 
-CPDevice(timeline& timeline, int& t, std::string nome, int ID, double consumo, int durataCiclo, bool stato = false)
+Device(Timeline& timeline, int& t, .......) : ......
 
-Il resto vedi te come fare, l'unica roba il tempo segnalo in minuti, quindi un'ora di esecuzione scrivi segna 60(minuti)
-Per il resto l'interfaccia è già pronta praticamente, una volta che hai fatto i metodi ricontrollo che tutto funzioni correttamente
-al massimo dai un occhiata al mio file, se ci sono problemi insultami.
+Questo perché così hai accesso a tutte le programmazioni fatte da interface e riesci a calcolare il tempo in cui
+un device rimane acceso, se al tempo t un device è acceso e tutto il resto. Leggiti un attimo come ho strutturato la classe,
+ad inizio del file c'è un commento in cui spiego tutto comunque, l'unico metodo che ti interessa sono i get vari, il resto
+sono tutti metodi di interface.
 
-Comunque sei proprio brutto <3
+Per il resto i metodi sono tutti ok, a parte getStato che non serve a parer mio, i file .cpp te li ho già preparati con
+gli #include degli header, se trovi dei metodi scritti dentro vai tra che non servono ad un cazzo, mi servivano solo
+perché sennò CMake rompe le palle con il linking.
+
+Ricordati che lo scorrere del tempo è in minuti, quindi tempo di esecuzione di 1 ora ritorna come valore: 60.
+
+Ciao TVB.
 */
 
 class Device {
@@ -53,18 +58,18 @@ protected:
 public:             //! Lo ho messo un attimo public che i getter mi servono in Interface.h
     // Getter and Setter for nome
     std::string getNome() const;
-    void setNome(const std::string& nome);  //! Non serve
+    void setNome(const std::string& nome); 
 
     // Getter and Setter for ID
     int getID() const;
-    void setID(int ID);         //! Non serve
+    void setID(int ID);   
 
     // Getter and Setter for consumo
     int getConsumo() const;
-    void setConsumo(int consumo);   //! Non serve
+    void setConsumo(int consumo); 
 
     // Getter and Setter for stato
-    bool getStato() const;      //! ci sono già turnOn, turnOff e isOn, non penso servano
+    bool getStato() const;      //! Ripetuta, c'è già isOn
     void setStato(bool stato);
 
     // Getter and Setter for tempoDiEsecuzione

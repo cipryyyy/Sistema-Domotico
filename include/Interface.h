@@ -36,7 +36,7 @@ private:
     bool isCP(int id) noexcept;
     bool isM(int M) noexcept;
     int searchCP(int id) noexcept;
-    int searchM(int M) noexcept;
+    int searchM(int id) noexcept;
     void updateKW() noexcept;                  //Aggiorna il numero di KW utilizzati ad ogni chiamata
     void BeautyTable(Device *devicelist) noexcept;
     std::string m2h(int minute) noexcept;      //Converte da minuti in formato hh::mm

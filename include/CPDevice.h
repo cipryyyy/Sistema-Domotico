@@ -1,5 +1,7 @@
 //Autore: Buso Riccardo
 
+// LEGGI IL COMMENTO IN DEVICE.H GRZ 
+
 #ifndef CPDEVICE_H
 #define CPDEVICE_H
 
