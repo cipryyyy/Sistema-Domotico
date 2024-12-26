@@ -34,6 +34,7 @@ int Interface::searchM(int id) noexcept {
     }
 	return -1;		//Stesso discorso ^w^
 }
+
 void timeCheck(int t, int start = INT_MIN, int end = INT_MIN) {
     if (t < 0 || t > 1439) throw InvalidTimeException();				//Tempo base
 	if (start != INT_MIN) {												//check di inizio routine
@@ -120,7 +121,7 @@ Interface::Interface(double KW, bool init, int maxDV, int time): maximumKW{KW}, 
         CPcounter = 6;
         Mcounter = 4;
 
-        std::vector<CPDevice> devicesCP = {
+        devicesCP = {
             CPDevice("Lavatrice", 0, 2, 110),
             CPDevice("Lavastoviglie", 1, 1.5, 195),
             CPDevice("Forno microonde", 2, 0.8, 2),
@@ -128,7 +129,7 @@ Interface::Interface(double KW, bool init, int maxDV, int time): maximumKW{KW}, 
             CPDevice("Tapparelle", 7, 0.3, 1),
             CPDevice("Televisore", 4, 0.2, 60)
         };
-        std::vector<ManualDevice> devicesM = {
+        devicesM = {
             ManualDevice("Impianto fotovoltaico", 5, -1.5),     //Pannello al contrario perché aumenta la soglia di KW disponibili
             ManualDevice("Pompa di calore", 6, 2),
             ManualDevice("Scaldabagno", 8, 1),
@@ -294,25 +295,26 @@ void Interface::setTime(int time) {
 void Interface::resetTime() {
     t = 0;                  //Ritorno con il tempo a 0
     timeline.clear();       //Elimino tutto dalla timeline
+    std::cout << "Reset del tempo effettuato con successo" << std::endl;
 }
 
 void Interface::show() {    //TODO Penso faccia abbastanza schifo per ora
 	//stats di tutti i dispositivi
     std::cout << "[" << m2h(t) << "]: Stato dei device manuali:" << std::endl;
     for (int i = 0; i < 5; i++) {
-        std::cout << devicesCP[i].getNome()<< "[" << (devicesCP[i].isOn()? "acceso" : "spento") << "]" << " ha consumato " << devicesCP[i].getConsumo() << ", oggi e' stato usato per " << devicesCP[i].getTempoDiEsecuzione();
+        std::cout << devicesCP[i].getNome()<< "[" << (devicesCP[i].isOn()? "acceso" : "spento") << "]" << " ha consumato " << devicesCP[i].getConsumo() << ", oggi e' stato usato per " << devicesCP[i].getTempoDiEsecuzione() << "\n";
     }
     for (int i = 0; i < 5; i++) {
-        std::cout << devicesM[i].getNome()<< "[" << (devicesM[i].isOn()? "acceso" : "spento") << "]" << " ha consumato " << devicesM[i].getConsumo() << ", oggi e' stato usato per " << devicesM[i].getTempoDiEsecuzione();
+        std::cout << devicesM[i].getNome()<< "[" << (devicesM[i].isOn()? "acceso" : "spento") << "]" << " ha consumato " << devicesM[i].getConsumo() << ", oggi e' stato usato per " << devicesM[i].getTempoDiEsecuzione() << "\n";
     }
 }
 
 void Interface::show(int id) { //TODO Stesso discorso qua
 	//stats del device ID
     if (isCP(id)) {
-        std::cout << devicesCP[id].getNome()<< "[" << (devicesCP[id].isOn()? "acceso" : "spento") << "]" << " ha consumato " << devicesCP[id].getConsumo() << ", oggi e' stato usato per " << devicesCP[id].getTempoDiEsecuzione();
+        std::cout << devicesCP[id].getNome()<< "[" << (devicesCP[id].isOn()? "acceso" : "spento") << "]" << " ha consumato " << devicesCP[id].getConsumo() << ", oggi e' stato usato per " << devicesCP[id].getTempoDiEsecuzione() << "\n";
     } else if (isM(id)) {
-        std::cout << devicesM[id].getNome()<< "[" << (devicesM[id].isOn()? "acceso" : "spento") << "]" << " ha consumato " << devicesM[id].getConsumo() << ", oggi e' stato usato per " << devicesM[id].getTempoDiEsecuzione();
+        std::cout << devicesM[id].getNome()<< "[" << (devicesM[id].isOn()? "acceso" : "spento") << "]" << " ha consumato " << devicesM[id].getConsumo() << ", oggi e' stato usato per " << devicesM[id].getTempoDiEsecuzione() << "\n";
     } else {
         throw DeviceIDOutOfBoundException();
     }
@@ -321,7 +323,7 @@ void Interface::show(int id) { //TODO Stesso discorso qua
 void Interface::installM(std::string name, double consumo, bool isOn) {
 	//Creazione ID
     int id;
-    if (Mcounter + CPcounter == maximumDV) throw DeviceLimitException();	//Eccezione, troppi Device installati
+    if (Mcounter + CPcounter >= maximumDV) throw DeviceLimitException();	//Eccezione, troppi Device installati
     Mcounter++;
     if (freeID.size() > 0) {			//Se ho degli id liberi, li uso
         id = freeID[0];
@@ -335,7 +337,7 @@ void Interface::installM(std::string name, double consumo, bool isOn) {
 void Interface::installCP(std::string name, double consumo, int durataCiclo, bool isOn) {
 	//Creazione ID
     int id;
-    if (Mcounter + CPcounter == maximumDV) throw DeviceLimitException();	//Eccezione, troppi Device installati
+    if (Mcounter + CPcounter >= maximumDV) throw DeviceLimitException();	//Eccezione, troppi Device installati
     CPcounter++;
     if (freeID.size() > 0) {		//Se ho degli ID liberi, li uso
         id = freeID[0];
