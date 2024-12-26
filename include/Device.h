@@ -48,7 +48,6 @@ public:
 
 protected:
     // attributi 
-    
     std::string nome;    
     int ID; 
     int consumo; //consumo specifico del device
@@ -69,7 +68,7 @@ public:             //! Lo ho messo un attimo public che i getter mi servono in 
     void setConsumo(int consumo); 
 
     // Getter and Setter for stato
-    bool getStato() const;      //! Ripetuta, c'è già isOn
+    // bool getStato() const;      //! Ripetuta, c'è già isOn
     void setStato(bool stato);
 
     // Getter and Setter for tempoDiEsecuzione
