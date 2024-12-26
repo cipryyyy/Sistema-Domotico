@@ -69,7 +69,7 @@ public:
     }
 
     std::vector<int> getTimes(int start = 0, int end = 1439) {      //Ritorna i timestamp in un lasso di tempo
-        if (end > start || start < 0 || end > 1439) {
+        if (end < start || start < 0 || end > 1439) {
             throw std::invalid_argument("Valori inseriti non validi");
         }
         std::vector<int> times;
@@ -82,7 +82,7 @@ public:
     }
 
     std::vector<std::string> getEvents(int start = 0, int end = 1439) {     //Ritorna gli eventi in un lasso di tempo
-        if (end > start || start < 0 || end > 1439) {
+        if (end < start || start < 0 || end > 1439) {
             throw std::invalid_argument("Valori inseriti non validi");
         }
         std::vector<std::string> events;
@@ -95,7 +95,7 @@ public:
     }
 
     std::vector<int> getIDs(int start = 0, int end = 1439) {        //Ritorna gli id agenti in un lasso di tempo
-        if (end > start || start < 0 || end > 1439) {
+        if (end < start || start < 0 || end > 1439) {
             throw std::invalid_argument("Valori inseriti non validi");
         }
         std::vector<int> IDs;
@@ -108,7 +108,7 @@ public:
     }
 
     std::vector<double> getKWs(int start = 0, int end = 1439) {     //Ritorna le variazioni in un lasso di tempo
-        if (end > start || start < 0 || end > 1439) {
+        if (end < start || start < 0 || end > 1439) {
             throw std::invalid_argument("Valori inseriti non validi");
         }
         std::vector<double> KWs;
