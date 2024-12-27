@@ -1,3 +1,4 @@
 .vscode/settings.json
 src/zen.cpp
-build
+/build/
+/build
