@@ -1,5 +1,8 @@
 #include "Device.h"
 
+//costruttore
+
+//no costruttore di default perchè non ha senso creare un device senza nome, ID e consumo
 
 Device::Device(std::string nome, int ID, double consumo,bool stato = false, Timeline& timeline, int& t){
     this->nome = nome;

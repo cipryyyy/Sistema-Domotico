@@ -10,15 +10,16 @@
 class Device {
 public:
     // Constructor
+    
     Device(std::string nome, int ID, double consumo,bool stato = false, Timeline& timeline, int& t);
 
     // Destructor
-    ~Device();
+   virtual ~Device();
 
     // Member functions
-    void turnOn();
-    void turnOff();
-    bool isOn() const;
+    virtual void turnOn();
+    virtual void turnOff();
+    virtual bool isOn() const;
 
     // Add more member functions and attributes as needed
 
