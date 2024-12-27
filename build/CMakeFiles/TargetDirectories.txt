@@ -1,3 +1,3 @@
-/Users/macbook/Documents/Github/Sistema-Domotico/build/CMakeFiles/SCD.dir
-/Users/macbook/Documents/Github/Sistema-Domotico/build/CMakeFiles/edit_cache.dir
-/Users/macbook/Documents/Github/Sistema-Domotico/build/CMakeFiles/rebuild_cache.dir
+C:/Users/User/OneDrive/Desktop/unipd/programmazione/Sistema-Domotico/build/CMakeFiles/SCD.dir
+C:/Users/User/OneDrive/Desktop/unipd/programmazione/Sistema-Domotico/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/User/OneDrive/Desktop/unipd/programmazione/Sistema-Domotico/build/CMakeFiles/ZERO_CHECK.dir

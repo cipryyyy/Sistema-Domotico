@@ -45,7 +45,7 @@ public:
     Timeline(int MaxID = 0) : range{MaxID} {}
     void addEvent(int time, std::string event, int ID, double KW) {         //Aggiunge un evento
         if (time < 0 || time > 1439) {
-            throw std::invalid_argument("Il tempo deve essere compreso tra 0 e 1439 minuti");
+            throw std::invalid_argument("Il tempo deve essere compreso tra 0 e 1439 minuti"); //24 h 
         }
         //Salvo tutti i dati
         t.push_back(time);

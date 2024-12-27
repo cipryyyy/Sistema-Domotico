@@ -1,23 +1,27 @@
 #include "Device.h"
 
-//Sono tutte dummy, non fanno una sega
-//Le ho scritte solo per vedere se almeno compila la parte interface
 
-Device::Device() : nome(""), ID(0), consumo(0), stato(false), tempoDiEsecuzione(0) {}
+Device::Device(std::string nome, int ID, double consumo,bool stato = false, Timeline& timeline, int& t){
+    this->nome = nome;
+    this->ID = ID;
+    this->consumo = consumo;
+    this->on = stato;    
+    this->tempoDiEsecuzione = 0;
+} 
 
 Device::~Device() {}
 
 void Device::turnOn() {
-    stato = true;
+    on = true;
     tempoDiEsecuzione = 0;
 }
 
 void Device::turnOff() {
-    stato = false;
+    on = false;
 }
 
 bool Device::isOn() const {
-    return stato;
+    return on;
 }
 
 std::string Device::getNome() const {
@@ -45,7 +49,7 @@ void Device::setConsumo(int newConsumo) {
 }
 
 void Device::setStato(bool newStato) {
-    stato = newStato;
+    on = newStato;
 }
 
 int Device::getTempoDiEsecuzione() const {
