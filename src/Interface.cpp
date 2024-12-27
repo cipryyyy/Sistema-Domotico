@@ -7,10 +7,11 @@ TODO list:
 * Attendere Device per eventuali migliorie
 * UpdateKW forse si può migliorare come calcoli
 ? File a parte per le funzioni helper
+? Integrare isM/isCP con searchM/searchCP
 */ 
 
 //Funzioni helper
-bool Interface::isCP(int id) noexcept {		// Controllare su un device è CP/M :ᓚᘏᗢ
+bool Interface::isCP(int id) noexcept {		// Controllare su un device è CP/M
     for (int i = 0; i < CPcounter; i++) {
         if (id == devicesCP[i].getID()) return true;
     }
@@ -26,13 +27,13 @@ int Interface::searchCP(int id) noexcept {		//In caso di isM/CP, ritorna l'indic
     for (int i = 0; i < CPcounter; i++) {
         if (id == devicesCP[i].getID()) return i;
     }
-	return -1;	//Non serve a nulla, solo che dopo il compilatore lancia un warning :3
+	return -1;	//* Non serve a nulla, solo che dopo il compilatore lancia un warning psceno
 }
 int Interface::searchM(int id) noexcept {
     for (int i = 0; i < Mcounter; i++) {
         if (id == devicesM[i].getID()) return i;
     }
-	return -1;		//Stesso discorso ^w^
+	return -1;		//Stesso discorso
 }
 
 void timeCheck(int t, int start = INT_MIN, int end = INT_MIN) {
@@ -54,13 +55,13 @@ void Interface::updateKW() noexcept{        			//Sommo tutte le variazioni dei K
     }
 }
 
-//Funzioni grafiche
+// TODO Funzioni grafiche
 void Lid(int sum) noexcept{
     for (int i = 0; i < sum; i++) {
         std::cout << "-";           //Ciclo di apertura e chiusura della tabella
     }
 }
-void Interface::BeautyTable(Device *devicelist) noexcept {          //!In sviluppo
+void Interface::BeautyTable(Device *devicelist) noexcept {
     int cols = 4;
     int nameCol = 21;
     int statusCol = 6;
@@ -137,7 +138,7 @@ Interface::Interface(double KW, bool init, int maxDV, int time): maximumKW{KW}, 
         };
     }
 }
-void Interface::turnOn(int id) {    //TODO Da testare
+void Interface::turnOn(int id) {
     updateKW();     //Aggiorno il numero di KW usati
     if (isCP(id)) {                                    //id 1-5 per i dispositivi a ciclo programmato
         id = searchCP(id);
@@ -160,7 +161,7 @@ void Interface::turnOn(int id) {    //TODO Da testare
         throw DeviceIDOutOfBoundException();        //ID non presente tra i dispositivi.
     }
 }
-void Interface::turnOn(int id, int start) {    //TODO Da testare
+void Interface::turnOn(int id, int start) {
     timeCheck(t, start);			//Controllo e aggiorno
 	updateKW();
 
@@ -219,7 +220,7 @@ void Interface::turnOn(int id, int start) {    //TODO Da testare
         throw DeviceIDOutOfBoundException();
     }
 }
-void Interface::turnOn(int id, int start, int end) {    //TODO Da testare
+void Interface::turnOn(int id, int start, int end) {
     timeCheck(t, start, end);
     updateKW();     //Aggiorno il numero di KW usati
     double temp = KW;

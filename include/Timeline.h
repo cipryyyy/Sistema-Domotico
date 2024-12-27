@@ -1,5 +1,6 @@
 /*
-Autore: Cipriani Andrea
+Autori: Cipriani Andrea, Giorgi Giacomo
+
 Questa libreria di supporto serve per generare una timeline
 in grado di salvare gli eventi del sistema, con il relativo orario e tutti i metadati necessari.
 
@@ -54,7 +55,7 @@ public:
     }
 
     void print(int start = 0, int end = 1439) {                         //! Meglio usare i get, così si accede più facilmente ai dati di un device.
-        if (end > start || start < 0 || end > 1439) {
+        if (end < start || start < 0 || end > 1439) {
             throw std::invalid_argument("Valori inseriti non validi");
         }
         for (int i = 0; i < t.size(); i++) {
