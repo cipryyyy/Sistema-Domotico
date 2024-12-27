@@ -79,188 +79,172 @@ int main() {
         return 1;
     }
     
-    // std::cout << "Smart Home Energy Management System\n";
-    // std::cout << "Type 'help' for available commands\n";
+    std::cout << "Smart Home Energy Management System\n";
+    std::cout << "Type 'help' for available commands\n";
 
-    // TEST CASES
-    std::cout << "Test case 1: " << std::endl;
-    std::cout << "Accendo televisore dalle 01:00 alle 03:00" << std::endl;
-    system.turnOn(system.searchID("Televisore"), 60, 120); // Accendo il televisore dalle 01:00 alle 03:00
-    std::cout << "Faccio scorrere il tempo fino alle 04:00" << std::endl;
-    system.setTime(240); // Sono le 04:00
+    while (true) {
+        std::cout << "\n>> ";
+        getline(std::cin, command);
 
-    std::cout << "Testing IDs:" << std::endl;
-    std::cout << "Televisore ID: " << system.searchID("Televisore") << std::endl;
+        // Loggo il comando
+        logFile << "[" << "] User input: " << command << std::endl;
 
+        try {
+            auto tokens = tokenize(command);
+            if (tokens.empty()) continue;
 
-    // while (true) {
-    //     std::cout << "\n>> ";
-    //     getline(std::cin, command);
+            // Display help
+            if(tokens[0] == "help" || tokens[0] == "h") {
+                displayHelp();
+                continue;
+            }
 
-    //     // Loggo il comando
-    //     logFile << "[" << "] User input: " << command << std::endl;
+            // Commando uscita
+            if (tokens[0] == "exit" || tokens[0] == "q") {
+                logFile << "Exiting program\n";
+                break;
+            }
 
-    //     try {
-    //         auto tokens = tokenize(command);
-    //         if (tokens.empty()) continue;
+            // Commandi "show"
+            if (tokens[0] == "show") {
+                if (tokens.size() == 1) {
+                    system.show();
+                } else if (tokens.size() == 2) {
+                    try {
+                        int deviceId = system.searchID(tokens[1]);
+                        system.show(deviceId);
+                    } catch (std::exception& e) {
+                        std::cerr << "Errore: " << e.what() << std::endl;
+                    }
+                } else {
+                    throw std::invalid_argument("Numero di argomenti non valido");
+                }
+                continue;
+            }
 
-    //         // Display help
-    //         if(tokens[0] == "help" || tokens[0] == "h") {
-    //             displayHelp();
-    //             continue;
-    //         }
+            // Commandi "set"
+            if (tokens[0] == "set") {
+                if (tokens.size() < 2) {
+                    throw std::invalid_argument("Utilizzo di set non valido. Usa 'help' per i comandi disponibili");
+                    continue;
+                }
 
-    //         // Commando uscita
-    //         if (tokens[0] == "exit" || tokens[0] == "q") {
-    //             logFile << "Exiting program\n";
-    //             break;
-    //         }
+                // Commando "set" per il tempo
+                if (tokens[1] == "time") {
+                    if (tokens.size() != 3) {
+                        throw std::invalid_argument("Utilizzo di set time non valido. Usa 'help' per i comandi disponibili");
+                    }
+                    try {
+                        int newTime = parseTime(tokens[2]);
+                        system.setTime(newTime);
+                    } catch (std::exception& e) {
+                        std::cerr << "Errore: " << e.what() << std::endl;
+                    }
+                    continue;
+                }
 
-    //         // Commandi "show"
-    //         if (tokens[0] == "show") {
-    //             if (tokens.size() == 1) {
-    //                 system.show();
-    //             } else if (tokens.size() == 2) {
-    //                 try {
-    //                     int deviceId = system.searchID(tokens[1]);
-    //                     system.show(deviceId);
-    //                 } catch (std::exception& e) {
-    //                     std::cerr << "Errore: " << e.what() << std::endl;
-    //                 }
-    //             } else {
-    //                 throw std::invalid_argument("Numero di argomenti non valido");
-    //             }
-    //             continue;
-    //         }
+                // Commandi per dispositivi
+                try {
+                    int deviceId = system.searchID(tokens[1]);
 
-    //         // Commandi "set"
-    //         if (tokens[0] == "set") {
-    //             if (tokens.size() < 2) {
-    //                 throw std::invalid_argument("Utilizzo di set non valido. Usa 'help' per i comandi disponibili");
-    //                 continue;
-    //             }
+                    if (tokens.size() < 3) {
+                        throw std::invalid_argument("Utilizzo di set non valido. Usa 'help' per i comandi disponibili");
+                    }
 
-    //             // Commando "set" per il tempo
-    //             if (tokens[1] == "time") {
-    //                 if (tokens.size() != 3) {
-    //                     throw std::invalid_argument("Utilizzo di set time non valido. Usa 'help' per i comandi disponibili");
-    //                 }
-    //                 try {
-    //                     int newTime = parseTime(tokens[2]);
-    //                     system.setTime(newTime);
-    //                 } catch (std::exception& e) {
-    //                     std::cerr << "Errore: " << e.what() << std::endl;
-    //                 }
-    //                 continue;
-    //             }
+                    if (tokens[2] == "on") {
+                        switch (tokens.size()) {
+                            case 3:
+                                system.turnOn(deviceId);
+                                break;
+                            case 4:
+                                system.turnOn(deviceId, parseTime(tokens[3]));
+                                break;
+                            case 5:
+                                system.turnOn(deviceId, parseTime(tokens[3]), parseTime(tokens[4]));
+                                break;
+                            default:
+                                throw std::invalid_argument("Numero di argomenti non valido");
+                        }
+                    } else if (tokens[2] == "off") {
+                        system.turnOff(deviceId);
+                    } else {
+                        throw std::invalid_argument("Comando non riconosciuto");
+                    }
+                } catch (std::exception& e) {
+                    std::cerr << "Errore: " << e.what() << std::endl;
+                }
+                continue;
+            }
 
-    //             // Commandi per dispositivi
-    //             try {
-    //                 int deviceId = system.searchID(tokens[1]);
+            // Commando "rm"
+            if (tokens[0] == "rm") {
+                if (tokens.size() != 2) {
+                    throw std::invalid_argument("Utilizzo di rm non valido. Usa 'help' per i comandi disponibili");
+                }
+                try {
+                    int deviceId = system.searchID(tokens[1]);
+                    system.removeTimer(deviceId);
+                } catch (std::exception& e) {
+                    std::cerr << "Errore: " << e.what() << std::endl;
+                }
+                continue;
+            }
 
-    //                 if (tokens.size() < 3) {
-    //                     throw std::invalid_argument("Utilizzo di set non valido. Usa 'help' per i comandi disponibili");
-    //                 }
+            // Commando "reset"
+            if (tokens[0] == "reset") {
+                if (tokens.size() != 2) {
+                    throw std::invalid_argument("Utilizzo di reset non valido. Usa 'help' per i comandi disponibili");
+                }
+                if (tokens[1] == "time") {
+                    system.resetTime();
+                }
+                else if (tokens[1] == "timers") {
+                    // system.resetTimers();
+                }
+                else if (tokens[1] == "all") {
+                    // system.resetAll();
+                }
+                else {
+                    throw std::invalid_argument("Comando non riconosciuto. Usa 'help' per i comandi disponibili");
+                }
+                continue;
+            }
 
-    //                 if (tokens[2] == "on") {
-    //                     switch (tokens.size()) {
-    //                         case 3:
-    //                             system.turnOn(deviceId);
-    //                             break;
-    //                         case 4:
-    //                             system.turnOn(deviceId, parseTime(tokens[3]));
-    //                             break;
-    //                         case 5:
-    //                             system.turnOn(deviceId, parseTime(tokens[3]), parseTime(tokens[4]));
-    //                             break;
-    //                         default:
-    //                             throw std::invalid_argument("Numero di argomenti non valido");
-    //                     }
-    //                 } else if (tokens[2] == "off") {
-    //                     system.turnOff(deviceId);
-    //                 } else {
-    //                     throw std::invalid_argument("Comando non riconosciuto");
-    //                 }
-    //             } catch (std::exception& e) {
-    //                 std::cerr << "Errore: " << e.what() << std::endl;
-    //             }
-    //             continue;
-    //         }
+            // Commandi "install"
+            if (tokens[0] == "install") {
+                if (tokens.size() <= 3) {
+                    throw std::invalid_argument("Utilizzo di install non valido. Usa 'help' per i comandi disponibili");
+                }
 
-    //         // Commando "rm"
-    //         if (tokens[0] == "rm") {
-    //             if (tokens.size() != 2) {
-    //                 throw std::invalid_argument("Utilizzo di rm non valido. Usa 'help' per i comandi disponibili");
-    //             }
-    //             try {
-    //                 int deviceId = system.searchID(tokens[1]);
-    //                 system.removeTimer(deviceId);
-    //             } catch (std::exception& e) {
-    //                 std::cerr << "Errore: " << e.what() << std::endl;
-    //             }
-    //             continue;
-    //         }
+                try {
+                    bool isOn = false;
+                    switch (tokens.size()) {
+                        case 4:
+                            if (tokens[2] == "on") {
+                                isOn = true;
+                            }
+                            system.installM(tokens[1], std::stod(tokens[2]), isOn);
+                            break;
+                        case 5:
+                            if (tokens[3] == "on") {
+                                isOn = true;
+                            }
+                            system.installCP(tokens[1], std::stod(tokens[2]), std::stoi(tokens[3]), isOn);
+                            break;
+                        default:
+                            throw std::invalid_argument("Numero di argomenti non valido");
+                            break;
+                    }
+                } catch (std::exception& e) {
+                    std::cerr << "Errore: " << e.what() << std::endl;
+                }
 
-    //         // Commando "reset"
-    //         if (tokens[0] == "reset") {
-    //             if (tokens.size() != 2) {
-    //                 throw std::invalid_argument("Utilizzo di reset non valido. Usa 'help' per i comandi disponibili");
-    //             }
-    //             if (tokens[1] == "time") {
-    //                 system.resetTime();
-    //             }
-    //             else if (tokens[1] == "timers") {
-    //                 // system.resetTimers();
-    //             }
-    //             else if (tokens[1] == "all") {
-    //                 // system.resetAll();
-    //             }
-    //             else {
-    //                 throw std::invalid_argument("Comando non riconosciuto. Usa 'help' per i comandi disponibili");
-    //             }
-    //             continue;
-    //         }
-
-    //         // Commandi "install"
-    //         if (tokens[0] == "install") {
-    //             if (tokens.size() <= 3) {
-    //                 throw std::invalid_argument("Utilizzo di install non valido. Usa 'help' per i comandi disponibili");
-    //             }
-
-    //             // PER DEBUGGING, DA ELIMINARE
-    //             for (int i = 0; i < tokens.size(); i++) {
-    //                 std::cout << "tokens[" << i << "]" << tokens[i] << std::endl;
-    //             }
-
-    //             try {
-    //                 bool isOn = false;
-    //                 switch (tokens.size()) {
-    //                     case 4:
-    //                         if (tokens[2] == "on") {
-    //                             isOn = true;
-    //                         }
-    //                         system.installM(tokens[1], std::stod(tokens[2]), isOn);
-    //                         break;
-    //                     case 5:
-    //                         if (tokens[3] == "on") {
-    //                             isOn = true;
-    //                         }
-    //                         system.installCP(tokens[1], std::stod(tokens[2]), std::stoi(tokens[3]), isOn);
-    //                         break;
-    //                     default:
-    //                         throw std::invalid_argument("Numero di argomenti non valido");
-    //                         break;
-    //                 }
-    //             } catch (std::exception& e) {
-    //                 std::cerr << "Errore: " << e.what() << std::endl;
-    //             }
-
-    //             continue;
-    //         }
-    //     } catch (std::exception& e) {
-    //         std::cerr << "Errore: " << e.what() << std::endl;
-    //     }
-    // }
+                continue;
+            }
+        } catch (std::exception& e) {
+            std::cerr << "Errore: " << e.what() << std::endl;
+        }
+    }
 
     logFile.close();
     return 0;
