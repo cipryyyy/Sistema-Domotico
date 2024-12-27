@@ -7,33 +7,20 @@ TODO list:
 * Attendere Device per eventuali migliorie
 * UpdateKW forse si può migliorare come calcoli
 ? File a parte per le funzioni helper
-? Integrare isM/isCP con searchM/searchCP
 */ 
 
 //Funzioni helper
-bool Interface::isCP(int id) noexcept {		// Controllare su un device è CP/M
-    for (int i = 0; i < CPcounter; i++) {
-        if (id == devicesCP[i].getID()) return true;
-    }
-    return false;
-}
-bool Interface::isM(int id) noexcept {
-    for (int i = 0; i < Mcounter; i++) {
-        if (id == devicesM[i].getID()) return true;
-    }
-    return false;
-}
-int Interface::searchCP(int id) noexcept {		//In caso di isM/CP, ritorna l'indice
+int Interface::CPscan(int id) noexcept {		// Controllare su un device è CP/M
     for (int i = 0; i < CPcounter; i++) {
         if (id == devicesCP[i].getID()) return i;
     }
-	return -1;	//* Non serve a nulla, solo che dopo il compilatore lancia un warning psceno
+    return -1;
 }
-int Interface::searchM(int id) noexcept {
+int Interface::Mscan(int id) noexcept {
     for (int i = 0; i < Mcounter; i++) {
         if (id == devicesM[i].getID()) return i;
     }
-	return -1;		//Stesso discorso
+    return -1;
 }
 
 void timeCheck(int t, int start = INT_MIN, int end = INT_MIN) {
@@ -140,23 +127,24 @@ Interface::Interface(double KW, bool init, int maxDV, int time): maximumKW{KW}, 
 }
 void Interface::turnOn(int id) {
     updateKW();     //Aggiorno il numero di KW usati
-    if (isCP(id)) {                                    //id 1-5 per i dispositivi a ciclo programmato
-        id = searchCP(id);
-        if (KW + devicesCP[id].getConsumo() > maximumKW) {    //Se supero i KW lancio l'eccezione
+	int Cpos = CPscan(id);
+	int Mpos = Mscan(id);
+
+    if (Cpos != -1) {                                    //id 1-5 per i dispositivi a ciclo programmato
+        if (KW + devicesCP[Cpos].getConsumo() > maximumKW) {    //Se supero i KW lancio l'eccezione
             throw OverKWException();
         }
-        devicesCP[id].turnOn();                       //Altrimenti lo accendo
+        devicesCP[Cpos].turnOn();                       //Altrimenti lo accendo
 
         //Aggiornamento timeline (con anche lo spegnimento)
-        timeline.addEvent(t, devicesCP[id].getNome() + " acceso", devicesCP[id].getID()+maximumDV, devicesCP[id].getConsumo());
-        timeline.addEvent(t+devicesCP[id].getDurataCiclo(), devicesCP[id].getNome() + " spento", devicesCP[id].getID(), -devicesCP[id].getConsumo());
-    } else if (isM(id)) {                           //id 6-10 per i dispositivi manuali
-        id = searchM(id);
-        if (KW + devicesM[id].getConsumo() > maximumKW) {     //Se supero i KW lancio l'eccezione
+        timeline.addEvent(t, devicesCP[Cpos].getNome() + " acceso", devicesCP[Cpos].getID()+maximumDV, devicesCP[Cpos].getConsumo());
+        timeline.addEvent(t+devicesCP[Cpos].getDurataCiclo(), devicesCP[Cpos].getNome() + " spento", devicesCP[Cpos].getID(), -devicesCP[Cpos].getConsumo());
+    } else if (Mpos != -1) {                           //id 6-10 per i dispositivi manuali
+        if (KW + devicesM[Mpos].getConsumo() > maximumKW) {     //Se supero i KW lancio l'eccezione
             throw OverKWException();
         }
-        devicesM[id].turnOn();                    //Altrimenti lo accendo
-        timeline.addEvent(t, devicesM[id].getNome() + " acceso", devicesM[id].getID()+maximumDV, devicesM[id].getConsumo());
+        devicesM[Mpos].turnOn();                    //Altrimenti lo accendo
+        timeline.addEvent(t, devicesM[Mpos].getNome() + " acceso", devicesM[Mpos].getID()+maximumDV, devicesM[Mpos].getConsumo());
     } else {
         throw DeviceIDOutOfBoundException();        //ID non presente tra i dispositivi.
     }
@@ -173,49 +161,50 @@ void Interface::turnOn(int id, int start) {
         KWonCall += requestesKW;                        //Sommo il tutto, dopo devo controllare di averne abbastanza liberi
     }
 
-    if (isCP(id)) {   //CP
-        id = searchCP(id);
+	int Cpos = CPscan(id);
+	int Mpos = Mscan(id);
+
+    if (Cpos != -1) {   //CP
 		//Controllo che il device non sia già attivo al lancio della routine
         std::vector<int> idRequest = timeline.getIDs(0,start);
         for (int i = idRequest.size() - 1; i > 0; i--) {
-            if (idRequest[i] == id+maximumDV) {
+            if (idRequest[i] == Cpos + maximumDV) {
                 throw TimerAlreadySetException();
             }
-            if (idRequest[i] == id) {
+            if (idRequest[i] == Cpos) {
                 break;
             }
         }
 
 		//Controllo che il device non presenti routine più brevi nella finestra temporale del ciclo
-        idRequest = timeline.getIDs(start,start+devicesCP[id].getDurataCiclo());
+        idRequest = timeline.getIDs(start,start+devicesCP[Cpos].getDurataCiclo());
         for (int i = idRequest.size() - 1; i > 0; i--) {
-            if (idRequest[i] == id+maximumDV) {
+            if (idRequest[i] == Cpos + maximumDV) {
                 throw TimerAlreadySetException();
             }
         }
 
         // Il dispositivo non sarà attivo nella finestra di tempo, ora controllo che non passi i KW
-        if (KWonCall + devicesCP[id].getConsumo() > maximumKW) throw OverKWException();
+        if (KWonCall + devicesCP[Cpos].getConsumo() > maximumKW) throw OverKWException();
 
         //Ora ho tutti i requisiti per impostare la programmazione
-        timeline.addEvent(start, devicesCP[id].getNome() + " acceso", devicesCP[id].getID()+maximumDV, devicesCP[id].getConsumo());
-        timeline.addEvent(start+devicesCP[id].getDurataCiclo(), devicesCP[id].getNome() + " spento", devicesCP[id].getID(), -devicesCP[id].getConsumo());
-    } else if (isM(id)) {
-        id = searchM(id);
+        timeline.addEvent(start, devicesCP[Cpos].getNome() + " acceso", devicesCP[Cpos].getID()+maximumDV, devicesCP[Cpos].getConsumo());
+        timeline.addEvent(start+devicesCP[Cpos].getDurataCiclo(), devicesCP[Cpos].getNome() + " spento", devicesCP[Cpos].getID(), -devicesCP[Cpos].getConsumo());
+    } else if (Mpos != -1) {
         std::vector<int> idRequest = timeline.getIDs(0,start);
         for (int i = idRequest.size() - 1; i > 0; i--) {    //Controllo che il device non sia già attivo al lancio
-            if (idRequest[i] == id+maximumDV) {
+            if (idRequest[i] == Mpos + maximumDV) {
                 throw TimerAlreadySetException();
             }
-            if (idRequest[i] == id) {               //Se l'ultimo comando mandato era di spegnimento: OK
+            if (idRequest[i] == Mpos) {               //Se l'ultimo comando mandato era di spegnimento: OK
                 break;
             }
         }
         //Controllo di avere abbastanza KW disponibili
-        if (KWonCall + devicesM[id].getConsumo() > maximumKW) throw OverKWException();
+        if (KWonCall + devicesM[Mpos].getConsumo() > maximumKW) throw OverKWException();
         //Se nel mentre erano già presenti delle programmazioni non mi interessa, le cancello tutte direttamente
-        timeline.forget(id, start);
-        timeline.addEvent(t, devicesM[id].getNome() + " acceso", devicesM[id].getID()+maximumDV, devicesM[id].getConsumo());
+        timeline.forget(Mpos, start);
+        timeline.addEvent(t, devicesM[Mpos].getNome() + " acceso", devicesM[Mpos].getID()+maximumDV, devicesM[Mpos].getConsumo());
     } else {
         throw DeviceIDOutOfBoundException();
     }
@@ -228,31 +217,33 @@ void Interface::turnOn(int id, int start, int end) {
     for (double requestedKW : programmedKW) {
         temp += requestedKW;                        //Sommo il tutto         
     }
-    if (isCP(id)) {
+
+	int Cpos = CPscan(id);
+	int Mpos = Mscan(id);
+    if (Cpos != -1) {
         throw CPIllegalInstructionException();
-    } else if (isM(id)) {
-        id = searchM(id);
+    } else if (Mpos != -1) {
         std::vector<int> idRequest = timeline.getIDs(0, start);
         for (int i = idRequest.size() - 1; i > 0; i--) {    //Controllo che il device non sia già attivo al lancio
-            if (idRequest[i] == id+maximumDV) {
+            if (idRequest[i] == Mpos + maximumDV) {
                 throw TimerAlreadySetException();
             }
-            if (idRequest[i] == id) {               //Se l'ultimo comando mandato era di spegnimento: OK
+            if (idRequest[i] == Mpos) {               //Se l'ultimo comando mandato era di spegnimento: OK
                 break;
             }
         }
         idRequest = timeline.getIDs(start, end);  //Controllo che non inizino altri timer senza concludersi
         int count = 0;
         for (int i : idRequest) {
-            if (i == id+maximumDV) count++;            //Conto che il numero di accensioni sia uguale a quello di spegnimenti
-            if (i == id) count--;
+            if (i == Mpos + maximumDV) count++;            //Conto che il numero di accensioni sia uguale a quello di spegnimenti
+            if (i == Mpos) count--;
         }
         if (count != 0) throw TimerAlreadySetException();
-        timeline.forget(id, start, end);        //Cancello queste programmazioni più corte
+        timeline.forget(Mpos, start, end);        //Cancello queste programmazioni più corte
         //Controllo di avere abbastanza KW al momento del lancio, in tal caso, imposto il programma
-        if (temp + devicesM[id].getConsumo() > maximumKW) throw OverKWException();
-        timeline.addEvent(start, devicesM[id].getNome() + " acceso", devicesM[id].getID(), devicesM[id].getConsumo());
-        timeline.addEvent(end, devicesM[id].getNome() + " spento", devicesM[id].getID(), -devicesM[id].getConsumo());
+        if (temp + devicesM[Mpos].getConsumo() > maximumKW) throw OverKWException();
+        timeline.addEvent(start, devicesM[Mpos].getNome() + " acceso", devicesM[Mpos].getID()+maximumDV, devicesM[Mpos].getConsumo());
+        timeline.addEvent(end, devicesM[Mpos].getNome() + " spento", devicesM[Mpos].getID()+maximumDV, -devicesM[Mpos].getConsumo());
     } else {
         throw DeviceIDOutOfBoundException();
     }
@@ -260,12 +251,14 @@ void Interface::turnOn(int id, int start, int end) {
 
 void Interface::turnOff(int id) {
     updateKW();     //Aggiorno il numero di KW usati
-    if (isCP(id)) {
+
+	int Cpos = CPscan(id);
+	int Mpos = Mscan(id);
+    if (Cpos != -1) {
         throw CPIllegalInstructionException();  //Se il dispositivo è a ciclo prefissato non si può spegnere manualmente
-    } else if (isM(id)) {
-        id = searchM(id);
-        timeline.forget(id, t);     //Cancello eventuali programmazioni future
-        timeline.addEvent(t, devicesM[id].getNome() + " spento", devicesM[id].getID()+maximumDV, -devicesM[id].getConsumo());
+    } else if (Mpos != -1) {
+        timeline.forget(Mpos, t);     //Cancello eventuali programmazioni future
+        timeline.addEvent(t, devicesM[Mpos].getNome() + " spento", devicesM[Mpos].getID()+maximumDV, -devicesM[Mpos].getConsumo());
     } else {
         throw DeviceIDOutOfBoundException();        //ID non presente tra i dispositivi.
     }
@@ -273,7 +266,7 @@ void Interface::turnOff(int id) {
 
 void Interface::removeTimer(int id) {
 	//Controllo che l'ID esista
-	if ((isCP(id) || isM(id)) == false) throw DeviceIDOutOfBoundException();
+	if ((CPscan(id) == -1 && Mscan(id) == -1) == false) throw DeviceIDOutOfBoundException();
     timeline.forget(id, t);             //Elimino tutti gli eventi futuri legati all'elettrodomestico
 }
 
