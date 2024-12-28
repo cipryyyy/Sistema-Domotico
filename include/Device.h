@@ -29,7 +29,7 @@ protected:
     int ID; 
     int consumo; //consumo specifico del device
     bool on; //false spento, true accesso
-    int tempoDiEsecuzione; //da quanto tempo è accesso
+    int tempoDiEsecuzione; //da quanto tempo è accesso, si resetta ogni volta che viene spento 
     Timeline timeLine ; 
 
 
