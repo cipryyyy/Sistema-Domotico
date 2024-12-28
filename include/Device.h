@@ -30,6 +30,9 @@ protected:
     int consumo; //consumo specifico del device
     bool on; //false spento, true accesso
     int tempoDiEsecuzione; //da quanto tempo è accesso
+    Timeline timeLine ; 
+
+
 
 public:             //! Lo ho messo un attimo public che i getter mi servono in Interface.h
     // Getter and Setter for nome
@@ -50,7 +53,10 @@ public:             //! Lo ho messo un attimo public che i getter mi servono in 
 
     // Getter and Setter for tempoDiEsecuzione
     int getTempoDiEsecuzione() const;
-    void setTempoDiEsecuzione(int tempoDiEsecuzione);
+    void setTempoDiEsecuzione();
+
+     //funzione che calcoli il consumo del device in base al tempo di esecuzione
+    virtual double getConsumoTot(); 
 };
 
 #endif // DEVICE_H

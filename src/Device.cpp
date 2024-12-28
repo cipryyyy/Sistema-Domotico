@@ -10,6 +10,7 @@ Device::Device(Timeline& timeline, int& t, std::string nome, int ID, double cons
     this->consumo = consumo;
     this->on = stato;    
     this->tempoDiEsecuzione = 0;
+    this->timeLine = timeline;
 }
 
 Device::~Device() {}
@@ -59,6 +60,14 @@ int Device::getTempoDiEsecuzione() const {
     return tempoDiEsecuzione;
 }
 
-void Device::setTempoDiEsecuzione(int newTempoDiEsecuzione) {
-    tempoDiEsecuzione = newTempoDiEsecuzione;
+void Device::setTempoDiEsecuzione(){
+    //calcolo il tempo dal momento in cui è stato avviato il mio device, fino a quando è stata chiamata questa funzione
+
+    
 }
+
+
+double Device::getConsumoTot() {
+    return tempoDiEsecuzione * consumo;
+}
+
