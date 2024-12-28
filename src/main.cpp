@@ -1,5 +1,14 @@
 //Autore: Giorgi Giacomo
 
+/*
+Tips (of my dick)
+* Metti un argc nel main, così passi il numero di KW massimi, se non viene dato lo chiede come primo argomento
+* set <device> <start> <stop> non lo riesco a fare partire, dimmi te se devo togliere la parte solo start per i dispositivi M
+* set time non funziona con il formato 9:00, solo con 09:00, se hai tempo sistemalo, sennò non importa
+* Ho messo una nuova eccezione nel caso si provi ad installare un dispositivo con uno stesso nome
+* Nel caso si provi a disinstallare un dispositivo che non esiste non da nessun problema, non so perché
+*/
+
 #include <iostream>
 #include <string>
 #include <sstream>

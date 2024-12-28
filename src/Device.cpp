@@ -4,13 +4,13 @@
 
 //no costruttore di default perchè non ha senso creare un device senza nome, ID e consumo
 
-Device::Device(std::string nome, int ID, double consumo,bool stato = false, Timeline& timeline, int& t){
+Device::Device(Timeline& timeline, int& t, std::string nome, int ID, double consumo, bool stato){
     this->nome = nome;
     this->ID = ID;
     this->consumo = consumo;
     this->on = stato;    
     this->tempoDiEsecuzione = 0;
-} 
+}
 
 Device::~Device() {}
 

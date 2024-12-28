@@ -10,11 +10,11 @@
 class Device {
 public:
     // Constructor
-    
-    Device(std::string nome, int ID, double consumo,bool stato = false, Timeline& timeline, int& t);
+
+    Device(Timeline& timeline, int& t, std::string nome, int ID, double consumo,bool stato = false);
 
     // Destructor
-   virtual ~Device();
+    virtual ~Device();
 
     // Member functions
     virtual void turnOn();

@@ -13,7 +13,7 @@ Appena ho tempo e voglia magari metto un errore più specifico.
 //! Lanciata da: turnOn(id), turnOn(id, start), turnOn(id, start, end), turnOff(id), show(id), removeTimer(id)
 struct DeviceIDOutOfBoundException : public std::exception {
     const char* what() const noexcept override {
-        return "ID non presente fra i tuoi dispositivi domotici. :ᓚᘏᗢ";
+        return "ID non presente fra i tuoi dispositivi domotici.";
     }
 };
 
@@ -21,7 +21,7 @@ struct DeviceIDOutOfBoundException : public std::exception {
 //! Lanciata da: turnOn(id, start, end), turnOff(id)
 struct CPIllegalInstructionException : public std::exception {
     const char* what() const noexcept override {
-        return "Impossibile spegnere i dispositivi a ciclo predefinito prima del termine. ʕ •ᴥ•ʔ";
+        return "Impossibile spegnere i dispositivi a ciclo predefinito prima del termine.";
     }
 };
 
@@ -29,7 +29,7 @@ struct CPIllegalInstructionException : public std::exception {
 //! Lanciata da: turnOn(id), turnOn(id, start), turnOn(id, start, end)
 struct OverKWException : public std::exception {
     const char* what() const noexcept override {
-        return "Impossibile avviare il dispositivo, KW insufficienti. (╯°□°）╯︵ ┻━┻";
+        return "Impossibile avviare il dispositivo, KW insufficienti.";
     }
 };
 
@@ -37,7 +37,7 @@ struct OverKWException : public std::exception {
 //! Lanciata da: turnOn(id, start), turnOn(id, start, end)
 struct TimerAlreadySetException : public std::exception {
     const char* what() const noexcept override {
-        return "Programmazione già avviata per questo dipositivo nella fascia temporale. B-)";
+        return "Programmazione già avviata per questo dipositivo nella fascia temporale.";
     }
 };
 
@@ -45,7 +45,7 @@ struct TimerAlreadySetException : public std::exception {
 //! Lanciata da: turnOn(id, start), turnOn(id, start, end), setTime(time)
 struct InvalidTimeException : public std::exception {
     const char* what() const noexcept override {
-        return "L'orario deve essere tra le 00:00 e le 23:59 (0-1439). >:(";
+        return "L'orario deve essere tra le 00:00 e le 23:59 (0-1439).";
     }
 };
 
@@ -53,7 +53,7 @@ struct InvalidTimeException : public std::exception {
 //! Lanciata da: installM, installCP
 struct DeviceLimitException : public std::exception {
     const char* what() const noexcept override {
-        return "Hai raggiunto il numero massimo di devices su questa interfaccia :p";
+        return "Hai raggiunto il numero massimo di devices su questa interfaccia.";
     }
 };
 
@@ -61,7 +61,7 @@ struct DeviceLimitException : public std::exception {
 //! Lanciata da: searchID
 struct NameNotFoundException : public std::exception {
     const char* what() const noexcept override {
-        return "Nome non presente tra i dispositivi. :O";
+        return "Nome non presente tra i dispositivi.";
     }
 };
 
@@ -70,7 +70,15 @@ struct NameNotFoundException : public std::exception {
 //! Lanciata da: turnOn(id, start), turnOn(id, start, end), setTime(time)
 struct NotATimeMachineException : public std::exception {
     const char* what() const noexcept override {
-        return "Impossibile variare il tempo in negativo. >:(";
+        return "Impossibile variare il tempo in negativo.";
+    }
+};
+
+//Non ho ancora finito il metodo:
+//! Lanciata da: i metodi che non ho finito
+struct DuplicateDeviceException : public std::exception {
+    const char* what() const noexcept override {
+        return "E' già presente un device con questo nome.";
     }
 };
 
@@ -78,7 +86,7 @@ struct NotATimeMachineException : public std::exception {
 //! Lanciata da: i metodi che non ho finito
 struct Error404FunctionNotFound : public std::exception {
     const char* what() const noexcept override {
-        return "Passa più tardi, non ho ancora finito di fare questa funzione :3";
+        return "Passa più tardi, non ho ancora finito di fare questa funzione.";
     }
 };
 

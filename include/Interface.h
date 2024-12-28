@@ -18,6 +18,7 @@ Genera le eccezioni e basta.
 #define INTERFACE_H
 
 #include <iostream>
+#include <algorithm>
 #include "InterfaceExceptions.h"
 #include "CPDevice.h"
 #include "ManualDevice.h"
@@ -33,8 +34,8 @@ private:
     int t;                          //tempo in minuti
     Timeline timeline;              //timeline degli eventi
 
-    int CPscan(int id) noexcept;
-    int Mscan(int M) noexcept;
+    int CPscan(int id) const noexcept;
+    int Mscan(int M) const noexcept;
     void updateKW() noexcept;                  //Aggiorna il numero di KW utilizzati ad ogni chiamata
     void BeautyTable(Device *devicelist) noexcept;
     std::string m2h(int minute) noexcept;      //Converte da minuti in formato hh::mm
