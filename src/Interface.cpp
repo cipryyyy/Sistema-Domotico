@@ -131,6 +131,7 @@ Interface::Interface(double KW, bool init, int maxDV, int time): maximumKW{KW}, 
         };
     }
 }
+
 void Interface::turnOn(int id) {
     updateKW();     //Aggiorno il numero di KW usati
 	int Cpos = CPscan(id);

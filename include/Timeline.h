@@ -34,6 +34,7 @@ L'unico errore è per l'input errato, lanciato con invalid_argument, in realtà 
 #include <stdexcept>
 
 class Timeline{
+
 private:
     int range;                      
     std::vector<int>         t;     //Salva il tempo
@@ -120,6 +121,28 @@ public:
         }
         return KWs;
     }
+
+
+    //questa funzione prende come parametro un id e ritorna l'ultima volta che questo device è  stato acceso 
+    int getLastTime(int id) {
+        for (int i = d.size() - 1; i >= 0; i--) {   //do per scontato  che tutti i vettori abbiano la stessa dimensione, (pessima scelta progettuale, fai una matrice o una classe prossima volta)
+            if (d[i] == id+range) {
+                //questo device è stato accesso l'ultima volta al tempo t[i]
+                return t[i];
+            }
+        }
+        //il device non è mai stato acceso
+        return -1;
+    }
+
+    //ritorna il tempo attuale in minuti dall'inizio della giornata 
+    //sistematela se volete non avevo altre ideee
+    int getCurrentTime() {
+        time_t now = time(0);
+        tm *ltm = localtime(&now);
+        return ltm->tm_hour * 60 + ltm->tm_min;
+    }
+
 
     void forget(int id, int begin = 0, int end = 1439) {        //Elimina gli eventi di un device in un lasso di tempo
         for (int i = 0; i < t.size(); i++) {

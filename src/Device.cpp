@@ -9,7 +9,7 @@ Device::Device(Timeline& timeline, int& t, std::string nome, int ID, double cons
     this->ID = ID;
     this->consumo = consumo;
     this->on = stato;    
-    this->tempoDiEsecuzione = 0;
+    this->tempoDiEsecuzione = -1; //il device non è ancora stato usato
     this->timeLine = timeline;
 }
 
@@ -17,11 +17,12 @@ Device::~Device() {}
 
 void Device::turnOn() {
     on = true;
-    tempoDiEsecuzione = 0;
 }
 
 void Device::turnOff() {
     on = false;
+    //quando spegno un dispositivo resetto il suo tempo di esecuzione
+    tempoDiEsecuzione = 0;
 }
 
 bool Device::isOn() const {
@@ -63,7 +64,20 @@ int Device::getTempoDiEsecuzione() const {
 void Device::setTempoDiEsecuzione(){
     //calcolo il tempo dal momento in cui è stato avviato il mio device, fino a quando è stata chiamata questa funzione
 
-    
+    if(!isOn){
+        tempoDiEsecuzione=  0;
+    }
+
+    //prendo il momento di ultimo avvio
+    int start =  timeLine.getLastTime(ID);
+
+    //prendo il momento attuale
+    int now = timeLine.getCurrentTime(); 
+
+    //calcolo il tempo di esecuzione
+    tempoDiEsecuzione = now - start;
+
+
 }
 
 
