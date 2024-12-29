@@ -15,7 +15,7 @@ public:
 
     int getOrarioDiSpegnimento();
 
-    void setOrarioDiSpegnimento(const std::string& shutdownTime);
+    void setOrarioDiSpegnimento(int shutdownTime);
 };
 
 #endif // MANUALDEVICE_H
