@@ -73,7 +73,7 @@ int parseTime(const std::string& timeStr) {
 
 // Helper function per mostrare il help message con i comandi disponibili
 void displayHelp() {
-    std::cout << "\nAvailable commands:\n"
+    std::cout << "\nFunzioni disponibili:\n"
               << "set <device> on                          - Accende dispositivo\n"
               << "set <device> off                         - Spegne dispositivo\n"
               << "set <device> <start> [stop]              - Imposta timer dispositivo\n"
@@ -113,15 +113,22 @@ int main(int argc, char* argv[]) {
         }
     } else {            // Se non è stato passato alcun argomento
         try {
-            std::cout << "Inserire la potenza massima del sistema (kW): ";          // Chiedo all'utente di inserire la potenza massima del sistema
-            std::cin >> power;                                                      // Salvo il valore inserito in power
+            std::cout << "Inserire la potenza massima del sistema (kW): "; // Chiedo all'utente di inserire la potenza massima del sistema
+            std::cin >> power;                                             // Salvo il valore inserito in power
+
+            // Controllo se l'input è un numero
+            if (std::cin.fail()) {
+                std::cin.clear();                                                   // Resetta lo stato del cin
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Ignora input non valido
+                throw std::invalid_argument("Valore non numerico");                 // Solleva eccezione
+            }
 
             if (!isValidPower(power)) {  // Controllo che la potenza inserita sia valida
                 throw std::invalid_argument("La potenza deve essere positiva e massimo 10 kW");
             }
         } catch (const std::exception& e) {
             std::cerr << "Errore: " << e.what() << "\n";
-            std::cerr << "Using default " << MAX_POWER << " kW\n";
+            std::cerr << "Utilizzo il valore predefinito " << MAX_POWER << " kW\n";
             power = MAX_POWER;
         }
     }
@@ -138,7 +145,10 @@ int main(int argc, char* argv[]) {
     }
     
     std::cout << "Smart Home Energy Management System\n";
-    std::cout << "Type 'help' for available commands\n";
+    std::cout << "-------------------------------------------------\n";
+    std::cout << "Scrivi 'help' per vedere le funzioni disponibili\n";
+    std::cout << "Scrivi 'exit' per uscire dal programma\n";
+    std::cout << "-------------------------------------------------" << std::endl;
 
     while (true) {
         std::cout << "\n>> ";
