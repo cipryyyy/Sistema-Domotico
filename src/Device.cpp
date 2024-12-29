@@ -64,7 +64,7 @@ int Device::getTempoDiEsecuzione() const {
 void Device::setTempoDiEsecuzione(){
     //calcolo il tempo dal momento in cui è stato avviato il mio device, fino a quando è stata chiamata questa funzione
 
-    if(!isOn){
+    if(!isOn()){
         tempoDiEsecuzione=  0;
     }
 
