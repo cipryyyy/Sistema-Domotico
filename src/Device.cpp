@@ -75,7 +75,7 @@ void Device::setTempoDiEsecuzione(){
     int now = timeLine.getCurrentTime(); 
 
     //calcolo il tempo di esecuzione
-    tempoDiEsecuzione = now - start;
+    tempoDiEsecuzione = start - now;
 
 
 }
