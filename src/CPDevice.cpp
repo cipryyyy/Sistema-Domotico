@@ -4,7 +4,7 @@ class orarioAccensioneNonImpostato : public std::exception{};
 
 CPDevice::CPDevice(Timeline& timeline, int& t, std::string nome, int ID, double consumo, int durataCiclo, bool stato) : Device(timeline, t, nome, ID, consumo, stato) {
     this->orarioAccensioneAutomatica = -1;
-    setDurataCiclo(durataCiclo);
+    this->durataCiclo = durataCiclo;
 }
 
 int CPDevice::getDurataCiclo() {
