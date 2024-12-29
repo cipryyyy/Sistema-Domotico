@@ -1,59 +1,73 @@
 //Autore: Giorgi Giacomo
 
-/*
-Tips (of my dick)
-* Metti un argc nel main, così passi il numero di KW massimi, se non viene dato lo chiede come primo argomento
-* set <device> <start> <stop> non lo riesco a fare partire, dimmi te se devo togliere la parte solo start per i dispositivi M
-* set time non funziona con il formato 9:00, solo con 09:00, se hai tempo sistemalo, sennò non importa
-* Ho messo una nuova eccezione nel caso si provi ad installare un dispositivo con uno stesso nome
-* Nel caso si provi a disinstallare un dispositivo che non esiste non da nessun problema, non so perché
-* show non funziona con i dispositivi con nomi composti (forno a microonde)
-*/
-
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <fstream>
 #include "Interface.h"
 
-// Costanti per il sistema
-const double MAX_POWER = 3.5;    // Potenza massina del sistema, in kW
-const int MAX_DEVICES = 100;      // Numero massimo di dispositivi supportati
+// Costanti di default per il sistema
+const double MAX_POWER = 3.5;       // Potenza massina del sistema, in kW
+const int MAX_DEVICES = 100;        // Numero massimo di dispositivi supportati
 
 // Helper function per splittare una stringa in token
 std::vector<std::string> tokenize(const std::string& cmd) {
-    std::vector<std::string> tokens;
-    std::stringstream ss(cmd);
-    std::string token;
-    
-    while (ss >> token) {
-        tokens.push_back(token);
+    std::vector<std::string> tokens;        // Vector di stringhe per i token
+    std::string token;                      // Stringa temporanea per i token
+    bool inQuotes = false;                  // Flag per le virgolette
+
+    for (const char& c : cmd) {             // Controllo ogni carattere della stringa
+        if (c == '"') {                     // Se trovo una virgoletta
+            inQuotes = !inQuotes;           // Cambio il flag
+            continue;
+        }
+
+        if (c == ' ' && !inQuotes) {        // Se trovo uno spazio e non sono tra virgolette
+            if (!token.empty()) {           // Se il token non è vuoto
+                tokens.push_back(token);    // Aggiungo il token al vector
+                token.clear();              // Svuoto il token
+            }
+        } else {                            // Se non è uno spazio o sono tra virgolette
+            token += c;                     // Aggiungo il carattere al token
+        }
     }
+
+    if (!token.empty()) {                   // Se alla fine del ciclo il token non è vuoto
+        tokens.push_back(token);            // Aggiungo il token al vector
+    }
+    
     return tokens;
 }
 
 // Helper function per validare il formato del tempo
 bool isValidTimeFormat(const std::string& time) {
-    if (time.size() != 5) return false; // formattazione obbligatoria HH:MM
-    if (time[2] != ':') return false;   // separatore tra ore e minuti
+    if (time.size() < 4 || time.size() > 5) return false; // Verifica lunghezza minima e massima della stringa
+    if (time.size() == 5 && time[2] != ':') return false; // Verifica il delimitatore
+    if (time.size() == 4 && time[1] != ':') return false; // Verifica il delimitatore
 
-    try {
-        int h = std::stoi(time.substr(0, 2));
-        int m = std::stoi(time.substr(3, 2));
+    try {                                                           // Prova a estrarre ore e minuti, controllando che siano validi
+        int h = std::stoi(time.substr(0, time.size() == 5 ? 2 : 1));    // Ore
+        int m = std::stoi(time.substr(time.size() == 5 ? 3 : 2));       // Minuti
         return h >= 0 && h <= 23 && m >= 0 && m <= 59;
-    } catch (std::invalid_argument& e) {
-        return false;
+    } catch (const std::exception& e) {                             // Ritorna false se ci sono errori di parsing
+        std::cerr << "Errore: " << e.what() << std::endl;
+        return false; 
     }
 }
 
-// Helper function per fare il parsing del tempo da HH:MM a minuti
+// Helper function per convertire tempo in minuti
 int parseTime(const std::string& timeStr) {
+    // Controlla che il formato dell'orario sia valido
     if (!isValidTimeFormat(timeStr)) {
         throw std::invalid_argument("Formato orario non valido");
     }
 
-    int hours = std::stoi(timeStr.substr(0, 2));
-    int minutes = std::stoi(timeStr.substr(3, 2));
+    // Determina la posizione di ore e minuti
+    bool isShortFormat = timeStr.size() == 4;                        // Controlla se è in formato breve (H:MM)
+    int hours = std::stoi(timeStr.substr(0, isShortFormat ? 1 : 2)); // Ore
+    int minutes = std::stoi(timeStr.substr(isShortFormat ? 2 : 3));  // Minuti
+
+    // Restituisci il totale in minuti
     return hours * 60 + minutes;
 }
 
@@ -77,9 +91,43 @@ void displayHelp() {
               << std::endl;
 }
 
-int main() {
+// Helper function per controllare se il valore della potenza massima è valido
+bool isValidPower(double power) {
+    return power > 0 && power <= 10;
+}
+
+int main(int argc, char* argv[]) {
+
+    // Inizializzo la potenza massima del sistema
+    double power;       // Variabile potenza massima del sistema
+    if (argc > 1) {     // Se è stato passato un argomento
+        try {
+            power = std::stod(argv[1]);  // Converto l'argomento in double
+            if (!isValidPower(power)) {  // Controllo che la potenza inserita sia valida
+                throw std::invalid_argument("La potenza deve essere positiva e massimo 10 kW");
+            }
+        } catch (const std::exception& e) {
+            std::cerr << "Errore: " << e.what() << "\n";
+            std::cerr << "Impostato limite massimo di potenza al valore predefinito di " << MAX_POWER << " kW\n";
+            power = MAX_POWER;
+        }
+    } else {            // Se non è stato passato alcun argomento
+        try {
+            std::cout << "Inserire la potenza massima del sistema (kW): ";          // Chiedo all'utente di inserire la potenza massima del sistema
+            std::cin >> power;                                                      // Salvo il valore inserito in power
+
+            if (!isValidPower(power)) {  // Controllo che la potenza inserita sia valida
+                throw std::invalid_argument("La potenza deve essere positiva e massimo 10 kW");
+            }
+        } catch (const std::exception& e) {
+            std::cerr << "Errore: " << e.what() << "\n";
+            std::cerr << "Using default " << MAX_POWER << " kW\n";
+            power = MAX_POWER;
+        }
+    }
+
     // Inizializzo il sistema
-    Interface system(MAX_POWER, true, MAX_DEVICES);
+    Interface system(power, true, MAX_DEVICES);
     std::string command;
     
     // Apro file di log
@@ -249,6 +297,20 @@ int main() {
                     std::cerr << "Errore: " << e.what() << std::endl;
                 }
 
+                continue;
+            }
+
+            // Commando "uninstall"
+            if (tokens[0] == "uninstall") {
+                if (tokens.size() != 2) {
+                    throw std::invalid_argument("Utilizzo di uninstall non valido. Usa 'help' per i comandi disponibili");
+                }
+                try {
+                    int deviceId = system.searchID(tokens[1]);
+                    system.uninstall(deviceId);
+                } catch (std::exception& e) {
+                    std::cerr << "Errore: " << e.what() << std::endl;
+                }
                 continue;
             }
         } catch (std::exception& e) {
