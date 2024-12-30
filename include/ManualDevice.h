@@ -11,7 +11,7 @@ private:
     int orarioDiSpegnimento; //orario in cui si deve  spegnere, si imposta dall'interfaccia  
 
 public:
-    ManualDevice(Timeline& timeline, int& t, std::string nome, int ID, double consumo, bool stato = false);
+    ManualDevice(Timeline* timeline, int* t, std::string nome, int ID, double consumo, bool stato = false);
 
     int getOrarioDiSpegnimento();
 

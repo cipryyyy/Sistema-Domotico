@@ -86,18 +86,18 @@ Interface::Interface(double KW, bool init, int maxDV, int time): maximumKW{KW}, 
         Mcounter = 4;
 
         devicesCP = {
-            CPDevice(timeline, t, "Lavatrice", 0, 2, 110),
-            CPDevice(timeline, t, "Lavastoviglie", 1, 1.5, 195),
-            CPDevice(timeline, t, "Forno_microonde", 2, 0.8, 2),
-            CPDevice(timeline, t, "Asciugatrice", 3, 0.5, 60),
-            CPDevice(timeline, t, "Tapparelle", 7, 0.3, 1),
-            CPDevice(timeline, t, "Televisore", 4, 0.2, 60)
+            CPDevice(&timeline, &t, "Lavatrice", 0, 2, 110),
+            CPDevice(&timeline, &t, "Lavastoviglie", 1, 1.5, 195),
+            CPDevice(&timeline, &t, "Forno_microonde", 2, 0.8, 2),
+            CPDevice(&timeline, &t, "Asciugatrice", 3, 0.5, 60),
+            CPDevice(&timeline, &t, "Tapparelle", 7, 0.3, 1),
+            CPDevice(&timeline, &t, "Televisore", 4, 0.2, 60)
         };
         devicesM = {
-            ManualDevice(timeline, t, "Impianto_fotovoltaico", 5, -1.5),     //Pannello al contrario perché aumenta la soglia di KW disponibili
-            ManualDevice(timeline, t, "Pompa_di_calore", 6, 2),
-            ManualDevice(timeline, t, "Scaldabagno", 8, 1),
-            ManualDevice(timeline, t, "Frigorifero", 9, 0.4)
+            ManualDevice(&timeline, &t, "Impianto_fotovoltaico", 5, -1.5),     //Pannello al contrario perché aumenta la soglia di KW disponibili
+            ManualDevice(&timeline, &t, "Pompa_di_calore", 6, 2),
+            ManualDevice(&timeline, &t, "Scaldabagno", 8, 1),
+            ManualDevice(&timeline, &t, "Frigorifero", 9, 0.4)
         };
     }
 }
@@ -326,7 +326,7 @@ void Interface::show() {
             for (int i = 0; i < diff; i++) {
                 emptyspaces1 += " ";
             }
-            std::cout << "| " << _cleaner(devicesM[i].getNome()) << emptyspaces1 << " | " << (devicesM[i].isOn()? "acceso" : "spento") << " | " << std::fixed << std::setprecision(3) << devicesM[i].getConsumo() << " | " << m2h(devicesM[i].getTempoDiEsecuzione()) << " |" << std::endl;
+            std::cout << "| " << _cleaner(devicesM[i].getNome()) << emptyspaces1 << " | " << (devicesM[i].isOn()? "acceso" : "spento") << " | " << std::fixed << std::setprecision(3) << devicesM[i].getConsumoTotale() << " | " << m2h(devicesM[i].getTempoDiEsecuzione()) << " |" << std::endl;
         }
     }
     for (int i = 0; i < CPcounter; i++) {      
@@ -337,11 +337,10 @@ void Interface::show() {
         for (int i = 0; i < diff; i++) {
             emptyspaces1 += " ";
         }
-        std::cout << "| " << _cleaner(devicesCP[i].getNome()) << emptyspaces1 << " | " << (devicesCP[i].isOn()? "acceso" : "spento") << " | " << std::fixed << std::setprecision(3) << devicesCP[i].getConsumo() << " | " << m2h(devicesCP[i].getTempoDiEsecuzione()) << " |" << std::endl;
+        std::cout << "| " << _cleaner(devicesCP[i].getNome()) << emptyspaces1 << " | " << (devicesCP[i].isOn()? "acceso" : "spento") << " | " << std::fixed << std::setprecision(3) << devicesCP[i].getConsumoTotale() << " | " << m2h(devicesCP[i].getTempoDiEsecuzione()) << " |" << std::endl;
     }
     Lid(sum);
 }
-
 void Interface::show(int id) {
     int Cpos = CPscan(id);
     int Mpos = Mscan(id);
@@ -352,7 +351,7 @@ void Interface::show(int id) {
 					<< (devicesCP[Cpos].isOn()? "acceso" : "spento") 
 					<< "]" 
 					<< " ha consumato " 
-					<< devicesCP[Cpos].getConsumo() 
+					<< devicesCP[Cpos].getConsumoTotale() 
 					<< "KW, oggi e' stato usato per " 
 					<< m2h(devicesCP[Cpos].getTempoDiEsecuzione())
 					<< " ore\n";
@@ -362,7 +361,7 @@ void Interface::show(int id) {
 					<< (devicesM[Mpos].isOn()? "acceso" : "spento") 
 					<< "]" 
 					<< " ha consumato " 
-					<< devicesM[Mpos].getConsumo() 
+					<< devicesM[Mpos].getConsumoTotale() 
 					<< "KW, oggi e' stato usato per " 
 					<< m2h(devicesM[Mpos].getTempoDiEsecuzione())
 					<< " ore \n";
@@ -370,7 +369,6 @@ void Interface::show(int id) {
         throw DeviceIDOutOfBoundException();
     }
 }
-
 void Interface::installM(std::string name, double consumo, bool isOn) {
     //Controllo che non sia già presente
     for (int i = 0; i < Mcounter; i++) {
@@ -386,7 +384,7 @@ void Interface::installM(std::string name, double consumo, bool isOn) {
     } else {
         id = Mcounter+CPcounter;		//Altrimenti, ne creo uno nuovo
     }
-    devicesM.push_back(ManualDevice(timeline, t, name, id, consumo, isOn));
+    devicesM.push_back(ManualDevice(&timeline, &t, name, id, consumo, isOn));
     std::cout << "Installato " << _cleaner(name) << "[" << id << "] con consumo " << consumo << "KW.";
 }
 
@@ -405,7 +403,7 @@ void Interface::installCP(std::string name, double consumo, int durataCiclo, boo
     } else {
         id = Mcounter+CPcounter;	//Altrimneti, ne creo uno nuovo
     }
-    devicesCP.push_back(CPDevice(timeline, t, name, id, consumo, durataCiclo, isOn));
+    devicesCP.push_back(CPDevice(&timeline, &t, name, id, consumo, durataCiclo, isOn));
     std::cout << "Installato " << _cleaner(name) << "[" << id << "] con ciclo di " << durataCiclo << " e consumo di " << consumo << "KW.";
 }
 
@@ -418,6 +416,7 @@ void Interface::uninstall(int id) {
             devicesCP.erase(devicesCP.begin() + pos);
             freeID.push_back(id);						//Segno il suo ID come libero
 			CPcounter--;
+            std::cout << "Disintallato il device " << name << "[" << id << "]";
             return;
         }
     }
@@ -428,11 +427,11 @@ void Interface::uninstall(int id) {
             devicesM.erase(devicesM.begin() + pos);
             freeID.push_back(id);					//Segno l'ID come libero
 			Mcounter--;
+            std::cout << "Disintallato il device " << name << "[" << id << "]";
             return;
         }
     }
     throw DeviceIDOutOfBoundException();	//Il device non è presente tra i devices	
-    std::cout << "Disintallato il device " << name << "[" << id << "]";
 }
 
 int Interface::searchID(std::string name) {			//Ritorna l'ID dato il nome
