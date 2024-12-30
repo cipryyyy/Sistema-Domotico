@@ -1,7 +1,5 @@
 #include "Interface.h"
 
-//TODO rimuovere eventuali cout di debug
-
 //Funzioni helper
 int Interface::CPscan(int id) const noexcept {		// Controllare su un device è CP/M
     for (int i = 0; i < CPcounter; i++) {
@@ -166,7 +164,6 @@ void Interface::turnOn(int id, int start) {
     if (Cpos != INT_MIN) {   //CP
         std::vector<int> idRequest = timeline.getIDs(0,start);
         for (int i = idRequest.size() - 1; i >= 0; i--) {
-            std::cout << idRequest[i];
             if (idRequest[i] == id + maximumDV) {
                 throw TimerAlreadySetException();
             }
@@ -192,7 +189,6 @@ void Interface::turnOn(int id, int start) {
     } else if (Mpos != INT_MIN) {
         std::vector<int> idRequest = timeline.getIDs(0,start);
         for (int i = idRequest.size() - 1; i >= 0; i--) {    //Controllo che il device non sia già attivo al lancio
-            std::cout << idRequest[i];
             if (idRequest[i] == id + maximumDV) {
                 throw TimerAlreadySetException();
             }
@@ -251,7 +247,7 @@ void Interface::turnOn(int id, int start, int end) {
     }
 }
 
-//TODO aggiungere controllo dispositivo di generazione
+//TODO aggiungere controllo dispositivi di generazione
 void Interface::turnOff(int id) {
     updateKW();     //Aggiorno il numero di KW usati
 
@@ -260,6 +256,7 @@ void Interface::turnOff(int id) {
     if (Cpos != INT_MIN) {
         throw CPIllegalInstructionException();  //Se il dispositivo è a ciclo prefissato non si può spegnere manualmente
     } else if (Mpos != INT_MIN) {
+        if (KW - devicesM[Mpos].getConsumo() > maximumKW) throw OverKWException();  //Se cerco di spegnere un generatore e i KW non bastano
         timeline.forget(id, t);     //Cancello eventuali programmazioni future
         std::cout << _cleaner(devicesM[Mpos].getNome()) + " spento" << std::endl;
         timeline.addEvent(t, devicesM[Mpos].getNome() + " spento", devicesM[Mpos].getID()+maximumDV, -devicesM[Mpos].getConsumo());
@@ -410,6 +407,7 @@ void Interface::show(int id) {
     }
 }
 
+//TODO rimettere i verbose
 void Interface::installM(std::string name, double consumo, bool isOn) {
     //Controllo che non sia già presente
     for (int i = 0; i < Mcounter; i++) {
@@ -426,6 +424,7 @@ void Interface::installM(std::string name, double consumo, bool isOn) {
         id = Mcounter+CPcounter;		//Altrimenti, ne creo uno nuovo
     }
     devicesM.push_back(ManualDevice(&timeline, &t, name, id, consumo, isOn));
+    std::cout << "Installato " << _cleaner(name) << "[" << id << "] con consumo " << consumo << "KW";
 
 }
 void Interface::installCP(std::string name, double consumo, int durataCiclo, bool isOn) {
@@ -444,6 +443,7 @@ void Interface::installCP(std::string name, double consumo, int durataCiclo, boo
         id = Mcounter+CPcounter;	//Altrimneti, ne creo uno nuovo
     }
     devicesCP.push_back(CPDevice(&timeline, &t, name, id, consumo, durataCiclo, isOn));
+    std::cout << "Installato " << _cleaner(name) << "[" << id << "] con ciclo " << m2h(durataCiclo) << "h e consumo " << consumo << "KW";
 }
 void Interface::uninstall(int id) {
     std::string name;
