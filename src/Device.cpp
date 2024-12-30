@@ -22,8 +22,6 @@ void Device::turnOn() {
 
 void Device::turnOff() {
     on = false;
-    //quando spegno un dispositivo resetto il suo tempo di esecuzione
-    tempoDiEsecuzione = 0;
 }
 
 bool Device::isOn() const {
@@ -58,26 +56,48 @@ void Device::setStato(bool newStato) {
     on = newStato;
 }
 
-int Device::getTempoDiEsecuzione() const {
+int Device::getTempoDiEsecuzione() {
+    //calcola il tempo di utilizzo del device in minuti durante tutta la giornata
+
+    std::vector<int> ids = timeLine.getIDs(); 
+    std::vector<int> times = timeLine.getTimes();
+    std::vector<std::string> events = timeLine.getEvents();
+
+
+    bool found = false;
+
+    //cerco se l'ID del device è presente nella timeline
+    for(int i=0;i<ids.size();i++){
+        if(ids[i] == ID){
+            found = true;
+            break;
+        }
+    }
+    //se non è presente non è mai stato usato
+    if(found == true){
+        
+        int sumTemp = 0;
+        int tempStart = 0;
+        int tempEnd = 0;
+
+        for(int i=0; i < times.size(); i++){
+            if(ids[i] == ID){
+                if(events[i] == "on"){
+                    //segno il tempo di avvio
+                    tempStart = times[i];
+                }else{
+                    //segno il tempo di spegnimento
+                    tempEnd = times[i];
+                    //aggiungo il tempo di utilizzo
+                    sumTemp += tempEnd - tempStart;
+                }
+            }
+        }
+        this->tempoDiEsecuzione = sumTemp;
+
+    }
     return tempoDiEsecuzione;
 }
-
-void Device::setTempoDiEsecuzione(){
-    //calcolo il tempo dal momento in cui è stato avviato il mio device, fino a quando è stata chiamata questa funzione
-
-    if(!isOn()){
-        tempoDiEsecuzione=  0;
-    }
-
-    //prendo il momento di ultimo avvio
-    int start =  timeLine.getLastTime(ID);
-
-    //calcolo il tempo di esecuzione
-    tempoDiEsecuzione = start - *t;
-
-
-}
-
 
 double Device::getConsumoTot() {
     return tempoDiEsecuzione * consumo;

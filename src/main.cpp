@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <limits>
 #include "Interface.h"
 
 // Costanti di default per il sistema

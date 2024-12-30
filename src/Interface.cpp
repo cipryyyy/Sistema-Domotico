@@ -1,4 +1,5 @@
 #include "Interface.h"
+#include <climits>
 
 //Funzioni helper
 int Interface::CPscan(int id) const noexcept {		// Controllare su un device è CP/M

@@ -53,8 +53,7 @@ public:             //! Lo ho messo un attimo public che i getter mi servono in 
     void setStato(bool stato);
 
     // Getter and Setter for tempoDiEsecuzione
-    int getTempoDiEsecuzione() const;
-    void setTempoDiEsecuzione();
+    int getTempoDiEsecuzione() ;
 
      //funzione che calcoli il consumo del device in base al tempo di esecuzione
     virtual double getConsumoTot(); 
