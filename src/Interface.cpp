@@ -1,5 +1,16 @@
 #include "Interface.h"
 
+/*
+! Errore 
+set lavatrice on
+set lavatrice on 1:00       //stampa un 100 a caso
+set lavatrice on 4:00       //Errore dei KW ?
+//set time 5:00               //OK
+set lavatrice on            //Dispositivo già acceso
+
+* Verificare sul branch secondario con isOn
+*/
+
 //Funzioni helper
 int Interface::CPscan(int id) const noexcept {		// Controllare su un device è CP/M
     for (int i = 0; i < CPcounter; i++) {
@@ -247,7 +258,6 @@ void Interface::turnOn(int id, int start, int end) {
     }
 }
 
-//TODO aggiungere controllo dispositivi di generazione
 void Interface::turnOff(int id) {
     updateKW();     //Aggiorno il numero di KW usati
 
@@ -271,8 +281,8 @@ void Interface::removeTimer(int id) {
     timeline.forget(id, t);             //Elimino tutti gli eventi futuri legati all'elettrodomestico
 }
 
-//? TODO pulire accensioni e spegnimenti contemporanei dei device M
 void Interface::setTime(int time) {
+//? TODO pulire accensioni e spegnimenti contemporanei dei device M
     timeCheck(t, time);                                                 // Controllo che il tempo sia valido
 
     std::vector<int> timestamp = timeline.getTimes(t,time);             // Vector con gli orari
@@ -407,7 +417,6 @@ void Interface::show(int id) {
     }
 }
 
-//TODO rimettere i verbose
 void Interface::installM(std::string name, double consumo, bool isOn) {
     //Controllo che non sia già presente
     for (int i = 0; i < Mcounter; i++) {
