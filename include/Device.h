@@ -31,6 +31,7 @@ protected:
     bool on; //false spento, true accesso
     int tempoDiEsecuzione; //da quanto tempo è accesso, si resetta ogni volta che viene spento 
     Timeline timeLine ; 
+    int *t; //tempo attuale in minuti dall'inizio della giornata
 
 
 

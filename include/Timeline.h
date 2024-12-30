@@ -1,5 +1,5 @@
 /*
-Autori: Cipriani Andrea, Giorgi Giacomo
+Autori: Cipriani Andrea, Giorgi Giacomo, Buso Riccardo
 
 Questa libreria di supporto serve per generare una timeline
 in grado di salvare gli eventi del sistema, con il relativo orario e tutti i metadati necessari.
@@ -122,6 +122,7 @@ public:
         return KWs;
     }
 
+    //Buso Riccardo
 
     //questa funzione prende come parametro un id e ritorna l'ultima volta che questo device è  stato acceso 
     int getLastTime(int id) {
@@ -135,14 +136,8 @@ public:
         return -1;
     }
 
-    //ritorna il tempo attuale in minuti dall'inizio della giornata 
-    //sistematela se volete non avevo altre ideee
-    int getCurrentTime() {
-        time_t now = time(0);
-        tm *ltm = localtime(&now);
-        return ltm->tm_hour * 60 + ltm->tm_min;
-    }
-
+    //Buso Riccardo
+    //funzione che calcola il tempo totale di utilizzo di ogni device nella giornata
 
     void forget(int id, int begin = 0, int end = 1439) {        //Elimina gli eventi di un device in un lasso di tempo
         for (int i = 0; i < t.size(); i++) {

@@ -11,6 +11,7 @@ Device::Device(Timeline& timeline, int& t, std::string nome, int ID, double cons
     this->on = stato;    
     this->tempoDiEsecuzione = -1; //il device non è ancora stato usato
     this->timeLine = timeline;
+    this-> t = &t;
 }
 
 Device::~Device() {}
@@ -71,11 +72,8 @@ void Device::setTempoDiEsecuzione(){
     //prendo il momento di ultimo avvio
     int start =  timeLine.getLastTime(ID);
 
-    //prendo il momento attuale
-    int now = timeLine.getCurrentTime(); 
-
     //calcolo il tempo di esecuzione
-    tempoDiEsecuzione = start - now;
+    tempoDiEsecuzione = start - *t;
 
 
 }
