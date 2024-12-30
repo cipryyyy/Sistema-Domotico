@@ -286,10 +286,9 @@ void Interface::resetTimers() {
         timeline.forget(devicesM[i].getID(), t);
     }
 }
-
-//TODO Isolare 'pannello' per produzione al posto di consumo, o comunque tutti i sistemi di produzione 
 void Interface::show() {
     std::cout << "[" << m2h(t) << "] Stato dei devices:" << std::endl;
+    std::vector<std::string> production;
 
     int cols = 4;
     int nameCol = 21;
@@ -318,7 +317,12 @@ void Interface::show() {
             }
             std::cout << "| " << headers[0] << emptyspaces1 << " | " << headers[1] << " | " << headers[2] << emptyspaces2 << " | " << headers[3] << " |" << std::endl;
             Lid(sum);
-        } else {        
+        } else {     
+            if (devicesM[i].getConsumo() < 0) {
+                double temp = -devicesM[i].getConsumoTotale();
+                production.push_back(devicesM[i].getNome() + " ha prodotto " + std::to_string(temp) + "KW in " + m2h(devicesM[i].getTempoDiEsecuzione()) + " ore");
+                continue;
+            }   
             int diff;
             std::string emptyspaces1;
 
@@ -326,10 +330,15 @@ void Interface::show() {
             for (int i = 0; i < diff; i++) {
                 emptyspaces1 += " ";
             }
-            std::cout << "| " << _cleaner(devicesM[i].getNome()) << emptyspaces1 << " | " << (devicesM[i].isOn()? "acceso" : "spento") << " | " << std::fixed << std::setprecision(3) << devicesM[i].getConsumo() << " | " << m2h(devicesM[i].getTempoDiEsecuzione()) << " |" << std::endl;
+            std::cout << "| " << _cleaner(devicesM[i].getNome()) << emptyspaces1 << " | " << (devicesM[i].isOn()? "acceso" : "spento") << " | " << std::fixed << std::setprecision(3) << devicesM[i].getConsumoTotale() << " | " << m2h(devicesM[i].getTempoDiEsecuzione()) << " |" << std::endl;
         }
     }
-    for (int i = 0; i < CPcounter; i++) {      
+    for (int i = 0; i < CPcounter; i++) {
+        if (devicesCP[i].getConsumo() < 0) {
+            double temp = -devicesCP[i].getConsumoTotale();
+            production.push_back(devicesCP[i].getNome() + " ha prodotto " + std::to_string(temp) + "KW in " + m2h(devicesCP[i].getTempoDiEsecuzione()) + " ore");
+            continue;
+        }
         int diff;
         std::string emptyspaces1;
 
@@ -337,9 +346,12 @@ void Interface::show() {
         for (int i = 0; i < diff; i++) {
             emptyspaces1 += " ";
         }
-        std::cout << "| " << _cleaner(devicesCP[i].getNome()) << emptyspaces1 << " | " << (devicesCP[i].isOn()? "acceso" : "spento") << " | " << std::fixed << std::setprecision(3) << devicesCP[i].getConsumo() << " | " << m2h(devicesCP[i].getTempoDiEsecuzione()) << " |" << std::endl;
+        std::cout << "| " << _cleaner(devicesCP[i].getNome()) << emptyspaces1 << " | " << (devicesCP[i].isOn()? "acceso" : "spento") << " | " << std::fixed << std::setprecision(3) << devicesCP[i].getConsumoTotale() << " | " << m2h(devicesCP[i].getTempoDiEsecuzione()) << " |" << std::endl;
     }
     Lid(sum);
+    for (int i = 0; i < production.size(); i++) {
+        std::cout << production[i] << std::endl;
+    }
 }
 
 void Interface::show(int id) {

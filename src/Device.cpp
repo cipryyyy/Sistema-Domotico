@@ -50,6 +50,10 @@ double Device::getConsumo() const {
     return consumo;
 }
 
+double Device::getConsumoTotale() const {
+    return 0;
+}
+
 void Device::setConsumo(int newConsumo) {
     consumo = newConsumo;
 }
