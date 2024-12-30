@@ -450,6 +450,7 @@ void Interface::uninstall(int id) {
     for (int i = 0; i < CPcounter; i++) {			//Controllo se il device è CP
         if (devicesCP[i].getID() == id) {
             int pos = CPscan(id);
+            if (devicesCP[pos].isOn()) throw DeviceIsRunningException();
             name = devicesCP[i].getNome();
             devicesCP.erase(devicesCP.begin() + pos);
             freeID.push_back(id);						//Segno il suo ID come libero
@@ -460,6 +461,7 @@ void Interface::uninstall(int id) {
     for (int i = 0; i < Mcounter; i++) {			//Controllo tra i device M
         if (devicesM[i].getID() == id) {
             int pos = Mscan(id);
+            if (devicesM[pos].isOn()) throw DeviceIsRunningException();
             name = devicesM[i].getNome();
             devicesM.erase(devicesM.begin() + pos);
             freeID.push_back(id);					//Segno l'ID come libero
