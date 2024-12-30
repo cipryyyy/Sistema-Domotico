@@ -64,18 +64,18 @@ Interface::Interface(double KW, bool init, int maxDV, int time): maximumKW{KW}, 
         Mcounter = 4;
 
         devicesCP = {
-            CPDevice(timeline, t, "Lavatrice", 0, 2, 110),
-            CPDevice(timeline, t, "Lavastoviglie", 1, 1.5, 195),
-            CPDevice(timeline, t, "Forno microonde", 2, 0.8, 2),
-            CPDevice(timeline, t, "Asciugatrice", 3, 0.5, 60),
-            CPDevice(timeline, t, "Tapparelle", 7, 0.3, 1),
-            CPDevice(timeline, t, "Televisore", 4, 0.2, 60)
+            CPDevice(&timeline ,  &t , "Lavatrice", 0, 2, 110),
+            CPDevice(&timeline, &t, "Lavastoviglie", 1, 1.5, 195),
+            CPDevice(&timeline, &t, "Forno microonde", 2, 0.8, 2),
+            CPDevice(&timeline, &t, "Asciugatrice", 3, 0.5, 60),
+            CPDevice(&timeline, &t, "Tapparelle", 7, 0.3, 1),
+            CPDevice(&timeline, &t, "Televisore", 4, 0.2, 60)
         };
         devicesM = {
-            ManualDevice(timeline, t, "Impianto fotovoltaico", 5, -1.5),     //Pannello al contrario perché aumenta la soglia di KW disponibili
-            ManualDevice(timeline, t, "Pompa di calore", 6, 2),
-            ManualDevice(timeline, t, "Scaldabagno", 8, 1),
-            ManualDevice(timeline, t, "Frigorifero", 9, 0.4)
+            ManualDevice(&timeline, &t, "Impianto fotovoltaico", 5, -1.5),     //Pannello al contrario perché aumenta la soglia di KW disponibili
+            ManualDevice(&timeline, &t, "Pompa di calore", 6, 2),
+            ManualDevice(&timeline, &t, "Scaldabagno", 8, 1),
+            ManualDevice(&timeline, &t, "Frigorifero", 9, 0.4)
         };
     }
 }
@@ -363,7 +363,7 @@ void Interface::installM(std::string name, double consumo, bool isOn) {
     } else {
         id = Mcounter+CPcounter;		//Altrimenti, ne creo uno nuovo
     }
-    devicesM.push_back(ManualDevice(timeline, t, name, id, consumo, isOn));
+    devicesM.push_back(ManualDevice(&timeline, &t, name, id, consumo, isOn));
 
 }
 void Interface::installCP(std::string name, double consumo, int durataCiclo, bool isOn) {
@@ -381,7 +381,7 @@ void Interface::installCP(std::string name, double consumo, int durataCiclo, boo
     } else {
         id = Mcounter+CPcounter;	//Altrimneti, ne creo uno nuovo
     }
-    devicesCP.push_back(CPDevice(timeline, t, name, id, consumo, durataCiclo, isOn));
+    devicesCP.push_back(CPDevice(&timeline, &t, name, id, consumo, durataCiclo, isOn));
 }
 void Interface::uninstall(int id) {
     for (int i = 0; i < CPcounter; i++) {			//Controllo se il device è CP

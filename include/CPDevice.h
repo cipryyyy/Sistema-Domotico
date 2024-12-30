@@ -14,7 +14,7 @@ private:
 
 public:
     //costruttore
-    CPDevice(Timeline& timeline, int& t, std::string nome, int ID, double consumo, int durataCiclo, bool stato = false);
+    CPDevice(Timeline* timeline, int* t, std::string nome, int ID, double consumo, int durataCiclo, bool stato = false);
 
 public:
 

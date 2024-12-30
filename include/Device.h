@@ -11,7 +11,7 @@ class Device {
 public:
     // Constructor
 
-    Device(Timeline& timeline, int& t, std::string nome, int ID, double consumo,bool stato = false);
+    Device(Timeline* timeline, int* t, std::string nome, int ID, double consumo,bool stato = false);
 
     // Destructor
     virtual ~Device();
@@ -30,7 +30,7 @@ protected:
     int consumo; //consumo specifico del device
     bool on; //false spento, true accesso
     int tempoDiEsecuzione; //da quanto tempo è accesso, si resetta ogni volta che viene spento 
-    Timeline timeLine ; 
+    Timeline *timeLine ; 
     int *t; //tempo attuale in minuti dall'inizio della giornata
 
 
