@@ -230,6 +230,7 @@ void Interface::removeTimer(int id) {
     timeline.forget(id, t);             //Elimino tutti gli eventi futuri legati all'elettrodomestico
 }
 
+//TODO ordinare il tempo, per ora è in ordine di inserimento
 void Interface::setTime(int time) {
     timeCheck(t, time);                                                 // Controllo che il tempo sia valido
 

@@ -27,7 +27,7 @@ protected:
     // attributi 
     std::string nome;    
     int ID; 
-    int consumo; //consumo specifico del device
+    double consumo; //consumo specifico del device
     bool on; //false spento, true accesso
     int tempoDiEsecuzione; //da quanto tempo è accesso, si resetta ogni volta che viene spento 
     Timeline timeLine ; 

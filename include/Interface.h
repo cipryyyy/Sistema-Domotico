@@ -38,8 +38,6 @@ private:
     int CPscan(int id) const noexcept;
     int Mscan(int M) const noexcept;
     void updateKW() noexcept;                  //Aggiorna il numero di KW utilizzati ad ogni chiamata
-    void BeautyTable(ManualDevice *devicelist) noexcept;
-    void BeautyTable(CPDevice *devicelist) noexcept;
 
     std::vector<int> freeID;
     std::vector<CPDevice> devicesCP;
