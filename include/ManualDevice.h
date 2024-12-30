@@ -13,9 +13,6 @@ private:
 public:
     ManualDevice(Timeline* timeline, int* t, std::string nome, int ID, double consumo, bool stato = false);
 
-    int getOrarioDiSpegnimento();
-
-    void setOrarioDiSpegnimento(int shutdownTime);
 };
 
 #endif // MANUALDEVICE_H
