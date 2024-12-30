@@ -44,8 +44,12 @@ void Device::setID(int newID) {
     ID = newID;
 }
 
-int Device::getConsumo() const {
+double Device::getConsumo() const {
     return consumo;
+}
+
+double Device::getConsumoTotale() const {
+    return 0;
 }
 
 void Device::setConsumo(int newConsumo) {

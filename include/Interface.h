@@ -19,6 +19,7 @@ Genera le eccezioni e basta.
 
 #include <iostream>
 #include <algorithm>
+#include <iomanip>
 #include "InterfaceExceptions.h"
 #include "CPDevice.h"
 #include "ManualDevice.h"
@@ -37,8 +38,6 @@ private:
     int CPscan(int id) const noexcept;
     int Mscan(int M) const noexcept;
     void updateKW() noexcept;                  //Aggiorna il numero di KW utilizzati ad ogni chiamata
-    void BeautyTable(ManualDevice *devicelist) noexcept;
-    void BeautyTable(CPDevice *devicelist) noexcept;
 
     std::vector<int> freeID;
     std::vector<CPDevice> devicesCP;
@@ -55,6 +54,7 @@ public:
 
     void setTime(int time);                             //Fa scorrere il tempo, chiamato con 'set time ${TIME}'
     void resetTime();                                   //Imposta t a 0, chiamato con 'reset time'
+    void resetTimers();                                 //Rimuove i timers a partire da t
 
     void show();                                        //Mostra lo stato di tutti i dispositivi
     void show(int id);                                  //Mostra lo stato di un singolo dispositivo
