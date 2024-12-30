@@ -46,8 +46,9 @@ public:             //! Lo ho messo un attimo public che i getter mi servono in 
 
     // Getter and Setter for consumo
     double getConsumo() const;
-    double getConsumoTotale() const;
+    double getConsumoTotale() ;
     void setConsumo(int consumo); 
+    double setConsumoTotale();
 
     // Getter and Setter for stato
     bool getStato() const;      //! Ripetuta, c'è già isOn, ma per coerenza con gli altri getter si mette lo stesso
@@ -55,6 +56,7 @@ public:             //! Lo ho messo un attimo public che i getter mi servono in 
 
     // Getter and Setter for tempoDiEsecuzione
     int getTempoDiEsecuzione() ;
+    void setTempoDiEsecuzione(int time);
 
      //funzione che calcoli il consumo del device in base al tempo di esecuzione
     virtual double getConsumoTot(); 

@@ -48,7 +48,7 @@ double Device::getConsumo() const {
     return consumo;
 }
 
-double Device::getConsumoTotale() const {
+double Device::getConsumoTotale() {
     return 0;
 }
 
@@ -98,6 +98,10 @@ int Device::getTempoDiEsecuzione() {
 
     }
     return tempoDiEsecuzione;
+}
+
+void Device::setTempoDiEsecuzione(int time) {
+    tempoDiEsecuzione = time;
 }
 
 double Device::getConsumoTot() {
