@@ -74,11 +74,19 @@ struct NotATimeMachineException : public std::exception {
     }
 };
 
-//Non ho ancora finito il metodo:
-//! Lanciata da: i metodi che non ho finito
+//Installazione dispositivo con lo stesso nome:
+//! Lanciata da: installCP, installM
 struct DuplicateDeviceException : public std::exception {
     const char* what() const noexcept override {
         return "E' già presente un device con questo nome.";
+    }
+};
+
+//Richiesta accensione device già acceso:
+//! Lanciata da: turnOn
+struct DeviceAlreadyOnException : public std::exception {
+    const char* what() const noexcept override {
+        return "Il dispositivo è già acceso.";
     }
 };
 

@@ -61,7 +61,7 @@ int Device::getTempoDiEsecuzione() {
     
     int range = timeline->getRange();
     int temp = -1;
-    int total = 0;
+    int exec = 0;
 
     // Scorri tutti gli eventi
     for (int i = 0; i < IDs.size(); i++) {
@@ -70,17 +70,20 @@ int Device::getTempoDiEsecuzione() {
             temp = timestamps[i];
         } else if (IDs[i] == ID) {
             if (temp != -1) {
-                total += timestamps[i] - temp;
+                exec += timestamps[i] - temp;
                 temp = -1;
             }
         }
     }
 
     if (isOn() && temp != -1) {
-        total += *t - temp;
+        exec += *t - temp;
     }
 
-    return total;
+    return exec;
+}
+void Device::setTempoDiEsecuzione(int time) {
+    exec = time;
 }
 
 double Device::getConsumoTotale() {

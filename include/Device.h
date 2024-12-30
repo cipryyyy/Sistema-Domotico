@@ -16,6 +16,8 @@ protected:
     int ID;
     double consumo;
     bool on;
+    int exec;
+
 public:
     Device(Timeline* timeline, int* t, std::string nome, int ID, double consumo, bool stato = false);
 
@@ -35,6 +37,7 @@ public:
 
     // Getter and Setter for tempoDiEsecuzione
     int getTempoDiEsecuzione();
+    void setTempoDiEsecuzione(int time);
     double getConsumoTotale();
 };
 
