@@ -19,6 +19,7 @@ Genera le eccezioni e basta.
 
 #include <iostream>
 #include <algorithm>
+#include <iomanip>
 #include "InterfaceExceptions.h"
 #include "CPDevice.h"
 #include "ManualDevice.h"

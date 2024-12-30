@@ -45,7 +45,7 @@ public:             //! Lo ho messo un attimo public che i getter mi servono in 
     void setID(int ID);   
 
     // Getter and Setter for consumo
-    int getConsumo() const;
+    double getConsumo() const;
     void setConsumo(int consumo); 
 
     // Getter and Setter for stato

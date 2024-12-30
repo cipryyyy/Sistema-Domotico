@@ -254,13 +254,14 @@ void Interface::resetTime() {
     std::cout << "Reset del tempo effettuato con successo" << std::endl;
 }
 
+//TODO Isolare 'pannello' per produzione al posto di consumo, o comunque tutti i sistemi di produzione 
 void Interface::show() {
     std::cout << "[" << m2h(t) << "] Stato dei devices:" << std::endl;
 
     int cols = 4;
     int nameCol = 21;
     int statusCol = 6;
-    int usageCol = 5;
+    int usageCol = 5;       //Problema
     int runningCol = 4;
 
 
@@ -287,33 +288,23 @@ void Interface::show() {
         } else {        
             int diff;
             std::string emptyspaces1;
-            std::string emptyspaces2;
 
             diff = nameCol - devicesM[i].getNome().size();
             for (int i = 0; i < diff; i++) {
                 emptyspaces1 += " ";
             }
-            diff = usageCol - std::to_string(devicesM[i].getConsumo()).size();
-            for (int i = 0; i < diff; i++) {
-                emptyspaces2 += " ";
-            }
-            std::cout << "| " << devicesM[i].getNome() << emptyspaces1 << " | " << (devicesM[i].isOn()? "acceso" : "spento") << " | " << devicesM[i].getConsumo() << emptyspaces2 << " | " << m2h(devicesM[i].getTempoDiEsecuzione()) << " |" << std::endl;
+            std::cout << "| " << devicesM[i].getNome() << emptyspaces1 << " | " << (devicesM[i].isOn()? "acceso" : "spento") << " | " << std::fixed << std::setprecision(3) << devicesM[i].getConsumo() << " | " << m2h(devicesM[i].getTempoDiEsecuzione()) << " |" << std::endl;
         }
     }
     for (int i = 0; i < CPcounter; i++) {      
         int diff;
         std::string emptyspaces1;
-        std::string emptyspaces2;
 
         diff = nameCol - devicesCP[i].getNome().size();
         for (int i = 0; i < diff; i++) {
             emptyspaces1 += " ";
         }
-        diff = usageCol - std::to_string(devicesCP[i].getConsumo()).size();
-        for (int i = 0; i < diff; i++) {
-            emptyspaces2 += " ";
-        }
-        std::cout << "| " << devicesCP[i].getNome() << emptyspaces1 << " | " << (devicesCP[i].isOn()? "acceso" : "spento") << " | " << devicesCP[i].getConsumo() << emptyspaces2 << " | " << m2h(devicesCP[i].getTempoDiEsecuzione()) << " |" << std::endl;
+        std::cout << "| " << devicesCP[i].getNome() << emptyspaces1 << " | " << (devicesCP[i].isOn()? "acceso" : "spento") << " | " << std::fixed << std::setprecision(3) << devicesCP[i].getConsumo() << " | " << m2h(devicesCP[i].getTempoDiEsecuzione()) << " |" << std::endl;
     }
     Lid(sum);
 }
@@ -365,6 +356,7 @@ void Interface::installM(std::string name, double consumo, bool isOn) {
     devicesM.push_back(ManualDevice(timeline, t, name, id, consumo, isOn));
 
 }
+
 void Interface::installCP(std::string name, double consumo, int durataCiclo, bool isOn) {
     //Check che non sia già presente
     for (int i = 0; i < CPcounter; i++) {
@@ -381,21 +373,26 @@ void Interface::installCP(std::string name, double consumo, int durataCiclo, boo
         id = Mcounter+CPcounter;	//Altrimneti, ne creo uno nuovo
     }
     devicesCP.push_back(CPDevice(timeline, t, name, id, consumo, durataCiclo, isOn));
+    std::cout << CPcounter << devicesCP.size();
 }
+
+//! Seg fault
 void Interface::uninstall(int id) {
     for (int i = 0; i < CPcounter; i++) {			//Controllo se il device è CP
+        int pos = CPscan(id);
         if (devicesCP[i].getID() == id) {
-            devicesCP.erase(devicesCP.begin() + id);
+            devicesCP.erase(devicesCP.begin() + pos);
             freeID.push_back(id);						//Segno il suo ID come libero
-			std::cout << "1";
+			CPcounter--;
             return;
         }
     }
     for (int i = 0; i < Mcounter; i++) {			//Controllo tra i device M
         if (devicesM[i].getID() == id) {
-            devicesM.erase(devicesM.begin() + id);
+            int pos = Mscan(id);
+            devicesM.erase(devicesM.begin() + pos);
             freeID.push_back(id);					//Segno l'ID come libero
-			std::cout << "2";
+			Mcounter--;
             return;
         }
     }

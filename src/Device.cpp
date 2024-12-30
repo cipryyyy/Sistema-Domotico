@@ -46,7 +46,7 @@ void Device::setID(int newID) {
     ID = newID;
 }
 
-int Device::getConsumo() const {
+double Device::getConsumo() const {
     return consumo;
 }
 
