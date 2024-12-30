@@ -65,7 +65,6 @@ int Device::getTempoDiEsecuzione() {
 
     std::vector<int> ids = timeLine->getIDs(); 
     std::vector<int> times = timeLine->getTimes();
-    std::vector<std::string> events = timeLine->getEvents();
 
 
     bool found = false;
@@ -85,16 +84,14 @@ int Device::getTempoDiEsecuzione() {
         int tempEnd = 0;
 
         for(int i=0; i < times.size(); i++){
-            if(ids[i] == ID){
-                if(events[i] == "on"){
+            if(ids[i] == ID+1024){
                     //segno il tempo di avvio
-                    tempStart = times[i];
+                    tempStart = times[i]*60;
                 }else{
                     //segno il tempo di spegnimento
-                    tempEnd = times[i];
+                    tempEnd = times[i]*60;
                     //aggiungo il tempo di utilizzo
                     sumTemp += tempEnd - tempStart;
-                }
             }
         }
         this->tempoDiEsecuzione = sumTemp;
@@ -104,6 +101,6 @@ int Device::getTempoDiEsecuzione() {
 }
 
 double Device::getConsumoTot() {
-    return tempoDiEsecuzione * consumo;
+    return (tempoDiEsecuzione * consumo)/60;
 }
 
