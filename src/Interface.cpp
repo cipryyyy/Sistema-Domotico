@@ -51,6 +51,22 @@ void Lid(int len) {
     }
     std::cout << "\n";
 }
+void sortTimeBased(std::vector<int>& timestamps, std::vector<std::string>& events) {
+    for (int i = 1; i < timestamps.size(); ++i) {
+        int key = timestamps[i];
+        std::string eventKey = events[i];
+        int j = i - 1;
+
+        while (j >= 0 && timestamps[j] > key) {
+            timestamps[j + 1] = timestamps[j];
+            events[j + 1] = events[j];
+            --j;
+        }
+
+        timestamps[j + 1] = key;
+        events[j + 1] = eventKey;
+    }
+}
 
 //Funzioni membro
 Interface::Interface(double KW, bool init, int maxDV, int time): maximumKW{KW}, maximumDV{maxDV}, t{time}
@@ -224,18 +240,19 @@ void Interface::turnOff(int id) {
     }
 }
 
+//TODO Ricontrollare il meccanismo
 void Interface::removeTimer(int id) {
 	//Controllo che l'ID esista
 	if ((CPscan(id) == INT_MIN && Mscan(id) == INT_MIN) == false) throw DeviceIDOutOfBoundException();
     timeline.forget(id, t);             //Elimino tutti gli eventi futuri legati all'elettrodomestico
 }
 
-//TODO ordinare il tempo, per ora è in ordine di inserimento
 void Interface::setTime(int time) {
     timeCheck(t, time);                                                 // Controllo che il tempo sia valido
 
     std::vector<int> timestamp = timeline.getTimes(t,time);             // Vector con gli orari
     std::vector<std::string> events = timeline.getEvents(t,time);       // Vector con gli eventi
+    sortTimeBased(timestamp, events);
 
     // Stampo la timeline
     std::cout << "[" << m2h(t) << "]: L'orario attuale e' " << m2h(t) << std::endl;
@@ -374,10 +391,8 @@ void Interface::installCP(std::string name, double consumo, int durataCiclo, boo
         id = Mcounter+CPcounter;	//Altrimneti, ne creo uno nuovo
     }
     devicesCP.push_back(CPDevice(timeline, t, name, id, consumo, durataCiclo, isOn));
-    std::cout << CPcounter << devicesCP.size();
 }
 
-//! Seg fault
 void Interface::uninstall(int id) {
     for (int i = 0; i < CPcounter; i++) {			//Controllo se il device è CP
         int pos = CPscan(id);
