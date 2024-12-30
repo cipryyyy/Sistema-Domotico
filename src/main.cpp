@@ -76,7 +76,7 @@ void displayHelp() {
     std::cout << "\nFunzioni disponibili:\n"
               << "set <device> on                          - Accende dispositivo\n"
               << "set <device> off                         - Spegne dispositivo\n"
-              << "set <device> <start> [stop]              - Imposta timer dispositivo\n"
+              << "set <device> on/off <start> [stop]       - Imposta timer dispositivo\n"
               << "rm <device>                              - Rimuovi timer dispositivo\n"
               << "show                                     - Mostra gli stati di tutti i dispositivi\n"
               << "show <device>                            - Mostra lo stato di un singolo dispositivo\n"
@@ -267,10 +267,11 @@ int main(int argc, char* argv[]) {
                     system.resetTime();
                 }
                 else if (tokens[1] == "timers") {
-                    // system.resetTimers();
+                    system.resetTimers();
                 }
                 else if (tokens[1] == "all") {
-                    // system.resetAll();
+                    system.resetTime();
+                    system.resetTimers();
                 }
                 else {
                     throw std::invalid_argument("Comando non riconosciuto. Usa 'help' per i comandi disponibili");

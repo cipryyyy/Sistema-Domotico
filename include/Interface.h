@@ -54,6 +54,7 @@ public:
 
     void setTime(int time);                             //Fa scorrere il tempo, chiamato con 'set time ${TIME}'
     void resetTime();                                   //Imposta t a 0, chiamato con 'reset time'
+    void resetTimers();                                 //Rimuove i timers a partire da t
 
     void show();                                        //Mostra lo stato di tutti i dispositivi
     void show(int id);                                  //Mostra lo stato di un singolo dispositivo
