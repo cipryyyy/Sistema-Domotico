@@ -65,7 +65,9 @@ public:
 
     int searchID(std::string name);                     //Ritorna l'ID di un dispositivo dato il nome
 
-    //Debug       
-    void getKWs();
+    //Funzioni di debug       
+    double getKWs();
+    int getTime();
+    void getCounters();
 };  
 #endif
