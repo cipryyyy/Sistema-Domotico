@@ -1,16 +1,5 @@
 #include "Interface.h"
 
-/*
-! Errore 
-set lavatrice on
-set lavatrice on 1:00       //stampa un 100 a caso
-set lavatrice on 4:00       //Errore dei KW ?
-//set time 5:00               //OK
-set lavatrice on            //Dispositivo già acceso
-
-* Verificare sul branch secondario con isOn
-*/
-
 //Funzioni helper
 int Interface::CPscan(int id) const noexcept {		// Controllare su un device è CP/M
     for (int i = 0; i < CPcounter; i++) {
@@ -163,8 +152,8 @@ void Interface::turnOn(int id, int start) {
 
     //Ci possono essere più richieste di timer, quindi controllo se, in base alle richieste future
     //avrò abbastanza KW disponibili per far andare il dispositivo
-    double KWonCall = KW;
-    std::vector<double> programmedKW = timeline.getKWs(t, start);   //Richiedo tutti i ΔKW da ora fino al momento dell'accensione
+    double KWonCall = 0;       //! TEST
+    std::vector<double> programmedKW = timeline.getKWs(0, start);   //Richiedo tutti i ΔKW da ora fino al momento dell'accensione
     for (double requestesKW : programmedKW) {
         KWonCall += requestesKW;                        //Sommo il tutto, dopo devo controllare di averne abbastanza liberi
     }
@@ -173,7 +162,7 @@ void Interface::turnOn(int id, int start) {
 	int Mpos = Mscan(id);
 
     if (Cpos != INT_MIN) {   //CP
-        std::vector<int> idRequest = timeline.getIDs(0,start);
+        std::vector<int> idRequest = timeline.getIDs(t,start);
         for (int i = idRequest.size() - 1; i >= 0; i--) {
             if (idRequest[i] == id + maximumDV) {
                 throw TimerAlreadySetException();
@@ -490,4 +479,9 @@ int Interface::searchID(std::string name) {			//Ritorna l'ID dato il nome
 		if (NSCcheck(devicesM[i].getNome(), name)) return devicesM[i].getID();	//Controllo gli M
 	}
 	throw NameNotFoundException();
+}
+
+void Interface::getKWs() {
+    updateKW();
+    std::cout << KW;
 }

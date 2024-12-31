@@ -63,6 +63,9 @@ public:
     void installCP(std::string name, double consumo, int durataCiclo, bool isOn = false);    //Installa un dispositivo CP
     void uninstall(int id);                                                                 //Rimuove un dispositivo
 
-    int searchID(std::string name);                     //Ritorna l'ID di un dispositivo dato il nome       
+    int searchID(std::string name);                     //Ritorna l'ID di un dispositivo dato il nome
+
+    //Debug       
+    void getKWs();
 };  
 #endif
