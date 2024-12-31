@@ -86,10 +86,10 @@ int Device::getTempoDiEsecuzione() {
         for(int i=0; i < times.size(); i++){
             if(ids[i] == ID+1024){
                     //segno il tempo di avvio
-                    tempStart = times[i]*60;
+                    tempStart = times[i];
                 }else{
                     //segno il tempo di spegnimento
-                    tempEnd = times[i]*60;
+                    tempEnd = times[i];
                     //aggiungo il tempo di utilizzo
                     sumTemp += tempEnd - tempStart;
             }

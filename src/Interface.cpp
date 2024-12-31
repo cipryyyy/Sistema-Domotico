@@ -1,4 +1,5 @@
 #include "Interface.h"
+#include <climits>
 
 /*
 ! Errore 
