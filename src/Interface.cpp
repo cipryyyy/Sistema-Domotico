@@ -152,7 +152,7 @@ void Interface::turnOn(int id, int start) {             //Accensione programmata
 
     //Ci possono essere più richieste di timer, quindi controllo se, in base alle richieste future
     //avrò abbastanza KW disponibili per far andare il dispositivo
-    double KWonCall = 0;       //! TEST
+    double KWonCall = 0;
     std::vector<double> programmedKW = timeline.getKWs(0, start);   //Richiedo tutti i ΔKW da ora fino al momento dell'accensione
     for (double requestesKW : programmedKW) {
         KWonCall += requestesKW;                        //Sommo il tutto, dopo devo controllare di averne abbastanza liberi
@@ -160,6 +160,7 @@ void Interface::turnOn(int id, int start) {             //Accensione programmata
 
 	int Cpos = CPscan(id);
 	int Mpos = Mscan(id);
+    //std::cout << "KWonCall: " << KWonCall << std::endl;
 
     if (Cpos != INT_MIN) {   //CP
         std::vector<int> idRequest = timeline.getIDs(t,start);
@@ -206,14 +207,20 @@ void Interface::turnOn(int id, int start) {             //Accensione programmata
         throw DeviceIDOutOfBoundException();
     }
 }
-//? se il device è già attivo, mette solo il termine
 void Interface::turnOn(int id, int start, int end) {    //routine
     timeCheck(t, start, end);
     updateKW();     //Aggiorno il numero di KW usati
-    double temp = KW;
-    std::vector<double> programmedKW = timeline.getKWs(t, start);   //Richiedo tutti i ΔKW da ora fino al momento dell'accensione
+    double KWonCall = 0;
+    double MaxKWonCall = 0;
+    std::vector<double> programmedKW = timeline.getKWs(0, start);   //Richiedo tutti i ΔKW da ora fino al momento dell'accensione
     for (double requestedKW : programmedKW) {
-        temp += requestedKW;                        //Sommo il tutto         
+        KWonCall += requestedKW;                        //Sommo il tutto         
+    }
+    programmedKW = timeline.getKWs(start, end); //Controllo che nella routine non superi mai i maximumKW
+    double temp = KWonCall;
+    for (double cycleKW : programmedKW) {
+        temp += cycleKW;                        //Sommo il tutto  
+        if (temp > MaxKWonCall) MaxKWonCall = temp;
     }
 
 	int Cpos = CPscan(id);
@@ -238,8 +245,8 @@ void Interface::turnOn(int id, int start, int end) {    //routine
         }
         if (count != 0) throw TimerAlreadySetException();
         timeline.forget(Mpos, start, end);        //Cancello queste programmazioni più corte
-        //Controllo di avere abbastanza KW al momento del lancio, in tal caso, imposto il programma
-        if (temp + devicesM[Mpos].getConsumo() > maximumKW) throw OverKWException();
+        if (KWonCall + devicesM[Mpos].getConsumo() > maximumKW) throw OverKWException();
+        if (MaxKWonCall + devicesM[Mpos].getConsumo() > maximumKW) throw OverKWException();
         std::cout << "Routine di " << _cleaner(devicesM[Mpos].getNome()) + " impostata" << std::endl;
         timeline.addEvent(start, devicesM[Mpos].getNome() + " acceso", devicesM[Mpos].getID()+maximumDV, devicesM[Mpos].getConsumo());
         timeline.addEvent(end, devicesM[Mpos].getNome() + " spento", devicesM[Mpos].getID()+maximumDV, -devicesM[Mpos].getConsumo());
@@ -486,15 +493,15 @@ int Interface::searchID(std::string name) {			//Ritorna l'ID dato il nome
 	throw NameNotFoundException();
 }
 
-double Interface::getKWs() {            //Debug KW
+double Interface::debugKWs() {            //Debug KW
     updateKW();
     std::cout << KW;
     return KW;
 }
-int Interface::getTime() {              //Debug time
+int Interface::debugTime() {              //Debug time
     std::cout << t;
     return t;
 }
-void Interface::getCounters() {         //Debug counters
+void Interface::debugCounters() {         //Debug counters
     std::cout << "CP: " << CPcounter << " M:" << Mcounter;
 }

@@ -8,6 +8,7 @@
 #include "Interface.h"
 
 // Costanti di default per il sistema
+bool debug = false;
 const double MAX_POWER = 3.5;       // Potenza massina del sistema, in kW
 const int MAX_DEVICES = 100;        // Numero massimo di dispositivi supportati
 
@@ -136,6 +137,7 @@ int main(int argc, char* argv[]) {
 
     // Inizializzo il sistema
     Interface system(power, true, MAX_DEVICES);
+    if (debug) std::cout << "Avvio con " << power << " KW e " << MAX_DEVICES << " device." << std::endl; 
     std::string command;
     
     // Apro file di log
@@ -188,6 +190,11 @@ int main(int argc, char* argv[]) {
                 } else {
                     throw std::invalid_argument("Numero di argomenti non valido");
                 }
+                if (debug) {
+                    std::cout << "Contatori: ";
+                    system.debugCounters();
+                    std::cout << std::endl;
+                }
                 continue;
             }
 
@@ -209,12 +216,21 @@ int main(int argc, char* argv[]) {
                     } catch (std::exception& e) {
                         std::cerr << "Errore: " << e.what() << std::endl;
                     }
+                    if (debug) {
+                        std::cout << "KW: ";
+                        system.debugKWs();
+                        std::cout << std::endl << "Time: ";
+                        system.debugTime();
+                        std::cout << std::endl;
+                    }
                     continue;
                 }
 
                 // Commandi per dispositivi
                 try {
+                    if (debug) std::cout << "Ricerca di: " << tokens[1] << std::endl;
                     int deviceId = system.searchID(tokens[1]);
+                    if (debug) std::cout << "ID TROVATO: " << deviceId << std::endl;
 
                     if (tokens.size() < 3) {
                         throw std::invalid_argument("Utilizzo di set non valido. Usa 'help' per i comandi disponibili");
@@ -223,18 +239,22 @@ int main(int argc, char* argv[]) {
                     if (tokens[2] == "on") {
                         switch (tokens.size()) {
                             case 3:
+                                if (debug) std::cout << "turnOn manuale" << std::endl;
                                 system.turnOn(deviceId);
                                 break;
                             case 4:
+                                if (debug) std::cout << "turnOn con start" << std::endl;
                                 system.turnOn(deviceId, parseTime(tokens[3]));
                                 break;
                             case 5:
+                                if (debug) std::cout << "Routine" << std::endl;
                                 system.turnOn(deviceId, parseTime(tokens[3]), parseTime(tokens[4]));
                                 break;
                             default:
                                 throw std::invalid_argument("Numero di argomenti non valido");
                         }
                     } else if (tokens[2] == "off") {
+                        if (debug) std::cout << "Spegnimento" << std::endl;
                         system.turnOff(deviceId);
                     } else {
                         throw std::invalid_argument("Comando non riconosciuto");
@@ -242,6 +262,7 @@ int main(int argc, char* argv[]) {
                 } catch (std::exception& e) {
                     std::cerr << "Errore: " << e.what() << std::endl;
                 }
+                if (debug) system.debugKWs();
                 continue;
             }
 
@@ -251,7 +272,9 @@ int main(int argc, char* argv[]) {
                     throw std::invalid_argument("Utilizzo di rm non valido. Usa 'help' per i comandi disponibili");
                 }
                 try {
+                    if (debug) std::cout << "Ricerca di: " << tokens[1] << std::endl;
                     int deviceId = system.searchID(tokens[1]);
+                    if (debug) std::cout << "ID TROVATO: " << deviceId << std::endl;
                     system.removeTimer(deviceId);
                 } catch (std::exception& e) {
                     std::cerr << "Errore: " << e.what() << std::endl;
