@@ -5,7 +5,6 @@ class orarioAccensioneNonImpostato : public std::exception{};
 CPDevice::CPDevice(Timeline* timeline, int* t, std::string nome, int ID, double consumo, int durataCiclo, bool stato) : Device(timeline, t, nome, ID, consumo, stato) {
     this->orarioAccensioneAutomatica = -1;
     this->durataCiclo = durataCiclo;
-    this->tempoDiEsecuzione = -1;
 }
 
 int CPDevice::getDurataCiclo() {
@@ -39,3 +38,6 @@ void CPDevice::turnOff(){
     this->tempoDiEsecuzione += this->durataCiclo ;
 }
 
+int CPDevice::getTempoDiEsecuzione() {
+    return this->tempoDiEsecuzione;
+}

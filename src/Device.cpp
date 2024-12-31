@@ -9,7 +9,7 @@ Device::Device(Timeline* timeline, int* t, std::string nome, int ID, double cons
     this->ID = ID;
     this->consumo = consumo;
     this->on = stato;    
-    this->tempoDiEsecuzione = -1; //il device non è ancora stato usato
+    this->tempoDiEsecuzione = 0; //il device non è ancora stato usato
     this->timeLine = timeline;
     this-> t = t;
 }
@@ -94,7 +94,7 @@ int Device::getTempoDiEsecuzione() {
                     sumTemp += tempEnd - tempStart;
             }
         }
-        this->tempoDiEsecuzione = sumTemp;
+        this->tempoDiEsecuzione = sumTemp/60;
 
     }
     return tempoDiEsecuzione;

@@ -11,7 +11,6 @@ class CPDevice : public Device {
 private:
     int durataCiclo; //in minuti
     int orarioAccensioneAutomatica;
-    int tempoDiEsecuzione; //da quanto tempo è accesso, si resetta ogni volta che viene spento
 
 public:
     //costruttore
@@ -28,6 +27,8 @@ public:
     void setOrarioAccensioneAutomatica(int orario);
 
     void turnOff() override;
+
+    int getTempoDiEsecuzione();
 };
 
 #endif // CPDEVICE_H
