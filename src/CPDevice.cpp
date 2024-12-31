@@ -5,6 +5,7 @@ class orarioAccensioneNonImpostato : public std::exception{};
 CPDevice::CPDevice(Timeline* timeline, int* t, std::string nome, int ID, double consumo, int durataCiclo, bool stato) : Device(timeline, t, nome, ID, consumo, stato) {
     this->orarioAccensioneAutomatica = -1;
     this->durataCiclo = durataCiclo;
+    this->tempoDiEsecuzione = -1;
 }
 
 int CPDevice::getDurataCiclo() {
@@ -28,5 +29,13 @@ void CPDevice::setOrarioAccensioneAutomatica(int orario) {
         throw std::invalid_argument("Orario deve essere compreso tra 0 e 1439 minuti");
     }
     orarioAccensioneAutomatica = orario;
+}
+
+//un device a ciclo impostato, può spegnersi solo a ciclo conluso, quindi il suo tempo di esecuzione
+// è uguale alla durata del ciclo + tempo di esecuzione, ogni qualvolta venga spento
+
+void CPDevice::turnOff(){
+    Device::turnOff();
+    this->tempoDiEsecuzione += this->durataCiclo ;
 }
 

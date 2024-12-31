@@ -16,6 +16,8 @@ public:
     int getOrarioDiSpegnimento();
 
     void setOrarioDiSpegnimento(int shutdownTime);
+
+
 };
 
 #endif // MANUALDEVICE_H

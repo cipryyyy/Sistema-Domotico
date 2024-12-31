@@ -299,6 +299,25 @@ void Interface::setTime(int time) {
     
     std::cout << "[" << m2h(time) << "]: L'orario attuale e' " << m2h(time) << std::endl;
     
+    //controllo se ci sono device accesi a ciclo prefissato,
+    //se si, 
+    //calcolo se la differenza del tempo attuale e il tempo impostato è maggiore del tempo di ciclo 
+    //se lo  è il device si spegne allo scadere del suo ciclo 
+
+    for (int i = 0; i < CPcounter; i++) {
+        if (devicesCP[i].isOn()) {
+            if (devicesCP[i].getTempoDiEsecuzione() + time - t >= devicesCP[i].getDurataCiclo()) {
+                devicesCP[i].turnOff();
+                timeline.addEvent(time, devicesCP[i].getNome() + " spento", devicesCP[i].getID(), -devicesCP[i].getConsumo());
+            } else {
+                devicesCP[i].setTempoDiEsecuzione(devicesCP[i].getTempoDiEsecuzione() + time - t);
+            }
+        }
+    }
+    
+  
+
+
     t = time; // Aggiorno l'orario
 }
 
