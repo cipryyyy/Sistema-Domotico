@@ -24,7 +24,20 @@ void Device::turnOff() {
     on = false;
 }
 
-bool Device::isOn() const {
+bool Device::isOn() {
+    std::vector<int> IDs = timeLine->getIDs(0, *t);
+    int range = timeLine->getRange();
+    
+    for (int i = IDs.size() - 1; i >= 0; i--) {
+        if (IDs[i] == ID) {
+            on = false;
+            break;
+        }
+        if (IDs[i] == ID + range) {
+            on = true;
+            break;
+        }
+    }
     return on;
 }
 

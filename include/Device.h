@@ -19,7 +19,7 @@ public:
     // Member functions
     virtual void turnOn();
     virtual void turnOff();
-    virtual bool isOn() const;
+    virtual bool isOn();
 
     // Add more member functions and attributes as needed
 
