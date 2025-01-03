@@ -78,7 +78,7 @@ public:
                 events.push_back(e[i]);
             }
         }
-        return events;
+        return std::move(events);
     }
 
     std::vector<int> getIDs(int start = 0, int end = 1439) {        //Ritorna gli id agenti in un lasso di tempo
@@ -91,7 +91,7 @@ public:
                 IDs.push_back(d[i]);
             }
         }
-        return IDs;
+        return std::move(IDs);
     }
 
     std::vector<double> getKWs(int start = 0, int end = 1439) {     //Ritorna le variazioni in un lasso di tempo
@@ -104,25 +104,8 @@ public:
                 KWs.push_back(k[i]);
             }
         }
-        return KWs;
+        return std::move(KWs);
     }
-
-    //Buso Riccardo
-
-    //questa funzione prende come parametro un id e ritorna l'ultima volta che questo device è  stato acceso 
-    int getLastTime(int id) {
-        for (int i = d.size() - 1; i >= 0; i--) {   //do per scontato  che tutti i vettori abbiano la stessa dimensione, (pessima scelta progettuale, fai una matrice o una classe prossima volta)
-            if (d[i] == id+range) {
-                //questo device è stato accesso l'ultima volta al tempo t[i]
-                return t[i];
-            }
-        }
-        //il device non è mai stato acceso
-        return -1;
-    }
-
-    //Buso Riccardo
-    //funzione che calcola il tempo totale di utilizzo di ogni device nella giornata
 
     void forget(int id, int begin = 0, int end = 1439) {        //Elimina gli eventi di un device in un lasso di tempo
         for (int i = 0; i < t.size(); i++) {
