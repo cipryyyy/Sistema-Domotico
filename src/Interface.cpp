@@ -98,7 +98,7 @@ Interface::Interface(double KW, bool init, int maxDV, int time): maximumKW{KW}, 
             ManualDevice(&timeline, &t, "Impianto_fotovoltaico", 5, -1.5),     //Pannello al contrario perché aumenta la soglia di KW disponibili
             ManualDevice(&timeline, &t, "Pompa_di_calore", 6, 2),
             ManualDevice(&timeline, &t, "Scaldabagno", 8, 1),
-            ManualDevice(&timeline, &t, "Frigorifero", 9, 0.4)
+            ManualDevice(&timeline, &t, "Frigorifero", 9, 0.4, false)
         };
     }
 }
@@ -249,7 +249,7 @@ void Interface::turnOn(int id, int start, int end) {    //routine
         if (MaxKWonCall + devicesM[Mpos].getConsumo() > maximumKW) throw OverKWException();
         std::cout << "Routine di " << _cleaner(devicesM[Mpos].getNome()) + " impostata" << std::endl;
         timeline.addEvent(start, devicesM[Mpos].getNome() + " acceso", devicesM[Mpos].getID()+maximumDV, devicesM[Mpos].getConsumo());
-        timeline.addEvent(end, devicesM[Mpos].getNome() + " spento", devicesM[Mpos].getID()+maximumDV, -devicesM[Mpos].getConsumo());
+        timeline.addEvent(end, devicesM[Mpos].getNome() + " spento", devicesM[Mpos].getID(), -devicesM[Mpos].getConsumo());
     } else {
         throw DeviceIDOutOfBoundException();
     }
@@ -266,9 +266,21 @@ void Interface::turnOff(int id) {                       //spegnimento
         if (KW - devicesM[Mpos].getConsumo() > maximumKW) throw OverKWException();  //Se cerco di spegnere un generatore e i KW non bastano
         timeline.forget(id, t);     //Cancello eventuali programmazioni future
         std::cout << _cleaner(devicesM[Mpos].getNome()) + " spento" << std::endl;
-        timeline.addEvent(t, devicesM[Mpos].getNome() + " spento", devicesM[Mpos].getID()+maximumDV, -devicesM[Mpos].getConsumo());
+        timeline.addEvent(t, devicesM[Mpos].getNome() + " spento", devicesM[Mpos].getID(), -devicesM[Mpos].getConsumo());
     } else {
         throw DeviceIDOutOfBoundException();        //ID non presente tra i dispositivi.
+    }
+}
+
+void Interface::forceOff(int id) noexcept {
+    std::vector<int> IDRequest = timeline.getIDs(t);
+    std::vector<int> TimeStamps = timeline.getTimes(t);
+    int Cpos = CPscan(id);
+    for (int i = 0; i < IDRequest.size(); i++) {
+        if (IDRequest[i] == id) {
+            timeline.forget(id, t+1, TimeStamps[i]);
+            timeline.addEvent(t, devicesCP[Cpos].getNome() + " interrotto", devicesCP[Cpos].getID(), -devicesCP[Cpos].getConsumo());
+        }
     }
 }
 
