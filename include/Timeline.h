@@ -141,7 +141,7 @@ public:
 
     void forget(int id, int begin = 0, int end = 1439) {        //Elimina gli eventi di un device in un lasso di tempo
         for (int i = 0; i < t.size(); i++) {
-            if (t[i] >= begin && (d[i] == id || d[i] == (id+range))) {
+            if (t[i] >= begin && t[i] <= end && (d[i] == id || d[i] == (id+range))) {
                 t.erase(t.begin() + i);
                 e.erase(e.begin() + i);
                 d.erase(d.begin() + i);

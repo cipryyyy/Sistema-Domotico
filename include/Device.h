@@ -17,9 +17,10 @@ protected:
     double consumo;
     bool on;
     int exec;
+    bool autoTurnOff;
 
 public:
-    Device(Timeline* timeline, int* t, std::string nome, int ID, double consumo, bool stato = false);
+    Device(Timeline* timeline, int* t, std::string nome, int ID, double consumo, bool autoTurnOff, bool stato = false);
 
     // Member functions
     virtual void turnOn();
