@@ -46,7 +46,7 @@ std::string m2h(int m) noexcept {                                   //conversion
     return (hour.size() == 1 ? '0' + hour : hour) + ":" + (minute.size() == 1 ? '0' + minute : minute);
 }
 void Lid(int len) {                     //hline della tabella
-    for (int i = 0; i < len; i++) {
+    for (int i = 0; i <= len; i++) {
         std::cout << "-";
     }
     std::cout << "\n";
@@ -124,8 +124,8 @@ void Interface::turnOn(int id) {                        //Accensione manuale
 
         //Aggiornamento timeline (con anche lo spegnimento)
         std::cout << _cleaner(devicesCP[Cpos].getNome()) + " acceso" << std::endl;
-        timeline.addEvent(t, devicesCP[Cpos].getNome() + " acceso", devicesCP[Cpos].getID()+maximumDV, devicesCP[Cpos].getConsumo());
-        timeline.addEvent(t+devicesCP[Cpos].getDurataCiclo(), devicesCP[Cpos].getNome() + " spento", devicesCP[Cpos].getID(), -devicesCP[Cpos].getConsumo());
+        timeline.addEvent(t, _cleaner(devicesCP[Cpos].getNome()) + " acceso", devicesCP[Cpos].getID()+maximumDV, devicesCP[Cpos].getConsumo());
+        timeline.addEvent(t+devicesCP[Cpos].getDurataCiclo(), _cleaner(devicesCP[Cpos].getNome()) + " spento", devicesCP[Cpos].getID(), -devicesCP[Cpos].getConsumo());
     } else if (Mpos != INT_MIN) {                           //id 6-10 per i dispositivi manuali
         if (devicesM[Mpos].isOn()) throw DeviceAlreadyOnException();
         if (KW + devicesM[Mpos].getConsumo() > maximumKW) {     //Se supero i KW lancio l'eccezione
@@ -141,7 +141,7 @@ void Interface::turnOn(int id) {                        //Accensione manuale
         }
         devicesM[Mpos].turnOn();                    //Altrimenti lo accendo
         std::cout << _cleaner(devicesM[Mpos].getNome()) + " acceso" << std::endl;
-        timeline.addEvent(t, devicesM[Mpos].getNome() + " acceso", devicesM[Mpos].getID()+maximumDV, devicesM[Mpos].getConsumo());
+        timeline.addEvent(t, _cleaner(devicesM[Mpos].getNome()) + " acceso", devicesM[Mpos].getID()+maximumDV, devicesM[Mpos].getConsumo());
     } else {
         throw DeviceIDOutOfBoundException();        //ID non presente tra i dispositivi.
     }
@@ -185,8 +185,8 @@ void Interface::turnOn(int id, int start) {             //Accensione programmata
 
         //Ora ho tutti i requisiti per impostare la programmazione
         std::cout << "Routine di " << _cleaner(devicesCP[Cpos].getNome()) + " impostata" << std::endl;
-        timeline.addEvent(start, devicesCP[Cpos].getNome() + " acceso", devicesCP[Cpos].getID()+maximumDV, devicesCP[Cpos].getConsumo());
-        timeline.addEvent(start+devicesCP[Cpos].getDurataCiclo(), devicesCP[Cpos].getNome() + " spento", devicesCP[Cpos].getID(), -devicesCP[Cpos].getConsumo());
+        timeline.addEvent(start, _cleaner(devicesCP[Cpos].getNome()) + " acceso", devicesCP[Cpos].getID()+maximumDV, devicesCP[Cpos].getConsumo());
+        timeline.addEvent(start+devicesCP[Cpos].getDurataCiclo(), _cleaner(devicesCP[Cpos].getNome()) + " spento", devicesCP[Cpos].getID(), -devicesCP[Cpos].getConsumo());
     } else if (Mpos != INT_MIN) {
         std::vector<int> idRequest = timeline.getIDs(0,start);
         for (int i = idRequest.size() - 1; i >= 0; i--) {    //Controllo che il device non sia già attivo al lancio
@@ -202,7 +202,7 @@ void Interface::turnOn(int id, int start) {             //Accensione programmata
         //Se nel mentre erano già presenti delle programmazioni non mi interessa, le cancello tutte direttamente
         timeline.forget(Mpos, start);
         std::cout << "Routine di " << _cleaner(devicesM[Mpos].getNome()) + " impostata" << std::endl;
-        timeline.addEvent(t, devicesM[Mpos].getNome() + " acceso", devicesM[Mpos].getID()+maximumDV, devicesM[Mpos].getConsumo());
+        timeline.addEvent(t, _cleaner(devicesM[Mpos].getNome()) + " acceso", devicesM[Mpos].getID()+maximumDV, devicesM[Mpos].getConsumo());
     } else {
         throw DeviceIDOutOfBoundException();
     }
@@ -248,8 +248,8 @@ void Interface::turnOn(int id, int start, int end) {    //routine
         if (KWonCall + devicesM[Mpos].getConsumo() > maximumKW) throw OverKWException();
         if (MaxKWonCall + devicesM[Mpos].getConsumo() > maximumKW) throw OverKWException();
         std::cout << "Routine di " << _cleaner(devicesM[Mpos].getNome()) + " impostata" << std::endl;
-        timeline.addEvent(start, devicesM[Mpos].getNome() + " acceso", devicesM[Mpos].getID()+maximumDV, devicesM[Mpos].getConsumo());
-        timeline.addEvent(end, devicesM[Mpos].getNome() + " spento", devicesM[Mpos].getID(), -devicesM[Mpos].getConsumo());
+        timeline.addEvent(start, _cleaner(devicesM[Mpos].getNome()) + " acceso", devicesM[Mpos].getID()+maximumDV, devicesM[Mpos].getConsumo());
+        timeline.addEvent(end, _cleaner(devicesM[Mpos].getNome()) + " spento", devicesM[Mpos].getID(), -devicesM[Mpos].getConsumo());
     } else {
         throw DeviceIDOutOfBoundException();
     }
@@ -266,7 +266,7 @@ void Interface::turnOff(int id) {                       //spegnimento
         if (KW - devicesM[Mpos].getConsumo() > maximumKW) throw OverKWException();  //Se cerco di spegnere un generatore e i KW non bastano
         timeline.forget(id, t);     //Cancello eventuali programmazioni future
         std::cout << _cleaner(devicesM[Mpos].getNome()) + " spento" << std::endl;
-        timeline.addEvent(t, devicesM[Mpos].getNome() + " spento", devicesM[Mpos].getID(), -devicesM[Mpos].getConsumo());
+        timeline.addEvent(t, _cleaner(devicesM[Mpos].getNome()) + " spento", devicesM[Mpos].getID(), -devicesM[Mpos].getConsumo());
     } else {
         throw DeviceIDOutOfBoundException();        //ID non presente tra i dispositivi.
     }
@@ -279,7 +279,7 @@ void Interface::forceOff(int id) noexcept {
     for (int i = 0; i < IDRequest.size(); i++) {
         if (IDRequest[i] == id) {
             timeline.forget(id, t+1, TimeStamps[i]);
-            timeline.addEvent(t, devicesCP[Cpos].getNome() + " interrotto", devicesCP[Cpos].getID(), -devicesCP[Cpos].getConsumo());
+            timeline.addEvent(t, _cleaner(devicesCP[Cpos].getNome()) + " interrotto", devicesCP[Cpos].getID(), -devicesCP[Cpos].getConsumo());
         }
     }
 }
@@ -312,16 +312,7 @@ void Interface::setTime(int time) {                     //Scorrimento del tempo
 
 void Interface::resetTime() {                           //Resetta il tempo
     t = 0;                  //Ritorno con il tempo a 0
-    timeline.clear();       //Elimino tutto dalla timeline
     std::cout << "Reset del tempo effettuato con successo" << std::endl;
-    for (int i = 0; i < CPcounter; i++) {
-        devicesCP[i].setTempoDiEsecuzione(0);
-        devicesCP[i].turnOff();
-    }
-    for (int i = 0; i < Mcounter; i++) {
-        devicesM[i].setTempoDiEsecuzione(0);
-        devicesM[i].turnOff();
-    }
 }
 void Interface::resetTimers() {                         //Resetta tutte le routine
     for (int i = 0; i < CPcounter; i++) {
@@ -366,7 +357,7 @@ void Interface::show() {                                //Mostra tutti i device
         } else {     
             if (devicesM[i].getConsumo() < 0) {
                 double temp = -devicesM[i].getConsumoTotale();
-                production.push_back(devicesM[i].getNome() + " ha prodotto " + std::to_string(temp) + "KW in " + m2h(devicesM[i].getTempoDiEsecuzione()) + " ore");
+                production.push_back(_cleaner(devicesM[i].getNome()) + " ha prodotto " + std::to_string(temp) + "KW in " + m2h(devicesM[i].getTempoDiEsecuzione()) + " ore");
                 continue;
             }   
             int diff;
@@ -382,7 +373,7 @@ void Interface::show() {                                //Mostra tutti i device
     for (int i = 0; i < CPcounter; i++) {
         if (devicesCP[i].getConsumo() < 0) {
             double temp = -devicesCP[i].getConsumoTotale();
-            production.push_back(devicesCP[i].getNome() + " ha prodotto " + std::to_string(temp) + "KW in " + m2h(devicesCP[i].getTempoDiEsecuzione()) + " ore");
+            production.push_back(_cleaner(devicesCP[i].getNome()) + " ha prodotto " + std::to_string(temp) + "KW in " + m2h(devicesCP[i].getTempoDiEsecuzione()) + " ore");
             continue;
         }
         int diff;
@@ -408,8 +399,8 @@ void Interface::show(int id) {                          //Mostra un device
 					<< "[" 
 					<< (devicesCP[Cpos].isOn()? "acceso" : "spento") 
 					<< "]" 
-					<< " ha consumato " 
-					<< devicesCP[Cpos].getConsumo() 
+					<< (devicesCP[Cpos].getConsumo() < 0? " ha prodotto " : " ha consumato") 
+					<< (devicesCP[Cpos].getConsumo() < 0? -devicesCP[Cpos].getConsumo() : devicesCP[Cpos].getConsumo())
 					<< "KW, oggi e' stato usato per " 
 					<< m2h(devicesCP[Cpos].getTempoDiEsecuzione())
 					<< " ore\n";
@@ -418,8 +409,8 @@ void Interface::show(int id) {                          //Mostra un device
 					<< "[" 
 					<< (devicesM[Mpos].isOn()? "acceso" : "spento") 
 					<< "]" 
-					<< " ha consumato " 
-					<< devicesM[Mpos].getConsumo() 
+					<< (devicesM[Mpos].getConsumo() < 0? " ha prodotto " : " ha consumato ")
+					<< (devicesM[Mpos].getConsumo() < 0? -devicesM[Mpos].getConsumo() : devicesM[Mpos].getConsumo() )
 					<< "KW, oggi e' stato usato per " 
 					<< m2h(devicesM[Mpos].getTempoDiEsecuzione())
 					<< " ore \n";

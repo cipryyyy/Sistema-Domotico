@@ -55,21 +55,6 @@ public:
         k.push_back(KW);
     }
 
-    void print(int start = 0, int end = 1439) {                         //! Meglio usare i get, così si accede più facilmente ai dati di un device.
-        if (end < start || start < 0 || end > 1439) {
-            throw std::invalid_argument("Valori inseriti non validi");
-        }
-        for (int i = 0; i < t.size(); i++) {
-            if (t[i] >= start && t[i] <= end) {
-                std::string hour = std::to_string(t[i]/60);
-                std::string minute = std::to_string(t[i] % 60);
-
-                std::string hr24time = (hour.size() == 1 ? '0' + hour : hour) + ":" + (minute.size() == 1 ? '0' + minute : minute);
-                std::cout << "[" << hr24time << "]: " << e[i] << std::endl;
-            }
-        }
-    }
-
     std::vector<int> getTimes(int start = 0, int end = 1439) {      //Ritorna i timestamp in un lasso di tempo
         if (end < start || start < 0 || end > 1439) {
             throw std::invalid_argument("Valori inseriti non validi");
