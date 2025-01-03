@@ -417,7 +417,7 @@ void Interface::show(int id) {                          //Mostra un device
     }
 }
 
-void Interface::installM(std::string name, double consumo, bool isOn, bool autoTurnOff = true) {     //Installa device M
+void Interface::installM(std::string name, double consumo, bool isOn, bool autoTurnOff) {     //Installa device M
     //Controllo che non sia già presente
     for (int i = 0; i < Mcounter; i++) {
         if (NSCcheck(devicesM[i].getNome(), name)) throw DuplicateDeviceException();
