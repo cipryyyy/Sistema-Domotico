@@ -444,8 +444,11 @@ void Interface::installM(std::string name, double consumo, bool isOn) {     //In
         id = Mcounter+CPcounter;		//Altrimenti, ne creo uno nuovo
     }
     devicesM.push_back(ManualDevice(&timeline, &t, name, id, consumo, isOn));
-    std::cout << "Installato " << _cleaner(name) << "[" << id << "] con consumo " << consumo << "KW";
-
+    if (consumo < 0) {
+        std::cout << "Installato " << _cleaner(name) << "[" << id << "] con produzione " << consumo << "KW";
+    } else {
+        std::cout << "Installato " << _cleaner(name) << "[" << id << "] con consumo " << consumo << "KW";
+    }
 }
 void Interface::installCP(std::string name, double consumo, int durataCiclo, bool isOn) {   //Installa device CP
     //Check che non sia già presente
@@ -464,7 +467,11 @@ void Interface::installCP(std::string name, double consumo, int durataCiclo, boo
         id = Mcounter+CPcounter;	//Altrimneti, ne creo uno nuovo
     }
     devicesCP.push_back(CPDevice(&timeline, &t, name, id, consumo, durataCiclo, isOn));
-    std::cout << "Installato " << _cleaner(name) << "[" << id << "] con ciclo " << m2h(durataCiclo) << "h e consumo " << consumo << "KW";
+    if (consumo < 0) {
+        std::cout << "Installato " << _cleaner(name) << "[" << id << "] con ciclo " << m2h(durataCiclo) << "h e produzione " << -consumo << "KW";
+    } else {
+        std::cout << "Installato " << _cleaner(name) << "[" << id << "] con ciclo " << m2h(durataCiclo) << "h e consumo " << consumo << "KW";
+    }
 }
 void Interface::uninstall(int id) {                     //Disinstalla un device
     std::string name;
