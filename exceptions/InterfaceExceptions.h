@@ -90,6 +90,14 @@ struct DeviceAlreadyOnException : public std::exception {
     }
 };
 
+//Tentato uninstall su un device attivo:
+//! Lanciata da: uninstall
+struct DeviceIsRunningException : public std::exception {
+    const char* what() const noexcept override {
+        return "Il dispositivo è attivo, spegnerlo prima di rimuoverlo.";
+    }
+};
+
 //Non ho ancora finito il metodo:
 //! Lanciata da: i metodi che non ho finito
 struct Error404FunctionNotFound : public std::exception {

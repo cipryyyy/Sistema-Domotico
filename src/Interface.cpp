@@ -1,30 +1,28 @@
 #include "Interface.h"
 
-//TODO rimuovere eventuali cout di debug
-
 //Funzioni helper
-int Interface::CPscan(int id) const noexcept {		// Controllare su un device è CP/M
+int Interface::CPscan(int id) const noexcept {		    //Indice e appartenenza di un device alla categoria CP
     for (int i = 0; i < CPcounter; i++) {
         if (id == devicesCP[i].getID()) return i;
     }
     return INT_MIN;
 }
-int Interface::Mscan(int id) const noexcept {
+int Interface::Mscan(int id) const noexcept {           //Indice e appartenenza di un device alla categoria M
     for (int i = 0; i < Mcounter; i++) {
         if (id == devicesM[i].getID()) return i;
     }
     return INT_MIN;
 }
-void Interface::updateKW() noexcept{        			//Sommo tutte le variazioni dei Kilowatt dal tempo 0 fino ad ora
-    KW = 0;												//Con le programmazioni esce un casino per il calcolo 
-    std::vector<double> delta = timeline.getKWs(0, t);
+void Interface::updateKW() noexcept{        			//Aggiorna il numero di KW in uso
+    KW = 0;												//Sommo tutte le variazioni, che con le routine
+    std::vector<double> delta = timeline.getKWs(0, t);  //nascono problemi
     for (double d : delta) {
-        KW += d;				//Aggiorna direttamente la variabile
+        KW += d;
     }
 }
 
-void timeCheck(int t, int start = INT_MIN, int end = INT_MIN) {
-    if (t < 0 || t > 1439) throw InvalidTimeException();				//Tempo base
+void timeCheck(int t, int start = INT_MIN, int end = INT_MIN) {     //Controllo della validità del tempo
+    if (t < 0 || t > 1439) throw InvalidTimeException();				//tempo di input
 	if (start != INT_MIN) {												//check di inizio routine
 		if (start < 0 || start > 1439) throw InvalidTimeException();
 		if (start < t) throw NotATimeMachineException();
@@ -34,26 +32,26 @@ void timeCheck(int t, int start = INT_MIN, int end = INT_MIN) {
 		if (end < start) throw NotATimeMachineException();
 	}
 }
-bool NSCcheck(std::string string1, std::string string2) noexcept {
+bool NSCcheck(std::string string1, std::string string2) noexcept {      //Comparazione case unsensitive
     if (string1.size() != string2.size()) return false;                 //Controllo preliminare
     std::transform(string1.begin(), string1.end(), string1.begin(), ::tolower);
     std::transform(string2.begin(), string2.end(), string2.begin(), ::tolower);
 
     return string1 == string2;
 }
-std::string m2h(int m) noexcept {
+std::string m2h(int m) noexcept {                                   //conversione da minuti a hh:mm
     //I casi in cui m va fuori dal range 0-1440 sono già coperti dalla timeline
     std::string hour = std::to_string(m/60);
     std::string minute = std::to_string(m % 60);
     return (hour.size() == 1 ? '0' + hour : hour) + ":" + (minute.size() == 1 ? '0' + minute : minute);
 }
-void Lid(int len) {
+void Lid(int len) {                     //hline della tabella
     for (int i = 0; i < len; i++) {
         std::cout << "-";
     }
     std::cout << "\n";
 }
-void sortTimeBased(std::vector<int>& timestamps, std::vector<std::string>& events) {
+void sortTimeBased(std::vector<int>& timestamps, std::vector<std::string>& events) {    //Ordinamento degli eventi in base al tempo
     for (int i = 1; i < timestamps.size(); ++i) {
         int key = timestamps[i];
         std::string eventKey = events[i];
@@ -69,7 +67,7 @@ void sortTimeBased(std::vector<int>& timestamps, std::vector<std::string>& event
         events[j + 1] = eventKey;
     }
 }
-std::string _cleaner(std::string raw) {
+std::string _cleaner(std::string raw) {     //Rimuove gli underscore dai nomi in output
     std::string output = "";
     for (char c : raw) {
         if (c == '_') output+=" ";
@@ -79,7 +77,7 @@ std::string _cleaner(std::string raw) {
 }
 
 //Funzioni membro
-Interface::Interface(double KW, bool init, int maxDV, int time): maximumKW{KW}, maximumDV{maxDV}, t{time}
+Interface::Interface(double KW, bool init, int maxDV, int time): maximumKW{KW}, maximumDV{maxDV}, t{time}   //Costruttore
 {
     KW = 0;     //KW utilizzati, all'inizio sono 0
     timeline.setRange(maximumDV);
@@ -89,23 +87,23 @@ Interface::Interface(double KW, bool init, int maxDV, int time): maximumKW{KW}, 
         Mcounter = 4;
 
         devicesCP = {
-            CPDevice(&timeline ,  &t , "Lavatrice", 0, 2, 110),
+            CPDevice(&timeline, &t, "Lavatrice", 0, 2, 110),
             CPDevice(&timeline, &t, "Lavastoviglie", 1, 1.5, 195),
-            CPDevice(&timeline, &t, "Forno microonde", 2, 0.8, 2),
+            CPDevice(&timeline, &t, "Forno_microonde", 2, 0.8, 2),
             CPDevice(&timeline, &t, "Asciugatrice", 3, 0.5, 60),
             CPDevice(&timeline, &t, "Tapparelle", 7, 0.3, 1),
             CPDevice(&timeline, &t, "Televisore", 4, 0.2, 60)
         };
         devicesM = {
-            ManualDevice(&timeline, &t, "Impianto fotovoltaico", 5, -1.5),     //Pannello al contrario perché aumenta la soglia di KW disponibili
-            ManualDevice(&timeline, &t, "Pompa di calore", 6, 2),
+            ManualDevice(&timeline, &t, "Impianto_fotovoltaico", 5, -1.5),     //Pannello al contrario perché aumenta la soglia di KW disponibili
+            ManualDevice(&timeline, &t, "Pompa_di_calore", 6, 2),
             ManualDevice(&timeline, &t, "Scaldabagno", 8, 1),
             ManualDevice(&timeline, &t, "Frigorifero", 9, 0.4)
         };
     }
 }
 
-void Interface::turnOn(int id) {
+void Interface::turnOn(int id) {                        //Accensione manuale
     updateKW();     //Aggiorno il numero di KW usati
 
 	int Cpos = CPscan(id);
@@ -148,25 +146,25 @@ void Interface::turnOn(int id) {
         throw DeviceIDOutOfBoundException();        //ID non presente tra i dispositivi.
     }
 }
-void Interface::turnOn(int id, int start) {
+void Interface::turnOn(int id, int start) {             //Accensione programmata
     timeCheck(t, start);			//Controllo e aggiorno
 	updateKW();
 
     //Ci possono essere più richieste di timer, quindi controllo se, in base alle richieste future
     //avrò abbastanza KW disponibili per far andare il dispositivo
-    double KWonCall = KW;
-    std::vector<double> programmedKW = timeline.getKWs(t, start);   //Richiedo tutti i ΔKW da ora fino al momento dell'accensione
+    double KWonCall = 0;
+    std::vector<double> programmedKW = timeline.getKWs(0, start);   //Richiedo tutti i ΔKW da ora fino al momento dell'accensione
     for (double requestesKW : programmedKW) {
         KWonCall += requestesKW;                        //Sommo il tutto, dopo devo controllare di averne abbastanza liberi
     }
 
 	int Cpos = CPscan(id);
 	int Mpos = Mscan(id);
+    //std::cout << "KWonCall: " << KWonCall << std::endl;
 
     if (Cpos != INT_MIN) {   //CP
-        std::vector<int> idRequest = timeline.getIDs(0,start);
+        std::vector<int> idRequest = timeline.getIDs(t,start);
         for (int i = idRequest.size() - 1; i >= 0; i--) {
-            std::cout << idRequest[i];
             if (idRequest[i] == id + maximumDV) {
                 throw TimerAlreadySetException();
             }
@@ -192,7 +190,6 @@ void Interface::turnOn(int id, int start) {
     } else if (Mpos != INT_MIN) {
         std::vector<int> idRequest = timeline.getIDs(0,start);
         for (int i = idRequest.size() - 1; i >= 0; i--) {    //Controllo che il device non sia già attivo al lancio
-            std::cout << idRequest[i];
             if (idRequest[i] == id + maximumDV) {
                 throw TimerAlreadySetException();
             }
@@ -210,13 +207,20 @@ void Interface::turnOn(int id, int start) {
         throw DeviceIDOutOfBoundException();
     }
 }
-void Interface::turnOn(int id, int start, int end) {
+void Interface::turnOn(int id, int start, int end) {    //routine
     timeCheck(t, start, end);
     updateKW();     //Aggiorno il numero di KW usati
-    double temp = KW;
-    std::vector<double> programmedKW = timeline.getKWs(t, start);   //Richiedo tutti i ΔKW da ora fino al momento dell'accensione
+    double KWonCall = 0;
+    double MaxKWonCall = 0;
+    std::vector<double> programmedKW = timeline.getKWs(0, start);   //Richiedo tutti i ΔKW da ora fino al momento dell'accensione
     for (double requestedKW : programmedKW) {
-        temp += requestedKW;                        //Sommo il tutto         
+        KWonCall += requestedKW;                        //Sommo il tutto         
+    }
+    programmedKW = timeline.getKWs(start, end); //Controllo che nella routine non superi mai i maximumKW
+    double temp = KWonCall;
+    for (double cycleKW : programmedKW) {
+        temp += cycleKW;                        //Sommo il tutto  
+        if (temp > MaxKWonCall) MaxKWonCall = temp;
     }
 
 	int Cpos = CPscan(id);
@@ -241,8 +245,8 @@ void Interface::turnOn(int id, int start, int end) {
         }
         if (count != 0) throw TimerAlreadySetException();
         timeline.forget(Mpos, start, end);        //Cancello queste programmazioni più corte
-        //Controllo di avere abbastanza KW al momento del lancio, in tal caso, imposto il programma
-        if (temp + devicesM[Mpos].getConsumo() > maximumKW) throw OverKWException();
+        if (KWonCall + devicesM[Mpos].getConsumo() > maximumKW) throw OverKWException();
+        if (MaxKWonCall + devicesM[Mpos].getConsumo() > maximumKW) throw OverKWException();
         std::cout << "Routine di " << _cleaner(devicesM[Mpos].getNome()) + " impostata" << std::endl;
         timeline.addEvent(start, devicesM[Mpos].getNome() + " acceso", devicesM[Mpos].getID()+maximumDV, devicesM[Mpos].getConsumo());
         timeline.addEvent(end, devicesM[Mpos].getNome() + " spento", devicesM[Mpos].getID()+maximumDV, -devicesM[Mpos].getConsumo());
@@ -251,8 +255,7 @@ void Interface::turnOn(int id, int start, int end) {
     }
 }
 
-//TODO aggiungere controllo dispositivo di generazione
-void Interface::turnOff(int id) {
+void Interface::turnOff(int id) {                       //spegnimento
     updateKW();     //Aggiorno il numero di KW usati
 
 	int Cpos = CPscan(id);
@@ -260,6 +263,7 @@ void Interface::turnOff(int id) {
     if (Cpos != INT_MIN) {
         throw CPIllegalInstructionException();  //Se il dispositivo è a ciclo prefissato non si può spegnere manualmente
     } else if (Mpos != INT_MIN) {
+        if (KW - devicesM[Mpos].getConsumo() > maximumKW) throw OverKWException();  //Se cerco di spegnere un generatore e i KW non bastano
         timeline.forget(id, t);     //Cancello eventuali programmazioni future
         std::cout << _cleaner(devicesM[Mpos].getNome()) + " spento" << std::endl;
         timeline.addEvent(t, devicesM[Mpos].getNome() + " spento", devicesM[Mpos].getID()+maximumDV, -devicesM[Mpos].getConsumo());
@@ -268,14 +272,14 @@ void Interface::turnOff(int id) {
     }
 }
 
-void Interface::removeTimer(int id) {
+void Interface::removeTimer(int id) {                   //Rimuove le routine di un device
 	//Controllo che l'ID esista
 	if ((CPscan(id) == INT_MIN && Mscan(id) == INT_MIN)) throw DeviceIDOutOfBoundException();
     timeline.forget(id, t);             //Elimino tutti gli eventi futuri legati all'elettrodomestico
 }
 
+void Interface::setTime(int time) {                     //Scorrimento del tempo
 //? TODO pulire accensioni e spegnimenti contemporanei dei device M
-void Interface::setTime(int time) {
     timeCheck(t, time);                                                 // Controllo che il tempo sia valido
 
     std::vector<int> timestamp = timeline.getTimes(t,time);             // Vector con gli orari
@@ -294,18 +298,20 @@ void Interface::setTime(int time) {
     t = time; // Aggiorno l'orario
 }
 
-void Interface::resetTime() {
+void Interface::resetTime() {                           //Resetta il tempo
     t = 0;                  //Ritorno con il tempo a 0
     timeline.clear();       //Elimino tutto dalla timeline
     std::cout << "Reset del tempo effettuato con successo" << std::endl;
     for (int i = 0; i < CPcounter; i++) {
         devicesCP[i].setTempoDiEsecuzione(0);
+        devicesCP[i].turnOff();
     }
     for (int i = 0; i < Mcounter; i++) {
         devicesM[i].setTempoDiEsecuzione(0);
+        devicesM[i].turnOff();
     }
 }
-void Interface::resetTimers() {
+void Interface::resetTimers() {                         //Resetta tutte le routine
     for (int i = 0; i < CPcounter; i++) {
         timeline.forget(devicesCP[i].getID(), t);
     }
@@ -314,7 +320,7 @@ void Interface::resetTimers() {
     }
 }
 
-void Interface::show() {
+void Interface::show() {                                //Mostra tutti i device
     std::cout << "[" << m2h(t) << "] Stato dei devices:" << std::endl;
     std::vector<std::string> production;
 
@@ -331,7 +337,7 @@ void Interface::show() {
     for (int i = -1; i < Mcounter; i++) {
         if (i < 0) {
             int diff;
-            std::string headers[5] = {"Nome Device", "Stato ", "KW", "Ore "};
+            std::string headers[5] = {"Nome Device", "Stato ", "KW", "Ore  "};
             std::string emptyspaces1;
             std::string emptyspaces2;
 
@@ -381,7 +387,7 @@ void Interface::show() {
         std::cout << production[i] << std::endl;
     }
 }
-void Interface::show(int id) {
+void Interface::show(int id) {                          //Mostra un device
     int Cpos = CPscan(id);
     int Mpos = Mscan(id);
 
@@ -410,7 +416,7 @@ void Interface::show(int id) {
     }
 }
 
-void Interface::installM(std::string name, double consumo, bool isOn) {
+void Interface::installM(std::string name, double consumo, bool isOn) {     //Installa device M
     //Controllo che non sia già presente
     for (int i = 0; i < Mcounter; i++) {
         if (NSCcheck(devicesM[i].getNome(), name)) throw DuplicateDeviceException();
@@ -426,10 +432,12 @@ void Interface::installM(std::string name, double consumo, bool isOn) {
         id = Mcounter+CPcounter;		//Altrimenti, ne creo uno nuovo
     }
     devicesM.push_back(ManualDevice(&timeline, &t, name, id, consumo, isOn));
+    std::cout << "Installato " << _cleaner(name) << "[" << id << "] con consumo " << consumo << "KW";
 
 }
-void Interface::installCP(std::string name, double consumo, int durataCiclo, bool isOn) {
+void Interface::installCP(std::string name, double consumo, int durataCiclo, bool isOn) {   //Installa device CP
     //Check che non sia già presente
+    //TODO fix installazione ciclo 00:00
     for (int i = 0; i < CPcounter; i++) {
         if (NSCcheck(devicesCP[i].getNome(), name)) throw DuplicateDeviceException();
     }
@@ -444,31 +452,35 @@ void Interface::installCP(std::string name, double consumo, int durataCiclo, boo
         id = Mcounter+CPcounter;	//Altrimneti, ne creo uno nuovo
     }
     devicesCP.push_back(CPDevice(&timeline, &t, name, id, consumo, durataCiclo, isOn));
+    std::cout << "Installato " << _cleaner(name) << "[" << id << "] con ciclo " << m2h(durataCiclo) << "h e consumo " << consumo << "KW";
 }
-void Interface::uninstall(int id) {
+void Interface::uninstall(int id) {                     //Disinstalla un device
     std::string name;
     for (int i = 0; i < CPcounter; i++) {			//Controllo se il device è CP
         if (devicesCP[i].getID() == id) {
             int pos = CPscan(id);
+            if (devicesCP[pos].isOn()) throw DeviceIsRunningException();
             name = devicesCP[i].getNome();
             devicesCP.erase(devicesCP.begin() + pos);
             freeID.push_back(id);						//Segno il suo ID come libero
-			CPcounter--;
+			CPcounter--;	
+            std::cout << "Disintallato il device " << name << "[" << id << "]";
             return;
         }
     }
     for (int i = 0; i < Mcounter; i++) {			//Controllo tra i device M
         if (devicesM[i].getID() == id) {
             int pos = Mscan(id);
+            if (devicesM[pos].isOn()) throw DeviceIsRunningException();
             name = devicesM[i].getNome();
             devicesM.erase(devicesM.begin() + pos);
             freeID.push_back(id);					//Segno l'ID come libero
-			Mcounter--;
+			Mcounter--;	
+            std::cout << "Disintallato il device " << name << "[" << id << "]";
             return;
         }
     }
-    throw DeviceIDOutOfBoundException();	//Il device non è presente tra i devices	
-    std::cout << "Disintallato il device " << name << "[" << id << "]";
+    throw DeviceIDOutOfBoundException();	//Il device non è presente tra i devices
 }
 
 int Interface::searchID(std::string name) {			//Ritorna l'ID dato il nome
@@ -479,4 +491,17 @@ int Interface::searchID(std::string name) {			//Ritorna l'ID dato il nome
 		if (NSCcheck(devicesM[i].getNome(), name)) return devicesM[i].getID();	//Controllo gli M
 	}
 	throw NameNotFoundException();
+}
+
+double Interface::debugKWs() {            //Debug KW
+    updateKW();
+    std::cout << KW;
+    return KW;
+}
+int Interface::debugTime() {              //Debug time
+    std::cout << t;
+    return t;
+}
+void Interface::debugCounters() {         //Debug counters
+    std::cout << "CP: " << CPcounter << " M:" << Mcounter;
 }
