@@ -4,24 +4,15 @@
 
 //no costruttore di default perchè non ha senso creare un device senza nome, ID e consumo
 
-Device::Device(Timeline* timeline, int* t, std::string nome, int ID, double consumo, bool autoTurnOff, bool stato) {
+Device::Device(Timeline* timeline, int* t, std::string nome, int ID, double consumo, bool stato) {
         // Usa i puntatori per manipolare gli oggetti passati
         this->timeline = timeline;
         this->t = t;
         this->nome = nome;
         this->ID = ID;
         this->consumo = consumo;
-        this->autoTurnOff = autoTurnOff;
         this->on = stato;
     }
-
-void Device::turnOn() {
-    on = true;
-}
-
-void Device::turnOff() {
-    on = false;
-}
 
 bool Device::isOn() {
     std::vector<int> IDs = timeline->getIDs(0, *t);
@@ -48,7 +39,6 @@ std::string Device::getNome() const {
 int Device::getID() const {
     return ID;
 }
-
 
 double Device::getConsumo() const {
     return consumo;
@@ -82,6 +72,7 @@ int Device::getTempoDiEsecuzione() {
 
     return exec;
 }
+
 void Device::setTempoDiEsecuzione(int time) {
     exec = time;
 }

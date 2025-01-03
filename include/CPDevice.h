@@ -6,25 +6,21 @@
 #define CPDEVICE_H
 
 #include "Device.h"
+#include <stdexcept>
 
 class CPDevice : public Device {
 private:
     int durataCiclo; //in minuti
-    int orarioAccensioneAutomatica;
 
 public:
+    class ValoreNonValido : public std::exception {
+        const char* what() const noexcept override {
+            return "Valore non valido";
+        }
+    };
     //costruttore
     CPDevice(Timeline *timeline, int *t, std::string nome, int ID, double consumo, int durataCiclo, bool stato = false);
-
-public:
-
     int getDurataCiclo();
-
-    void setDurataCiclo(int durata);
-
-    int getOrarioAccensioneAutomatica();
-
-    void setOrarioAccensioneAutomatica(int orario);
 };
 
 #endif // CPDEVICE_H

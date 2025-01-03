@@ -4,11 +4,10 @@
 #define DEVICE_H
 
 #include <string>
-#include "Timeline.h"       //Serve per regolare il flusso del tempo
+#include "Timeline.h"
 
 
 class Device {
-    // attributi 
 protected:
     Timeline* timeline;  // Puntatore a Timeline
     int* t;              // Puntatore a int
@@ -17,14 +16,11 @@ protected:
     double consumo;
     bool on;
     int exec;
-    bool autoTurnOff;
 
 public:
-    Device(Timeline* timeline, int* t, std::string nome, int ID, double consumo, bool autoTurnOff, bool stato = false);
+    Device(Timeline* timeline, int* t, std::string nome, int ID, double consumo, bool stato = false);
 
     // Member functions
-    virtual void turnOn();
-    virtual void turnOff();
     virtual bool isOn();
 
     // Getter and Setter for nome

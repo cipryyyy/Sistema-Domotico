@@ -8,11 +8,10 @@
 
 class ManualDevice : public Device {
 private:
-    int orarioDiSpegnimento; //orario in cui si deve  spegnere, si imposta dall'interfaccia  
-
+    bool autoTurnOff;
 public:
-    ManualDevice(Timeline* timeline, int* t, std::string nome, int ID, double consumo, bool stato = false);
-
+    ManualDevice(Timeline* timeline, int* t, std::string nome, int ID, double consumo, bool autoTurnOff = true, bool stato = false);
+    bool allowAutoTurnOff();
 };
 
 #endif // MANUALDEVICE_H

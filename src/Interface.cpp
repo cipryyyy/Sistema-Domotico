@@ -114,7 +114,6 @@ void Interface::turnOn(int id) {                        //Accensione manuale
         if (KW + devicesCP[Cpos].getConsumo() > maximumKW) {    //Se supero i KW lancio l'eccezione
             throw OverKWException();
         }
-        devicesCP[Cpos].turnOn();                       //Altrimenti lo accendo
 
         //controllo per accensione futura
         std::vector<int> IDrequest = timeline.getIDs(t, t+devicesCP[Cpos].getDurataCiclo());
@@ -139,7 +138,6 @@ void Interface::turnOn(int id) {                        //Accensione manuale
                 timeline.forget(id, t, TimeRequest[i]);
             }
         }
-        devicesM[Mpos].turnOn();                    //Altrimenti lo accendo
         std::cout << _cleaner(devicesM[Mpos].getNome()) + " acceso" << std::endl;
         timeline.addEvent(t, _cleaner(devicesM[Mpos].getNome()) + " acceso", devicesM[Mpos].getID()+maximumDV, devicesM[Mpos].getConsumo());
     } else {
@@ -419,7 +417,7 @@ void Interface::show(int id) {                          //Mostra un device
     }
 }
 
-void Interface::installM(std::string name, double consumo, bool isOn) {     //Installa device M
+void Interface::installM(std::string name, double consumo, bool isOn, bool autoTurnOff = true) {     //Installa device M
     //Controllo che non sia già presente
     for (int i = 0; i < Mcounter; i++) {
         if (NSCcheck(devicesM[i].getNome(), name)) throw DuplicateDeviceException();
@@ -434,7 +432,7 @@ void Interface::installM(std::string name, double consumo, bool isOn) {     //In
     } else {
         id = Mcounter+CPcounter;		//Altrimenti, ne creo uno nuovo
     }
-    devicesM.push_back(ManualDevice(&timeline, &t, name, id, consumo, isOn));
+    devicesM.push_back(ManualDevice(&timeline, &t, name, id, consumo, autoTurnOff, isOn));
     if (consumo < 0) {
         std::cout << "Installato " << _cleaner(name) << "[" << id << "] con produzione " << -consumo << "KW";
     } else {
@@ -443,7 +441,6 @@ void Interface::installM(std::string name, double consumo, bool isOn) {     //In
 }
 void Interface::installCP(std::string name, double consumo, int durataCiclo, bool isOn) {   //Installa device CP
     //Check che non sia già presente
-    //TODO fix installazione ciclo 00:00
     for (int i = 0; i < CPcounter; i++) {
         if (NSCcheck(devicesCP[i].getNome(), name)) throw DuplicateDeviceException();
     }
@@ -501,6 +498,11 @@ int Interface::searchID(std::string name) {			//Ritorna l'ID dato il nome
 		if (NSCcheck(devicesM[i].getNome(), name)) return devicesM[i].getID();	//Controllo gli M
 	}
 	throw NameNotFoundException();
+}
+
+bool Interface::allowAutoTurnOff(int id) {
+    int pos = Mscan(id);
+    return devicesM[pos].allowAutoTurnOff();
 }
 
 double Interface::debugKWs() {            //Debug KW
