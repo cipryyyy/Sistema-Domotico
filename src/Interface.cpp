@@ -445,7 +445,7 @@ void Interface::installM(std::string name, double consumo, bool isOn) {     //In
     }
     devicesM.push_back(ManualDevice(&timeline, &t, name, id, consumo, isOn));
     if (consumo < 0) {
-        std::cout << "Installato " << _cleaner(name) << "[" << id << "] con produzione " << consumo << "KW";
+        std::cout << "Installato " << _cleaner(name) << "[" << id << "] con produzione " << -consumo << "KW";
     } else {
         std::cout << "Installato " << _cleaner(name) << "[" << id << "] con consumo " << consumo << "KW";
     }
