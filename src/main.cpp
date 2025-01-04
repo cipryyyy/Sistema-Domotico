@@ -19,12 +19,7 @@ std::vector<std::string> tokenize(const std::string& cmd) {
     bool inQuotes = false;                  // Flag per le virgolette
 
     for (const char& c : cmd) {             // Controllo ogni carattere della stringa
-        if (c == '"') {                     // Se trovo una virgoletta
-            inQuotes = !inQuotes;           // Cambio il flag
-            continue;
-        }
-
-        if (c == ' ' && !inQuotes) {        // Se trovo uno spazio e non sono tra virgolette
+        if (c == ' ') {                     // Se è uno spazio
             if (!token.empty()) {           // Se il token non è vuoto
                 tokens.push_back(token);    // Aggiungo il token al vector
                 token.clear();              // Svuoto il token
@@ -37,7 +32,7 @@ std::vector<std::string> tokenize(const std::string& cmd) {
     if (!token.empty()) {                   // Se alla fine del ciclo il token non è vuoto
         tokens.push_back(token);            // Aggiungo il token al vector
     }
-    
+
     return tokens;
 }
 
@@ -79,6 +74,7 @@ void displayHelp() {
               << "set <device> on                          - Accende dispositivo\n"
               << "set <device> off                         - Spegne dispositivo\n"
               << "set <device> on/off <start> [stop]       - Imposta timer dispositivo\n"
+              << "kill <device>                            - Spegni dispositivo forzatamente\n"
               << "rm <device>                              - Rimuovi timer dispositivo\n"
               << "show                                     - Mostra gli stati di tutti i dispositivi\n"
               << "show <device>                            - Mostra lo stato di un singolo dispositivo\n"
@@ -262,8 +258,9 @@ int main(int argc, char* argv[]) {
 
                         try {
                             tryTurnOn();                                    // Prova ad accendere il dispositivo
-                            if (!isRoutineOrProgrammed && system.allowAutoTurnOff(deviceId)) {  // Se non è un dispositivo con routine o programmazione
-                                devicesTurnedOn.push_back(deviceId);                            // Aggiungi il dispositivo al vector
+                            if (deviceId >= 0 && std::find(devicesTurnedOn.begin(), devicesTurnedOn.end(), deviceId) == devicesTurnedOn.end() && !isRoutineOrProgrammed) {
+                                devicesTurnedOn.push_back(deviceId);
+                                if (debug) std::cout << "Device " << deviceId << " added to vector" << std::endl;
                             }
                         } catch (OverKWException& e) {                                          // Se c'è un'eccezione di OverKW
                             if (devicesTurnedOn.empty()) {                                      // Se non ci sono dispositivi nel vector
@@ -273,11 +270,16 @@ int main(int argc, char* argv[]) {
                             } else {                                                            // Se ci sono dispositivi nel vector
                                 bool success = false;                                           // Flag per controllare se l'accensione è riuscita
                                 while (!devicesTurnedOn.empty() && !success) {                  // Cicla finché ci sono dispositivi nel vector e l'accensione non è riuscita
+                                    if (debug) std::cout << "Tentativo di spegnimento" << std::endl;
                                     system.turnOff(devicesTurnedOn.back());                     // Spegni l'ultimo dispositivo acceso
+                                    int lastDevice = devicesTurnedOn.back();                    // Salva l'ID dell'ultimo dispositivo acceso
+                                    if (debug) std::cout << "Device " << lastDevice << " turned off" << std::endl;
                                     devicesTurnedOn.pop_back();                                 // Rimuovi il dispositivo dal vector
                                     try {                                                       // Prova ad accendere il dispositivo
+                                        if (debug) std::cout << "Tentativo di riaccensione" << std::endl;
                                         tryTurnOn();
                                         if (!isRoutineOrProgrammed && system.allowAutoTurnOff(deviceId)) {  // Se non è un dispositivo con routine o programmazione
+                                            if (debug) std::cout << "Aggiunta dispositivo al vector" << std::endl;
                                             devicesTurnedOn.push_back(deviceId);                            // Aggiungi il dispositivo al vector
                                         }
                                         success = true;                                         // Imposta il flag a true
@@ -309,6 +311,39 @@ int main(int argc, char* argv[]) {
                     std::cerr << "Errore: " << e.what() << std::endl;
                 }
                 if (debug) system.debugKWs();
+                continue;
+            }
+
+            // Commando "kill"
+            if (tokens[0] == "kill") {
+                if (tokens.size() != 2) {
+                    throw std::invalid_argument("Utilizzo di kill non valido. Usa 'help' per i comandi disponibili");
+                }
+                try {
+                    int deviceId   = system.searchID(tokens[1]);
+                    char choice;
+                    std::cout << "Sei sicuro di voler spegnere il dispositivo " << tokens[1] << "? (y/n): ";
+                    std::cin >> choice;
+                    switch (choice)
+                    {
+                    case 'y':
+                        system.forceOff(deviceId);
+                        if (!devicesTurnedOn.empty()) {
+                            auto device = std::find(devicesTurnedOn.begin(), devicesTurnedOn.end(), deviceId);  // Cerca il dispositivo nel vector
+                            if (device != devicesTurnedOn.end()) {                                              // Se il dispositivo è stato trovato
+                                devicesTurnedOn.erase(device);                                                  // Rimuovi il dispositivo dal vector
+                            }
+                        }
+                        break;
+                    case 'n':
+                        std::cout << "Operazione annullata\n";
+                        break;
+                    default:
+                        break;
+                    }
+                } catch (std::exception& e) {
+                    std::cerr << "Errore: " << e.what() << std::endl;
+                }
                 continue;
             }
 
