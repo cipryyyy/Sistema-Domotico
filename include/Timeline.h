@@ -1,5 +1,5 @@
 /*
-Autori: Cipriani Andrea, Giorgi Giacomo, Buso Riccardo
+Autori: Cipriani Andrea, Giorgi Giacomo
 
 Questa libreria di supporto serve per generare una timeline
 in grado di salvare gli eventi del sistema, con il relativo orario e tutti i metadati necessari.
@@ -107,6 +107,10 @@ public:
         return std::move(KWs);
     }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> main
     void forget(int id, int begin = 0, int end = 1439) {        //Elimina gli eventi di un device in un lasso di tempo
         for (int i = 0; i < t.size(); i++) {
             if (t[i] >= begin && t[i] <= end && (d[i] == id || d[i] == (id+range))) {
