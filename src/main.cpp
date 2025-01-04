@@ -138,7 +138,9 @@ int main(int argc, char* argv[]) {
     // Inizializzo il sistema
     Interface system(power, true, MAX_DEVICES);
     if (debug) std::cout << "Avvio con " << power << " KW e " << MAX_DEVICES << " device." << std::endl; 
+
     std::string command;
+    std::vector<int> devicesTurnedOn;  // Vector per tenere traccia dei dispositivi accesi in ordine di accensione
     
     // Apro file di log
     std::ofstream logFile("system.log", std::ios::app);
@@ -237,25 +239,69 @@ int main(int argc, char* argv[]) {
                     }
 
                     if (tokens[2] == "on") {
-                        switch (tokens.size()) {
-                            case 3:
-                                if (debug) std::cout << "turnOn manuale" << std::endl;
-                                system.turnOn(deviceId);
-                                break;
-                            case 4:
-                                if (debug) std::cout << "turnOn con start" << std::endl;
-                                system.turnOn(deviceId, parseTime(tokens[3]));
-                                break;
-                            case 5:
-                                if (debug) std::cout << "Routine" << std::endl;
-                                system.turnOn(deviceId, parseTime(tokens[3]), parseTime(tokens[4]));
-                                break;
-                            default:
-                                throw std::invalid_argument("Numero di argomenti non valido");
+                        bool isRoutineOrProgrammed = tokens.size() > 3;     // Flag per controllare se è un dispositivo con routine o programmazione
+                        
+                        auto tryTurnOn = [&]() {                            // Funzione per provare ad accendere il dispositivo
+                            switch (tokens.size()) {                        // Switch per controllare il numero di argomenti
+                                case 3:
+                                    if (debug) std::cout << "turnOn manuale" << std::endl;
+                                    system.turnOn(deviceId);
+                                    break;
+                                case 4:
+                                    if (debug) std::cout << "turnOn con start" << std::endl;
+                                    system.turnOn(deviceId, parseTime(tokens[3]));
+                                    break;
+                                case 5:
+                                    if (debug) std::cout << "Routine" << std::endl;
+                                    system.turnOn(deviceId, parseTime(tokens[3]), parseTime(tokens[4]));
+                                    break;
+                                default:
+                                    throw std::invalid_argument("Numero di argomenti non valido");
+                            }
+                        };
+
+                        try {
+                            tryTurnOn();                                    // Prova ad accendere il dispositivo
+                            if (!isRoutineOrProgrammed && system.allowAutoTurnOff(deviceId)) {  // Se non è un dispositivo con routine o programmazione
+                                devicesTurnedOn.push_back(deviceId);                            // Aggiungi il dispositivo al vector
+                            }
+                        } catch (OverKWException& e) {                                          // Se c'è un'eccezione di OverKW
+                            if (devicesTurnedOn.empty()) {                                      // Se non ci sono dispositivi nel vector
+                                std::cout << "Impossibile accendere il dispositivo: potenza insufficiente.\n"
+                                          << "Attendere il termine dei cicli programmati o attivare un generatore ausiliario."
+                                          << std::endl;
+                            } else {                                                            // Se ci sono dispositivi nel vector
+                                bool success = false;                                           // Flag per controllare se l'accensione è riuscita
+                                while (!devicesTurnedOn.empty() && !success) {                  // Cicla finché ci sono dispositivi nel vector e l'accensione non è riuscita
+                                    system.turnOff(devicesTurnedOn.back());                     // Spegni l'ultimo dispositivo acceso
+                                    devicesTurnedOn.pop_back();                                 // Rimuovi il dispositivo dal vector
+                                    try {                                                       // Prova ad accendere il dispositivo
+                                        tryTurnOn();
+                                        if (!isRoutineOrProgrammed && system.allowAutoTurnOff(deviceId)) {  // Se non è un dispositivo con routine o programmazione
+                                            devicesTurnedOn.push_back(deviceId);                            // Aggiungi il dispositivo al vector
+                                        }
+                                        success = true;                                         // Imposta il flag a true
+                                    } catch (OverKWException&) {                                // Se c'è un'eccezione di OverKW
+                                        continue;                                               // Continua il ciclo
+                                    }
+                                }
+                                if (!success) {
+                                    std::cout << "Impossibile accendere il dispositivo anche dopo aver spento tutti i dispositivi gestibili.\n"
+                                              << "Attendere il termine dei cicli programmati o attivare un generatore ausiliario."
+                                              << std::endl;
+                                }
+                            }
                         }
+
                     } else if (tokens[2] == "off") {
                         if (debug) std::cout << "Spegnimento" << std::endl;
                         system.turnOff(deviceId);
+                        if (!devicesTurnedOn.empty()) {
+                            auto it = std::find(devicesTurnedOn.begin(), devicesTurnedOn.end(), deviceId);
+                            if (it != devicesTurnedOn.end()) {
+                                devicesTurnedOn.erase(it);
+                            }
+                        }
                     } else {
                         throw std::invalid_argument("Comando non riconosciuto");
                     }
