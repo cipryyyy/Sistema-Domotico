@@ -18,12 +18,12 @@ Genera le eccezioni e basta.
 #define INTERFACE_H
 
 #include <iostream>
-#include <algorithm>
-#include <iomanip>
-#include "InterfaceExceptions.h"
-#include "CPDevice.h"
-#include "ManualDevice.h"
-#include "Timeline.h"
+#include <algorithm>                // Per std::transform
+#include <iomanip>                  // Per il setprecision
+#include "InterfaceExceptions.h"    // Per le eccezioni
+#include "CPDevice.h"               // Per i dispositivi CP
+#include "ManualDevice.h"           // Per i dispositivi manuali
+#include "Timeline.h"               // Per la timeline
 
 class Interface {
 private:
@@ -35,16 +35,16 @@ private:
     int t;                          //tempo in minuti
     Timeline timeline;              //timeline degli eventi
 
-    int CPscan(int id) const noexcept;
-    int Mscan(int M) const noexcept;
+    int CPscan(int id) const noexcept;          //Ricerca di un device CP
+    int Mscan(int M) const noexcept;            //Ricerca di un device M
     void updateKW() noexcept;                  //Aggiorna il numero di KW utilizzati ad ogni chiamata
 
-    std::vector<int> freeID;
-    std::vector<CPDevice> devicesCP;
-    std::vector<ManualDevice> devicesM;
+    std::vector<int> freeID;                    //ID liberi
+    std::vector<CPDevice> devicesCP;        //Vector di dispositivi CP
+    std::vector<ManualDevice> devicesM;     //Vector di dispositivi M
 
 public:
-    Interface(double KW, bool init = true, int maxDV = 1024, int time = 0);
+    Interface(double KW, bool init = true, int maxDV = 1024, int time = 0); //Costruttore
 
     void turnOn(int id);                                // Chiamato con 'set ${DEVICENAME} on'
     void turnOn(int id, int start);                     // Chiamato con 'set ${DEVICENAME} [start] on'
@@ -68,9 +68,9 @@ public:
     int searchID(std::string name);                     //Ritorna l'ID di un dispositivo dato il nome
     bool allowAutoTurnOff(int id);                      //Ritorna se il device supporta l'autoTurnOff in caso di OverKWException
 
-    //Funzioni di debug       
-    double debugKWs();
-    int debugTime();
-    void debugCounters();
+    //Funzioni di debug
+    double debugKWs();                //Mostra i KW attualmente in uso
+    int debugTime();                  //Mostra il tempo attuale
+    void debugCounters();             //Mostra il numero di device CP e M
 };  
 #endif
