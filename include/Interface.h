@@ -50,11 +50,7 @@ public:
     void turnOn(int id, int start);                     // Chiamato con 'set ${DEVICENAME} [start] on'
     void turnOn(int id, int start, int end);            // Chiamato con 'set ${DEVICENAME} [start]-[end]on'
     void turnOff(int id);                               // Chiamato con 'set ${DEVICENAME} off'
-<<<<<<< HEAD
     void forceOff(int id) noexcept;                     // Spegnimento forzato dei devices CP
-=======
-    void forceOff(int id) noexcept;
->>>>>>> main
     void removeTimer(int id);                           // Chiamato con 'rm ${DEVICENAME}' 
 
     void setTime(int time);                             //Fa scorrere il tempo, chiamato con 'set time ${TIME}'
@@ -68,7 +64,6 @@ public:
     void installCP(std::string name, double consumo, int durataCiclo, bool isOn = false);       //Installa un dispositivo CP
     void uninstall(int id);                                                                     //Rimuove un dispositivo
 
-<<<<<<< HEAD
     //Accesso alle informazioni dei devices
     int searchID(std::string name);                     //Ritorna l'ID di un dispositivo dato il nome
     bool allowAutoTurnOff(int id);                      //Ritorna se il device supporta l'autoTurnOff in caso di OverKWException
@@ -77,13 +72,5 @@ public:
     double debugKWs();                //Mostra i KW attualmente in uso
     int debugTime();                  //Mostra il tempo attuale
     void debugCounters();             //Mostra il numero di device CP e M
-=======
-    int searchID(std::string name);                     //Ritorna l'ID di un dispositivo dato il nome
-
-    //Funzioni di debug       
-    double debugKWs();
-    int debugTime();
-    void debugCounters();
->>>>>>> main
 };  
 #endif

@@ -107,10 +107,6 @@ public:
         return std::move(KWs);
     }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> main
     void forget(int id, int begin = 0, int end = 1439) {        //Elimina gli eventi di un device in un lasso di tempo
         for (int i = 0; i < t.size(); i++) {
             if (t[i] >= begin && t[i] <= end && (d[i] == id || d[i] == (id+range))) {

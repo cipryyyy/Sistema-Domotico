@@ -134,10 +134,6 @@ int main(int argc, char* argv[]) {
     // Inizializzo il sistema
     Interface system(power, true, MAX_DEVICES);
     if (debug) std::cout << "Avvio con " << power << " KW e " << MAX_DEVICES << " device." << std::endl; 
-<<<<<<< HEAD
-
-=======
->>>>>>> main
     std::string command;
     std::vector<int> devicesTurnedOn;  // Vector per tenere traccia dei dispositivi accesi in ordine di accensione
     
@@ -238,7 +234,6 @@ int main(int argc, char* argv[]) {
                     }
 
                     if (tokens[2] == "on") {
-<<<<<<< HEAD
                         bool isRoutineOrProgrammed = tokens.size() > 3;     // Flag per controllare se è un dispositivo con routine o programmazione
                         
                         auto tryTurnOn = [&]() {                            // Funzione per provare ad accendere il dispositivo
@@ -297,23 +292,6 @@ int main(int argc, char* argv[]) {
                                               << std::endl;
                                 }
                             }
-=======
-                        switch (tokens.size()) {
-                            case 3:
-                                if (debug) std::cout << "turnOn manuale" << std::endl;
-                                system.turnOn(deviceId);
-                                break;
-                            case 4:
-                                if (debug) std::cout << "turnOn con start" << std::endl;
-                                system.turnOn(deviceId, parseTime(tokens[3]));
-                                break;
-                            case 5:
-                                if (debug) std::cout << "Routine" << std::endl;
-                                system.turnOn(deviceId, parseTime(tokens[3]), parseTime(tokens[4]));
-                                break;
-                            default:
-                                throw std::invalid_argument("Numero di argomenti non valido");
->>>>>>> main
                         }
 
                     } else if (tokens[2] == "off") {
@@ -332,7 +310,6 @@ int main(int argc, char* argv[]) {
                     std::cerr << "Errore: " << e.what() << std::endl;
                 }
                 if (debug) system.debugKWs();
-<<<<<<< HEAD
                 continue;
             }
 
@@ -366,8 +343,6 @@ int main(int argc, char* argv[]) {
                 } catch (std::exception& e) {
                     std::cerr << "Errore: " << e.what() << std::endl;
                 }
-=======
->>>>>>> main
                 continue;
             }
 
