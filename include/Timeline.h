@@ -36,7 +36,7 @@ L'unico errore è per l'input errato, lanciato con invalid_argument, in realtà 
 class Timeline{
 
 private:
-    int range;                      
+    int range;
     std::vector<int>         t;     //Salva il tempo
     std::vector<std::string> e;     //Testo che spiega cosa è successo
     std::vector<int>         d;     //ID del dispositivo che ha fatto la richiesta
@@ -133,5 +133,4 @@ public:
         return range;
     }
 };
-
 #endif

@@ -75,6 +75,14 @@ std::string _cleaner(std::string raw) {     //Rimuove gli underscore dai nomi in
     }
     return output;
 }
+std::vector<int> reverse(std::vector<int> seq) {    //Inverte l'ordine di un vettore
+    for (int i = 0; i < seq.size()/2; i++) {
+        int temp = seq[i];
+        seq[i] = seq[seq.size()-1-i];
+        seq[seq.size()-1-i] = temp;
+    }
+    return seq;
+}
 
 //Funzioni membro
 Interface::Interface(double KW, bool init, int maxDV, int time): maximumKW{KW}, maximumDV{maxDV}, t{time}   //Costruttore
@@ -519,6 +527,28 @@ int Interface::searchID(std::string name) {			//Ritorna l'ID dato il nome
 bool Interface::allowAutoTurnOff(int id) {
     int pos = Mscan(id);
     return devicesM[pos].allowAutoTurnOff();
+}
+
+std::vector<int> Interface::turnOffSequence() {
+    std::vector<int> sequence;
+    std::vector<int> OnDevices;
+    std::vector<int> IDreq = timeline.getIDs(0, t);             //Ordine di accensione
+
+    for (auto device : devicesM) {                              // Controllo quali dispositivi possono essere spenti
+        if (device.allowAutoTurnOff() && device.isOn()) {
+            OnDevices.push_back(device.getID());
+        }
+    }
+    for (int i = IDreq.size() - 1; i >= 0; i--) {       //Controllo l'ordine di accensione, dal più recente al più vecchio
+        for (int j : OnDevices) {
+            if (IDreq[i] == j) {
+                sequence.push_back(j);
+                break;
+            }
+        }
+        if (sequence.size() == OnDevices.size()) break;     //Se ho trovato la sequenza, esco
+    }
+    return reverse(sequence);                           //Inverto la sequenza, così restituisco dal meno recente
 }
 
 double Interface::debugKWs() {            //Debug KW

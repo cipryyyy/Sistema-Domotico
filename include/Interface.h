@@ -61,12 +61,13 @@ public:
     void show(int id);                                  //Mostra lo stato di un singolo dispositivo
 
     void installM(std::string name, double consumo, bool isOn = false, bool autoTurnOff = true); //Installa un dispositivo manuale
-    void installCP(std::string name, double consumo, int durataCiclo, bool isOn = false);       //Installa un dispositivo CP
-    void uninstall(int id);                                                                     //Rimuove un dispositivo
+    void installCP(std::string name, double consumo, int durataCiclo, bool isOn = false);        //Installa un dispositivo CP
+    void uninstall(int id);                                                                      //Rimuove un dispositivo
 
     //Accesso alle informazioni dei devices
     int searchID(std::string name);                     //Ritorna l'ID di un dispositivo dato il nome
     bool allowAutoTurnOff(int id);                      //Ritorna se il device supporta l'autoTurnOff in caso di OverKWException
+    std::vector<int> turnOffSequence();                  //Ritorna il primo dispositivo acceso
 
     //Funzioni di debug
     double debugKWs();                //Mostra i KW attualmente in uso
