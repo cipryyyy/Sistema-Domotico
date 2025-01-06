@@ -374,8 +374,7 @@ int main(int argc, char* argv[]) {
                     system.resetTimers();
                 }
                 else if (tokens[1] == "all") {
-                    system.resetTime();
-                    system.resetTimers();
+                    system.resetAll();
                 }
                 else {
                     throw std::invalid_argument("Comando non riconosciuto. Usa 'help' per i comandi disponibili");

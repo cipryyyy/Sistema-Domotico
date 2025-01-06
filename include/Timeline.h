@@ -41,10 +41,11 @@ private:
     std::vector<std::string> e;     //Testo che spiega cosa è successo
     std::vector<int>         d;     //ID del dispositivo che ha fatto la richiesta
     std::vector<double>      k;     //ΔKW
+    std::vector<bool>        r;    //Flag per sapere se è comando di routine
 
 public:
     Timeline(int MaxID = 0) : range{MaxID} {}
-    void addEvent(int time, std::string event, int ID, double KW) {         //Aggiunge un evento
+    void addEvent(int time, std::string event, int ID, double KW, bool routine) {         //Aggiunge un evento
         if (time < 0 || time > 1439) {
             throw std::invalid_argument("Il tempo deve essere compreso tra 0 e 1439 minuti"); //24 h 
         }
@@ -109,6 +110,10 @@ public:
 
     void forget(int id, int begin = 0, int end = 1439) {        //Elimina gli eventi di un device in un lasso di tempo
         for (int i = 0; i < t.size(); i++) {
+            if (begin == 0 && end == 1439) {        // Se devo cancellare da inizio a fine
+                clear();
+                return;
+            }
             if (t[i] >= begin && t[i] <= end && (d[i] == id || d[i] == (id+range))) {
                 t.erase(t.begin() + i);
                 e.erase(e.begin() + i);
@@ -131,6 +136,35 @@ public:
     }
     int getRange() const noexcept {
         return range;
+    }
+
+    void removeRoutines(int begin = 0, int end = 1439) {
+        for (int i = 0; i < r.size(); i++) {
+            if (t[i] >= begin && t[i] <= end && r[i]) {
+                if (r[i]) {
+                    t.erase(t.begin() + i);
+                    e.erase(e.begin() + i);
+                    d.erase(d.begin() + i);
+                    k.erase(k.begin() + i);
+                    r.erase(r.begin() + i);
+                    --i;
+                }
+            }
+        }
+    }
+    void removeNonRoutines(int begin = 0, int end = 1439) {
+        for (int i = 0; i < r.size(); i++) {
+            if (t[i] >= begin && t[i] <= end && r[i]) {
+                if (!r[i]) {
+                    t.erase(t.begin() + i);
+                    e.erase(e.begin() + i);
+                    d.erase(d.begin() + i);
+                    k.erase(k.begin() + i);
+                    r.erase(r.begin() + i);
+                    --i;
+                }
+            }
+        }
     }
 };
 #endif

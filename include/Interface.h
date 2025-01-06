@@ -42,6 +42,7 @@ private:
     std::vector<int> freeID;                    //ID liberi
     std::vector<CPDevice> devicesCP;        //Vector di dispositivi CP
     std::vector<ManualDevice> devicesM;     //Vector di dispositivi M
+    std::vector<int> OnOnLaunch;            //Dispositivi accesi al lancio del programma
 
 public:
     Interface(double KW, bool init = true, int maxDV = 1024, int time = 0); //Costruttore
@@ -56,6 +57,7 @@ public:
     void setTime(int time);                             //Fa scorrere il tempo, chiamato con 'set time ${TIME}'
     void resetTime();                                   //Imposta t a 0, chiamato con 'reset time'
     void resetTimers();                                 //Rimuove i timers a partire da t
+    void resetAll();                                    //Resetta tutto
 
     void show();                                        //Mostra lo stato di tutti i dispositivi
     void show(int id);                                  //Mostra lo stato di un singolo dispositivo

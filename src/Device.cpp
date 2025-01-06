@@ -12,12 +12,17 @@ Device::Device(Timeline* timeline, int* t, std::string nome, int ID, double cons
         this->ID = ID;
         this->consumo = consumo;
         this->on = stato;
+        this->resetStatus = stato;
     }
 
 bool Device::isOn() {
     std::vector<int> IDs = timeline->getIDs(0, *t);
     int range = timeline->getRange();
-    
+
+    if (IDs.empty()) {
+        on = false;
+    }
+
     for (int i = IDs.size() - 1; i >= 0; i--) {
         if (IDs[i] == ID) {
             on = false;
