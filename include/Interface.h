@@ -38,7 +38,7 @@ public:
     void turnOn(int id, int start);                     // Chiamato con 'set ${DEVICENAME} [start] on'
     void turnOn(int id, int start, int end);            // Chiamato con 'set ${DEVICENAME} [start]-[end]on'
     void turnOff(int id);                               // Chiamato con 'set ${DEVICENAME} off'
-    void forceOff(int id) noexcept;                     // Spegnimento forzato dei devices CP
+    void forceOff(int id);                     // Spegnimento forzato dei devices CP
     void removeTimer(int id);                           // Chiamato con 'rm ${DEVICENAME}' 
 
     void setTime(int time);                             //Fa scorrere il tempo, chiamato con 'set time ${TIME}'

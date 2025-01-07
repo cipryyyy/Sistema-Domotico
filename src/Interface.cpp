@@ -290,7 +290,7 @@ void Interface::turnOff(int id) {                       //spegnimento
     }
 }
 
-void Interface::forceOff(int id) noexcept {
+void Interface::forceOff(int id) {
     std::vector<int> IDreq = timeline.getIDs(t);
     std::vector<int> TimeStamps = timeline.getTimes(t);
 
@@ -299,6 +299,7 @@ void Interface::forceOff(int id) noexcept {
         throw ForceOnMException();            //Passo il controllo al metodo di spegnimento normale
     }
     for (int i = 0; i < IDreq.size(); i++) {            //Ricerco quando doveva essere spento il device in futuro
+        if (!devicesCP[Cpos].isOn()) throw DeviceAlreadyOffException();
         if (IDreq[i] == id) {
             timeline.forget(id, t+1, TimeStamps[i]);        // Aggiorno l'orario di spegnimento
             timeline.addEvent(t, _cleaner(devicesCP[Cpos].getNome()) + " interrotto", devicesCP[Cpos].getID(), -devicesCP[Cpos].getConsumo(), false);
