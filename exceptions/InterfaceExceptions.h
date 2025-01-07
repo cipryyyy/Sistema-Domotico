@@ -105,5 +105,13 @@ struct ForceOnMException : public std::exception {
         return "La funzione non può essere chiamata su un device M.";
     }
 };
+//Spegnimento forzato di un device non CP:
+//! Lanciata da: forceOff
+struct DeviceAlreadyOffException : public std::exception {
+    const char* what() const noexcept override {
+        return "Il dispositivo è già spento.";
+    }
+};
+
 
 #endif
