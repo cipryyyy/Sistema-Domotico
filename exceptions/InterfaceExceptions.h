@@ -98,11 +98,11 @@ struct DeviceIsRunningException : public std::exception {
     }
 };
 
-//Non ho ancora finito il metodo:
-//! Lanciata da: i metodi che non ho finito
-struct Error404FunctionNotFound : public std::exception {
+//Spegnimento forzato di un device non CP:
+//! Lanciata da: forceOff
+struct RoundSquareException : public std::exception {
     const char* what() const noexcept override {
-        return "Passa più tardi, non ho ancora finito di fare questa funzione.";
+        return "La funzione non può essere chiamata su un device M.";
     }
 };
 

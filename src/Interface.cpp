@@ -136,7 +136,7 @@ void Interface::turnOn(int id) {                        //Accensione manuale
         }
 
         //Aggiornamento timeline (con anche lo spegnimento)
-        std::cout << _cleaner(devicesCP[Cpos].getNome()) + " avviato" << std::endl;
+        std::cout << _cleaner(devicesCP[Cpos].getNome()) + " avviato";
         timeline.addEvent(t, _cleaner(devicesCP[Cpos].getNome()) + " acceso", devicesCP[Cpos].getID()+maximumDV, devicesCP[Cpos].getConsumo(), false);
         timeline.addEvent(t+devicesCP[Cpos].getDurataCiclo(), _cleaner(devicesCP[Cpos].getNome()) + " spento", devicesCP[Cpos].getID(), -devicesCP[Cpos].getConsumo(), false);
     } else if (Mpos != INT_MIN) {
@@ -152,7 +152,7 @@ void Interface::turnOn(int id) {                        //Accensione manuale
                 timeline.forget(id, t, TimeRequest[i]);
             }
         }
-        std::cout << _cleaner(devicesM[Mpos].getNome()) + " acceso" << std::endl;
+        std::cout << _cleaner(devicesM[Mpos].getNome()) + " acceso";
         timeline.addEvent(t, _cleaner(devicesM[Mpos].getNome()) + " acceso", devicesM[Mpos].getID()+maximumDV, devicesM[Mpos].getConsumo(), false);
     } else {
         throw DeviceIDOutOfBoundException();        //ID non presente tra i dispositivi.
@@ -196,7 +196,7 @@ void Interface::turnOn(int id, int start) {             //Accensione programmata
         if (KWonCall + devicesCP[Cpos].getConsumo() > maximumKW) throw OverKWException();
 
         //Ora ho tutti i requisiti per impostare la programmazione
-        std::cout << "Accensione di " << _cleaner(devicesCP[Cpos].getNome()) + " impostata" << std::endl;
+        std::cout << "Accensione di " << _cleaner(devicesCP[Cpos].getNome()) + " impostata";
         timeline.addEvent(start, _cleaner(devicesCP[Cpos].getNome()) + " acceso", devicesCP[Cpos].getID()+maximumDV, devicesCP[Cpos].getConsumo(), true);
         timeline.addEvent(start+devicesCP[Cpos].getDurataCiclo(), _cleaner(devicesCP[Cpos].getNome()) + " spento", devicesCP[Cpos].getID(), -devicesCP[Cpos].getConsumo(), true);
     } else if (Mpos != INT_MIN) {
@@ -213,7 +213,7 @@ void Interface::turnOn(int id, int start) {             //Accensione programmata
         if (KWonCall + devicesM[Mpos].getConsumo() > maximumKW) throw OverKWException();
         //Cancello eventuali programmazioni future
         timeline.forget(Mpos, start);
-        std::cout << "Accensione di " << _cleaner(devicesM[Mpos].getNome()) + " impostata" << std::endl;
+        std::cout << "Accensione di " << _cleaner(devicesM[Mpos].getNome()) + " impostata";
         timeline.addEvent(t, _cleaner(devicesM[Mpos].getNome()) + " acceso", devicesM[Mpos].getID()+maximumDV, devicesM[Mpos].getConsumo(), true);
     } else {
         throw DeviceIDOutOfBoundException();
@@ -263,7 +263,7 @@ void Interface::turnOn(int id, int start, int end) {    //routine
         if (MaxKWonCall + devicesM[Mpos].getConsumo() > maximumKW) throw OverKWException();
 
         //Avvio la routine
-        std::cout << "Routine di " << _cleaner(devicesM[Mpos].getNome()) + " impostata" << std::endl;
+        std::cout << "Routine di " << _cleaner(devicesM[Mpos].getNome()) + " impostata";
         timeline.addEvent(start, _cleaner(devicesM[Mpos].getNome()) + " acceso", devicesM[Mpos].getID()+maximumDV, devicesM[Mpos].getConsumo(), true);
         timeline.addEvent(end, _cleaner(devicesM[Mpos].getNome()) + " spento", devicesM[Mpos].getID(), -devicesM[Mpos].getConsumo(), true);
     } else {
@@ -282,7 +282,7 @@ void Interface::turnOff(int id) {                       //spegnimento
     } else if (Mpos != INT_MIN) {
         if (KW - devicesM[Mpos].getConsumo() > maximumKW) throw OverKWException();  //Se cerco di spegnere un generatore e i KW non bastano
         timeline.forget(id, t);     //Cancello eventuali programmazioni future
-        std::cout << _cleaner(devicesM[Mpos].getNome()) + " spento" << std::endl;
+        std::cout << _cleaner(devicesM[Mpos].getNome()) + " spento";
         timeline.addEvent(t, _cleaner(devicesM[Mpos].getNome()) + " spento", devicesM[Mpos].getID(), -devicesM[Mpos].getConsumo(), false);
     } else {
         throw DeviceIDOutOfBoundException();        //ID non presente tra i dispositivi.
@@ -295,7 +295,7 @@ void Interface::forceOff(int id) noexcept {
 
     int Cpos = CPscan(id);
     if (Cpos == INT_MIN) {      //Se non è un dispositivo CP
-        turnOff(id);            //Passo il controllo al metodo di spegnimento normale
+        throw RoundSquareException();            //Passo il controllo al metodo di spegnimento normale
     }
     for (int i = 0; i < IDreq.size(); i++) {            //Ricerco quando doveva essere spento il device in futuro
         if (IDreq[i] == id) {
@@ -326,7 +326,7 @@ void Interface::setTime(int time) {                     //Scorrimento del tempo
         std::cout << "[" << m2h(timestamp[i]) << "]: " << events[i] << std::endl;
     }
     
-    std::cout << "[" << m2h(time) << "]: L'orario attuale e' " << m2h(time) << std::endl;
+    std::cout << "[" << m2h(time) << "]: L'orario attuale e' " << m2h(time);
     
     t = time; // Aggiorno l'orario
 }
@@ -550,7 +550,7 @@ std::vector<int> Interface::turnOffSequence() {
         for (int j : OnDevices) {
             //std::cout << IDreq[i] << " | " << j;   //!DBG
             if (IDreq[i] == j + maximumDV) {
-                //std::cout << " tick" << std::endl;   //!DBG
+                //std::cout << " * * *" << std::endl;   //!DBG
                 sequence.push_back(j);
                 break;
             }

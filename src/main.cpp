@@ -263,9 +263,8 @@ int main(int argc, char* argv[]) {
                             bool success = false;                                            // Flag per controllare se l'accensione è riuscita
                             while (!devicesToTurnOff.empty() && !success) {                  // Cicla finché ci sono dispositivi nel vector e l'accensione non è riuscita
                                 if (debug) std::cout << "Tentativo di spegnimento" << std::endl;
-                                system.turnOff(devicesToTurnOff.back());                     // Spegni l'ultimo dispositivo acceso
-                                int lastDevice = devicesToTurnOff.back();                    // Salva l'ID dell'ultimo dispositivo acceso
-                                if (debug) std::cout << "Device " << lastDevice << " turned off" << std::endl;
+                                system.turnOff(devicesToTurnOff.front());                     // Spegni l'ultimo dispositivo acceso
+                                int lastDevice = devicesToTurnOff.front();                    // Salva l'ID dell'ultimo dispositivo acceso
                                 devicesToTurnOff.pop_back();                                 // Rimuovi il dispositivo dal vector
                                 try {                                                        // Prova ad accendere il dispositivo
                                     if (debug) std::cout << "Tentativo di riaccensione" << std::endl;
