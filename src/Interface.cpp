@@ -282,7 +282,7 @@ void Interface::turnOff(int id) {                       //spegnimento
     } else if (Mpos != INT_MIN) {
         if (!devicesM[Mpos].isOn()) throw DeviceAlreadyOffException();   //Se il dispositivo è già spento lancio l'eccezione
         if (KW - devicesM[Mpos].getConsumo() > maximumKW) throw OverKWException();  //Se cerco di spegnere un generatore e i KW non bastano
-        timeline.forget(id, t);     //Cancello eventuali programmazioni future
+        timeline.forget(id, t+1);     //Cancello eventuali programmazioni future
         std::cout << _cleaner(devicesM[Mpos].getNome()) + " spento";
         timeline.addEvent(t, _cleaner(devicesM[Mpos].getNome()) + " spento", devicesM[Mpos].getID(), -devicesM[Mpos].getConsumo(), false);
     } else {
@@ -291,6 +291,7 @@ void Interface::turnOff(int id) {                       //spegnimento
 }
 
 void Interface::forceOff(int id) {
+    updateKW();
     std::vector<int> IDreq = timeline.getIDs(t);
     std::vector<int> TimeStamps = timeline.getTimes(t);
 
