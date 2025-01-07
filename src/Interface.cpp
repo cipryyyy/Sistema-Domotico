@@ -295,7 +295,7 @@ void Interface::forceOff(int id) noexcept {
 
     int Cpos = CPscan(id);
     if (Cpos == INT_MIN) {      //Se non è un dispositivo CP
-        throw RoundSquareException();            //Passo il controllo al metodo di spegnimento normale
+        throw ForceOnMException();            //Passo il controllo al metodo di spegnimento normale
     }
     for (int i = 0; i < IDreq.size(); i++) {            //Ricerco quando doveva essere spento il device in futuro
         if (IDreq[i] == id) {

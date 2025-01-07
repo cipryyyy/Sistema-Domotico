@@ -100,7 +100,7 @@ struct DeviceIsRunningException : public std::exception {
 
 //Spegnimento forzato di un device non CP:
 //! Lanciata da: forceOff
-struct RoundSquareException : public std::exception {
+struct ForceOnMException : public std::exception {
     const char* what() const noexcept override {
         return "La funzione non può essere chiamata su un device M.";
     }
