@@ -138,20 +138,6 @@ public:
         return range;
     }
 
-    void removeRoutines(int begin = 0, int end = 1439) {
-        for (int i = 0; i < r.size(); i++) {
-            if (t[i] >= begin && t[i] <= end && r[i]) {
-                if (r[i]) {
-                    t.erase(t.begin() + i);
-                    e.erase(e.begin() + i);
-                    d.erase(d.begin() + i);
-                    k.erase(k.begin() + i);
-                    r.erase(r.begin() + i);
-                    --i;
-                }
-            }
-        }
-    }
     void removeNonRoutines(int begin = 0, int end = 1439) {
         for (int i = 0; i < r.size(); i++) {
             if (t[i] >= begin && t[i] <= end && r[i]) {

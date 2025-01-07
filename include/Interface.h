@@ -1,17 +1,5 @@
 /*
 Autore: Cipriani Andrea
-
-L'interfaccia si pone tra la parte di parsing (main.cpp) e i gestori del singolo device.
-Si occupa di;
-Accendere/Spegnere dispositivi
-Creare/Rimuovere delle routine di accensione e spegnimento
-Far scorrere il tempo
-Mostrare i dati e i consumi
-Installare devices
-Rimuovere devices 
-
-Non si occupa di gestire la politica di spegnimenti in caso di OverKWException, o in generale di gestire errori.
-Genera le eccezioni e basta.
 */
 
 #ifndef INTERFACE_H
