@@ -472,7 +472,6 @@ void Interface::installM(std::string name, double consumo, bool isOn, bool autoT
 }
 void Interface::installCP(std::string name, double consumo, int durataCiclo, bool isOn) {   //Installa device CP
     //Check che non sia già presente
-    //TODO fix installazione ciclo 00:00
     for (int i = 0; i < CPcounter; i++) {
         if (NSCcheck(devicesCP[i].getNome(), name)) throw DuplicateDeviceException();
     }

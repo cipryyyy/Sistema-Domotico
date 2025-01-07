@@ -8,7 +8,7 @@
 #include "Interface.h"
 
 // Costanti di default per il sistema
-bool debug = false;
+bool debug = true;
 const double MAX_POWER = 3.5;       // Potenza massina del sistema, in kW
 const int MAX_DEVICES = 100;        // Numero massimo di dispositivi supportati
 
@@ -135,7 +135,6 @@ int main(int argc, char* argv[]) {
     Interface system(power, true, MAX_DEVICES);
     if (debug) std::cout << "Avvio con " << power << " KW e " << MAX_DEVICES << " device." << std::endl; 
     std::string command;
-    std::vector<int> devicesTurnedOn;  // Vector per tenere traccia dei dispositivi accesi in ordine di accensione
     
     // Apro file di log
     std::ofstream logFile("system.log", std::ios::app);
@@ -234,66 +233,59 @@ int main(int argc, char* argv[]) {
                     }
 
                     if (tokens[2] == "on") {
-                        bool isProgrammed = tokens.size() > 3;     // Flag per controllare se è un dispositivo con routine o programmazione
-                        
-                        auto tryTurnOn = [&]() {                            // Funzione per provare ad accendere il dispositivo
-                            switch (tokens.size()) {                        // Switch per controllare il numero di argomenti
-                                case 3:
-                                    if (debug) std::cout << "turnOn manuale" << std::endl;
-                                    system.turnOn(deviceId);
-                                    break;
-                                case 4:
-                                    if (debug) std::cout << "turnOn con start" << std::endl;
-                                    system.turnOn(deviceId, parseTime(tokens[3]));
-                                    break;
-                                case 5:
-                                    if (debug) std::cout << "Routine" << std::endl;
-                                    system.turnOn(deviceId, parseTime(tokens[3]), parseTime(tokens[4]));
-                                    break;
-                                default:
-                                    throw std::invalid_argument("Numero di argomenti non valido");
-                            }
-                        };
+                        if (tokens.size() != 3) {
+                            throw std::invalid_argument("Utilizzo di set on non valido. Usa 'help' per i comandi disponibili");
+                        }
 
                         try {
-                            tryTurnOn();                                                     // Prova ad accendere il dispositivo
-                        } catch (OverKWException& e) {                                       // Se c'è un'eccezione di OverKW
-                            if (debug) std::cout << "OverKWException" << std::endl;
-                            std::vector<int> devicesToTurnOff = system.turnOffSequence();    // Ottieni la sequenza di spegnimento
-                            bool success = false;                                            // Flag per controllare se l'accensione è riuscita
-                            while (!devicesToTurnOff.empty() && !success) {                  // Cicla finché ci sono dispositivi nel vector e l'accensione non è riuscita
-                                if (debug) std::cout << "Tentativo di spegnimento" << std::endl;
-                                system.turnOff(devicesToTurnOff.front());                     // Spegni l'ultimo dispositivo acceso
-                                int lastDevice = devicesToTurnOff.front();                    // Salva l'ID dell'ultimo dispositivo acceso
-                                devicesToTurnOff.pop_back();                                 // Rimuovi il dispositivo dal vector
-                                try {                                                        // Prova ad accendere il dispositivo
-                                    if (debug) std::cout << "Tentativo di riaccensione" << std::endl;
-                                    tryTurnOn();
-                                    if (!isProgrammed && system.allowAutoTurnOff(deviceId)) {   // Se non è un dispositivo con routine o programmazione
-                                        if (debug) std::cout << "Aggiunta dispositivo al vector" << std::endl;
-                                        devicesToTurnOff.push_back(deviceId);                            // Aggiungi il dispositivo al vector
+                            int arguments = tokens.size();
+                            if (arguments == 3) {
+                                system.turnOn(deviceId);    // Accensione immediata
+                            } else if (arguments > 3 && arguments <= 5) {
+                                
+                                int start = 0;                              // Inizializzo start & end a 0
+                                int end   = 0;                              // per evitare errori di compilazione
+                                
+                                if (arguments == 4) {                       // Accensione immediata
+                                    start = parseTime(tokens[3]);           // Prendo orario di accesnsione
+                                    system.turnOn(deviceId, start);         // Programmo l'accensione
+                                } else if (arguments == 5) {                // Accensione programmata
+                                    start = parseTime(tokens[3]);           // Prendo orario di accensione
+                                    end   = parseTime(tokens[4]);           // Prendo orario di spegnimento
+                                    system.turnOn(deviceId, start, end);    // Programmo il dispositivo
+                                }
+                            } else {
+                                throw std::invalid_argument("Numero di argomenti non valido");
+                            }
+                        } catch (OverKWException& e) {
+                            std::vector<int> turnOffSequence = system.turnOffSequence();    // Ottiene la sequenza di spegnimento
+                            // provo a spegnere un dispositivo alla volta e riprovo l'accensione
+                            while (!turnOffSequence.empty()) {
+                                try {
+                                    int device = turnOffSequence.back();
+                                    system.turnOff(device);
+                                    turnOffSequence.pop_back();        
+                                    system.turnOn(deviceId);
+                                    break;
+                                } catch (OverKWException& e) { 
+                                    if (turnOffSequence.empty()) {
+                                        std::cerr << "Non ci sono KW a sufficienza. prepuzio.." << std::endl;
+                                        break;
                                     }
-                                    success = true;                                          // Imposta il flag a true
-                                } catch (OverKWException&) {                                 // Se c'è un'eccezione di OverKW
-                                    continue;                                                // Continua il ciclo
-                                } 
+                                    continue; 
+                                }
                             }
-                            if (!success) {
-                                std::cout << "Impossibile accendere il dispositivo anche dopo aver spento tutti i dispositivi gestibili.\n"
-                                            << "Attendere il termine dei cicli programmati o attivare un generatore ausiliario."
-                                            << std::endl;
-                            }
+                        } catch (TimerAlreadySetException& e) {
+                            std::cerr << "Errore: " << e.what() << std::endl;
+                        } catch (std::exception& e) {
+                            std::cerr << "Errore: " << e.what() << std::endl;
                         }
 
                     } else if (tokens[2] == "off") {
-                        if (debug) std::cout << "Spegnimento" << std::endl;
-                        system.turnOff(deviceId);
-                        if (!devicesTurnedOn.empty()) {
-                            auto it = std::find(devicesTurnedOn.begin(), devicesTurnedOn.end(), deviceId);
-                            if (it != devicesTurnedOn.end()) {
-                                devicesTurnedOn.erase(it);
-                            }
+                        if (tokens.size() != 3) {
+                            throw std::invalid_argument("Utilizzo di set off non valido. Usa 'help' per i comandi disponibili");
                         }
+                        system.turnOff(deviceId);
                     } else {
                         throw std::invalid_argument("Comando non riconosciuto");
                     }
@@ -315,22 +307,15 @@ int main(int argc, char* argv[]) {
                     char choice;
                     std::cout << "Sei sicuro di voler spegnere il dispositivo " << tokens[1] << "? (y/n): ";
                     std::cin >> choice;
-                    switch (choice)
-                    {
-                    case 'y':
-                        system.forceOff(deviceId);
-                        if (!devicesTurnedOn.empty()) {
-                            auto device = std::find(devicesTurnedOn.begin(), devicesTurnedOn.end(), deviceId);  // Cerca il dispositivo nel vector
-                            if (device != devicesTurnedOn.end()) {                                              // Se il dispositivo è stato trovato
-                                devicesTurnedOn.erase(device);                                                  // Rimuovi il dispositivo dal vector
-                            }
-                        }
-                        break;
-                    case 'n':
-                        std::cout << "Operazione annullata\n";
-                        break;
-                    default:
-                        break;
+                    switch (choice) {
+                        case 'y':
+                            system.forceOff(deviceId);
+                            break;
+                        case 'n':
+                            std::cout << "Operazione annullata\n";
+                            break;
+                        default:
+                            break;
                     }
                 } catch (std::exception& e) {
                     std::cerr << "Errore: " << e.what() << std::endl;
