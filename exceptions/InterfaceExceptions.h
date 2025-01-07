@@ -65,7 +65,6 @@ struct NameNotFoundException : public std::exception {
     }
 };
 
-
 //Richiesta di variazione temporale negativa:
 //! Lanciata da: turnOn(id, start), turnOn(id, start, end), setTime(time)
 struct NotATimeMachineException : public std::exception {
@@ -105,11 +104,20 @@ struct ForceOnMException : public std::exception {
         return "La funzione non può essere chiamata su un device M.";
     }
 };
+
 //Spegnimento forzato di un device non CP:
 //! Lanciata da: forceOff
 struct DeviceAlreadyOffException : public std::exception {
     const char* what() const noexcept override {
         return "Il dispositivo è già spento.";
+    }
+};
+
+//Spegnimento di un generatore
+//! Lanciata da: turnOff
+struct IllegalGeneratorShutdownException : public std::exception {
+    const char* what() const noexcept override {
+        return "Il generatore non può essere spento.";
     }
 };
 
