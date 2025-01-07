@@ -234,7 +234,7 @@ int main(int argc, char* argv[]) {
                     }
 
                     if (tokens[2] == "on") {
-                        bool isRoutineOrProgrammed = tokens.size() > 3;     // Flag per controllare se è un dispositivo con routine o programmazione
+                        bool isProgrammed = tokens.size() > 3;     // Flag per controllare se è un dispositivo con routine o programmazione
                         
                         auto tryTurnOn = [&]() {                            // Funzione per provare ad accendere il dispositivo
                             switch (tokens.size()) {                        // Switch per controllare il numero di argomenti
@@ -256,41 +256,33 @@ int main(int argc, char* argv[]) {
                         };
 
                         try {
-                            tryTurnOn();                                    // Prova ad accendere il dispositivo
-                            if (deviceId >= 0 && std::find(devicesTurnedOn.begin(), devicesTurnedOn.end(), deviceId) == devicesTurnedOn.end() && !isRoutineOrProgrammed) {
-                                devicesTurnedOn.push_back(deviceId);
-                                if (debug) std::cout << "Device " << deviceId << " added to vector" << std::endl;
-                            }
-                        } catch (OverKWException& e) {                                          // Se c'è un'eccezione di OverKW
-                            if (devicesTurnedOn.empty()) {                                      // Se non ci sono dispositivi nel vector
-                                std::cout << "Impossibile accendere il dispositivo: potenza insufficiente.\n"
-                                          << "Attendere il termine dei cicli programmati o attivare un generatore ausiliario."
-                                          << std::endl;
-                            } else {                                                            // Se ci sono dispositivi nel vector
-                                bool success = false;                                           // Flag per controllare se l'accensione è riuscita
-                                while (!devicesTurnedOn.empty() && !success) {                  // Cicla finché ci sono dispositivi nel vector e l'accensione non è riuscita
-                                    if (debug) std::cout << "Tentativo di spegnimento" << std::endl;
-                                    system.turnOff(devicesTurnedOn.back());                     // Spegni l'ultimo dispositivo acceso
-                                    int lastDevice = devicesTurnedOn.back();                    // Salva l'ID dell'ultimo dispositivo acceso
-                                    if (debug) std::cout << "Device " << lastDevice << " turned off" << std::endl;
-                                    devicesTurnedOn.pop_back();                                 // Rimuovi il dispositivo dal vector
-                                    try {                                                       // Prova ad accendere il dispositivo
-                                        if (debug) std::cout << "Tentativo di riaccensione" << std::endl;
-                                        tryTurnOn();
-                                        if (!isRoutineOrProgrammed && system.allowAutoTurnOff(deviceId)) {  // Se non è un dispositivo con routine o programmazione
-                                            if (debug) std::cout << "Aggiunta dispositivo al vector" << std::endl;
-                                            devicesTurnedOn.push_back(deviceId);                            // Aggiungi il dispositivo al vector
-                                        }
-                                        success = true;                                         // Imposta il flag a true
-                                    } catch (OverKWException&) {                                // Se c'è un'eccezione di OverKW
-                                        continue;                                               // Continua il ciclo
+                            tryTurnOn();                                                     // Prova ad accendere il dispositivo
+                        } catch (OverKWException& e) {                                       // Se c'è un'eccezione di OverKW
+                            if (debug) std::cout << "OverKWException" << std::endl;
+                            std::vector<int> devicesToTurnOff = system.turnOffSequence();    // Ottieni la sequenza di spegnimento
+                            bool success = false;                                            // Flag per controllare se l'accensione è riuscita
+                            while (!devicesToTurnOff.empty() && !success) {                  // Cicla finché ci sono dispositivi nel vector e l'accensione non è riuscita
+                                if (debug) std::cout << "Tentativo di spegnimento" << std::endl;
+                                system.turnOff(devicesToTurnOff.back());                     // Spegni l'ultimo dispositivo acceso
+                                int lastDevice = devicesToTurnOff.back();                    // Salva l'ID dell'ultimo dispositivo acceso
+                                if (debug) std::cout << "Device " << lastDevice << " turned off" << std::endl;
+                                devicesToTurnOff.pop_back();                                 // Rimuovi il dispositivo dal vector
+                                try {                                                        // Prova ad accendere il dispositivo
+                                    if (debug) std::cout << "Tentativo di riaccensione" << std::endl;
+                                    tryTurnOn();
+                                    if (!isProgrammed && system.allowAutoTurnOff(deviceId)) {   // Se non è un dispositivo con routine o programmazione
+                                        if (debug) std::cout << "Aggiunta dispositivo al vector" << std::endl;
+                                        devicesToTurnOff.push_back(deviceId);                            // Aggiungi il dispositivo al vector
                                     }
-                                }
-                                if (!success) {
-                                    std::cout << "Impossibile accendere il dispositivo anche dopo aver spento tutti i dispositivi gestibili.\n"
-                                              << "Attendere il termine dei cicli programmati o attivare un generatore ausiliario."
-                                              << std::endl;
-                                }
+                                    success = true;                                          // Imposta il flag a true
+                                } catch (OverKWException&) {                                 // Se c'è un'eccezione di OverKW
+                                    continue;                                                // Continua il ciclo
+                                } 
+                            }
+                            if (!success) {
+                                std::cout << "Impossibile accendere il dispositivo anche dopo aver spento tutti i dispositivi gestibili.\n"
+                                            << "Attendere il termine dei cicli programmati o attivare un generatore ausiliario."
+                                            << std::endl;
                             }
                         }
 
@@ -319,7 +311,7 @@ int main(int argc, char* argv[]) {
                     throw std::invalid_argument("Utilizzo di kill non valido. Usa 'help' per i comandi disponibili");
                 }
                 try {
-                    int deviceId   = system.searchID(tokens[1]);
+                    int deviceId = system.searchID(tokens[1]);
                     char choice;
                     std::cout << "Sei sicuro di voler spegnere il dispositivo " << tokens[1] << "? (y/n): ";
                     std::cin >> choice;
