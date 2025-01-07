@@ -302,6 +302,7 @@ int main(int argc, char* argv[]) {
                     std::cerr << "Errore: " << e.what() << std::endl;
                 }
                 if (debug) system.debugKWs();
+                if (debug) system.debugTOS();
                 continue;
             }
 

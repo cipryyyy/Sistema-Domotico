@@ -534,22 +534,27 @@ bool Interface::allowAutoTurnOff(int id) {
     return devicesM[pos].allowAutoTurnOff();
 }
 
+//TODO CHECK CHECK CHECK CHECK CHECK CHECK
 std::vector<int> Interface::turnOffSequence() {
     std::vector<int> sequence;
     std::vector<int> OnDevices;
     std::vector<int> IDreq = timeline.getIDs(0, t);             //Ordine di accensione
 
     for (auto device : devicesM) {                              // Controllo quali dispositivi possono essere spenti
-        if (device.allowAutoTurnOff() && device.isOn()) {
+        if (device.allowAutoTurnOff() && device.isOn() && device.getConsumo() > 0) {
             OnDevices.push_back(device.getID());
         }
     }
-    for (int i = IDreq.size() - 1; i >= 0; i--) {       //Controllo l'ordine di accensione, dal più recente al più vecchio
+    //std::cout << "S: " << IDreq.size() << std::endl;  //!DBG
+    for (int i = IDreq.size(); i >= 0; i--) {       //Controllo l'ordine di accensione, dal più recente al più vecchio
         for (int j : OnDevices) {
-            if (IDreq[i] == j) {
+            //std::cout << IDreq[i] << " | " << j;   //!DBG
+            if (IDreq[i] == j + maximumDV) {
+                //std::cout << " tick" << std::endl;   //!DBG
                 sequence.push_back(j);
                 break;
             }
+            //std::cout << std::endl;   //!DBG
         }
         if (sequence.size() == OnDevices.size()) break;     //Se ho trovato la sequenza, esco
     }
@@ -558,13 +563,24 @@ std::vector<int> Interface::turnOffSequence() {
 
 double Interface::debugKWs() {            //Debug KW
     updateKW();
-    std::cout << KW;
+    std::cout << "#DK" << KW << std::endl;
     return KW;
 }
 int Interface::debugTime() {              //Debug time
-    std::cout << t;
+    std::cout << "#DT " << t << std::endl;
     return t;
 }
 void Interface::debugCounters() {         //Debug counters
-    std::cout << "CP: " << CPcounter << " M:" << Mcounter;
+    std::cout << "#DC CP: " << CPcounter << " M:" << Mcounter << std::endl;
+}
+void Interface::debugTOS() {
+    std::cout << "CALCOLO TOS" << std::endl;
+    std::vector<int> sequence = turnOffSequence();
+    std::cout << std::endl;
+    std::cout << "#TOS [ ";
+    for (int i : sequence) {
+        std::cout << "\b" << i << " ";
+    }
+    std::cout << "\b]" << std::endl;
+    std::cout << "SIZE = " << sequence.size() << std::endl;
 }

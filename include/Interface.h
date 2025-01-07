@@ -23,14 +23,13 @@ private:
     int t;                          //tempo in minuti
     Timeline timeline;              //timeline degli eventi
 
-    int CPscan(int id) const noexcept;          //Ricerca di un device CP
-    int Mscan(int M) const noexcept;            //Ricerca di un device M
-    void updateKW() noexcept;                  //Aggiorna il numero di KW utilizzati ad ogni chiamata
-
     std::vector<int> freeID;                    //ID liberi
     std::vector<CPDevice> devicesCP;        //Vector di dispositivi CP
     std::vector<ManualDevice> devicesM;     //Vector di dispositivi M
-    std::vector<int> OnOnLaunch;            //Dispositivi accesi al lancio del programma
+
+    int CPscan(int id) const noexcept;          //Ricerca di un device CP
+    int Mscan(int M) const noexcept;            //Ricerca di un device M
+    void updateKW() noexcept;                  //Aggiorna il numero di KW utilizzati ad ogni chiamata
 
 public:
     Interface(double KW, bool init = true, int maxDV = 1024, int time = 0); //Costruttore
@@ -63,5 +62,6 @@ public:
     double debugKWs();                //Mostra i KW attualmente in uso
     int debugTime();                  //Mostra il tempo attuale
     void debugCounters();             //Mostra il numero di device CP e M
+    void debugTOS();                  //Mostra la sequenza di spegnimento in caso di OverKW
 };  
 #endif
