@@ -1,28 +1,5 @@
 /*
 Autori: Cipriani Andrea, Giorgi Giacomo
-
-Questa libreria di supporto serve per generare una timeline
-in grado di salvare gli eventi del sistema, con il relativo orario e tutti i metadati necessari.
-
-Il vector time può contenere valori in un range 0 (00:00) - 1439 (23:59)
-ovvero il tempo del giorno convertito in minuti, con ID che ha fatto la richiesta e la variazione di KW
-Nel vettore 'e' viene data una breve descrizione dell'evento per il front end.
-
-L'ID salvato è uguale a quello del dispositivo se viene spento, mentre sarà ID+1024 se viene acceso
-Questo perché il sistema supporta fino a 1024 dispositivi
-il numero dei device è arbitrario, comunque numero difficile da raggiungere e in caso modificabile in inizializzazione.
-
-I metodi della libreria sono: 
-* addEvent      Aggiungere eventi
-* print         Per stampare a schermo gli eventi in un range start - end
-* get[...]      Ritorna un vettore con orari/eventi/id/kw in un range start - end
-* clear         Elimina tutti gli eventi
-* forget        Elimina gli eventi di un dispositivo in un lasso di tempo
-* setRange      Imposta il valore massimo degli ID per segnalare quando è acceso o spento il device
-* getRange      Ottieni il valore massimo degli ID per segnalare quando è acceso o spento il device
-
-L'unico errore è per l'input errato, lanciato con invalid_argument, in realtà questa eccezione
-è già coperta in interface.h, ma non si sa mai.
 */
 
 #ifndef TIMELINE_H
@@ -119,6 +96,7 @@ public:
                 e.erase(e.begin() + i);
                 d.erase(d.begin() + i);
                 k.erase(k.begin() + i);
+                r.erase(r.begin() + i);
                 --i;                        //Siccome rimuovo un elemento, devo tornare indietro di 1
             }
         }
@@ -129,6 +107,7 @@ public:
         e.clear();
         d.clear();
         k.clear();
+        r.clear();
     }
 
     void setRange(int mid) {

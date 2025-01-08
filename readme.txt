@@ -1,10 +1,76 @@
 Note per la consegna
 
+SUDDIVISIONE DEL PROGETTO:
+* Buso Riccardo: Progettazione dei moduli Device, ManualDevice, CPDevice, creazione dei log e del CMakeLists.txt
+* Cipriani Andrea: Progettazione dei moduli Interface e Timeline
+* Giorgi Giacomo: Progettazione di main, correzioni di Timeline
+
+L'intero progetto è stato fatto con l'utilizzo di github per il controllo versione.
+
 # main.cpp:
 
 # Interface.h / Interface.cpp
+Il modulo Interface si occupa di gestire la comunicazione tra l'input utente e i device, facendo lavorare in sicurezza l'intero sistema, si occupa di gestire
+gli oggetti di Timeline.h e Device.h.
+Interface si articola nell'header (include/Interface.h), nel file con le definizioni (src/Interface.cpp) e nel file con le eccezioni (exceptions/InterfaceExceptions.h).
+I metodi principali sono:
+ - turnOn,                              accensione classica e programmata dei device
+ - turnOff,                             spegnimento dei device
+ - forceOff,                            interrompe l'esecuzione di un device a ciclo programmato
+ - setTime,                             fa scorrere il tempo
+ - resetTime, resetTimers, resetAll,    resettano i vari parametri come tempo, timers o il programma in generale
+ - show,                                mostra lo stato di uno o tutti i dispositivi
+ - installM, installCP                  installano device manuali e a ciclo programmato
+ - uninstall,                           Disinstalla un dispositivo
+
+Oltre a queste funzioni sono presenti una serie di funzioni helper che servono di supporto, come il TimeCheck, Mscan/CPscan, searchID...
+Una su cui vorrei fare un appunto è updateKW(), dato che ci sono stati diversi problemi nel conteggio dei KW utilizzano multiple routine,
+ho optato per fare una funzione che ogni volta che si chiama una funzione di modifica dei KW (accensione e spegnimento dei device) aggiorno
+il numero di KW, così posso fare i calcoli e valutare se posso accendere il device / se ne devo spegnere altri.
+
+Per il resto il programma fa un uso pesante del passaggio di dati alle funzioni per copia, fatta eccezione per il passaggio dei vettori, per quelli
+ho preferito fare un passaggio per reference in quanto lo ritengo più adatto.
+
+Le eccezioni sono tutte commentate all'interno del file in cui sono contenute.
+
+L'unico 'spreco' di memoria (per quanto leggero), sono counterCP e counterM, sono banalmente equivalenti a Device.size(), ma 
+tuttora non riesco a far funzionare il programma se li sostituisco.
+Inoltre, i device quando vengono installati sono spenti, stesso discorso quando si resetta il tempo e il tempo (salvo la presenza di una routine che parte da mezzanotte)
 
 # Timeline.h
+
+Timeline è una libreria che genera oggetti capaci di tener traccia degli eventi del sistema.
+Questo modulo nasce per riuscire a sostenere più routine su un singolo device, per esempio se volessi accendere il termosifone in 4 intervalli della giornata con timeline posso fare tutto subito
+senza attendere che la routine precedente finisca. Inoltre è molto utile per tenere traccia delle varie accensioni, spegnimenti, routine future e passate
+
+La Timeline è composta da 5 oggetti vector contenenti:
+ - I timestamp dell'evento
+ - Una breve descrizione testuale dell'evento (Per rendere chiaro all'utente cos'è successo con la funzione setTime di Interface)
+ - L'ID dell'evento(*)
+ - La variazione di KW (usata da UpdateKW)
+ - la natura dell'accensione/spegnimento (routine o comando manuale) (**)
+
+(*) Per tenere traccia delle accensioni e degli spegnimenti ho voluto strutturare il vector ID in maniera particolare.
+Premetto che il sistema può gestire un massimo di Device salvato in maximumDV (Interface) e passato in range (Timeline)
+
+È impossibile che esista nel sistema un device con ID == range, perciò ho voluto sfruttare questa cosa.
+Se un Device viene acceso, in ID salverò il suo ID + range, mentre se viene spento salvo solo ID, in questa maniera non solo so chi ha compiuto l'azione, ma so pure se si è acceso e spento,
+senza fare un parsing del vettore eventi (che richiederebbe più passaggi, o comunque sarebbe meno elegante a parer mio con altre maniere).
+
+Come eccezioni Timeline presenta dei banali invalid_argument, questo perché li ho messi più per una doppia sicurezza, nel caso qualcun altro dovesse usare il modulo,
+infatti le eccezioni sono facilmente evitate già da Interface, è una ripetizione messa li come sicurezza per un utente diverso che non conosce bene il meccanismo di timeline.
+
+(**) Quando faccio un resetTime io ritorno al tempo 0, il problema è che io nella timeline ho salvato tutte le azioni, anche quelle manuali.
+Per conservare i timer e cancellare le azioni manuali devo essere in grado di identificare la natura dell'accensione/spegnimento, questo vector serve a questo.
+
+Le funzioni più importanti sono:
+ - addEvent,                        Aggiunge un evento alla timeline
+ - getTimes, Events, Ids, KWs,      Ritornano delle copie dei vettori con i valori contenuti in un certo lasso di tempo
+ - forget,                          Elimina le azioni di un ID in un lasso di tempo
+ - clear,                           Elimina tutto dalla timeline
+ - setRange,                        Imposta il valore di range, siccome una sua modifica potrebbe invalidare l'intero programma, viene chiamata solo nella costruttore di interface
+ - getRange,                        Ritorna il valore di range, utile per i device per i comandi isOn, getTempoDiEsecuzione..
+ - removeNonRoutines,               esegue quanto detto in (**)
 
 # Device.h / Device.cpp
 

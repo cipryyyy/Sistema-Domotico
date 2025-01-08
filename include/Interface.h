@@ -29,7 +29,9 @@ private:
 
     int CPscan(int id) const noexcept;          //Ricerca di un device CP
     int Mscan(int M) const noexcept;            //Ricerca di un device M
-    void updateKW() noexcept;                  //Aggiorna il numero di KW utilizzati ad ogni chiamata
+    void updateKW() noexcept;                   //Aggiorna il numero di KW utilizzati ad ogni chiamata
+    int searchID(std::string name);             //Ritorna l'ID di un dispositivo dato il nome
+    bool allowAutoTurnOff(int id);              //Ritorna se il device supporta l'autoTurnOff in caso di OverKWException
 
 public:
     Interface(double KW, bool init = true, int maxDV = 1024, int time = 0); //Costruttore
@@ -54,8 +56,6 @@ public:
     void uninstall(int id);                                                                      //Rimuove un dispositivo
 
     //Accesso alle informazioni dei devices
-    int searchID(std::string name);                     //Ritorna l'ID di un dispositivo dato il nome
-    bool allowAutoTurnOff(int id);                      //Ritorna se il device supporta l'autoTurnOff in caso di OverKWException
     std::vector<int> turnOffSequence();                  //Ritorna il primo dispositivo acceso
 
     //Funzioni di debug
