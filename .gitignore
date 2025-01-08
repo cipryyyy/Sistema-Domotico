@@ -32,3 +32,4 @@ test-results.xml
 *.coverage
 *.gcda
 *.gcno
+.vscode
