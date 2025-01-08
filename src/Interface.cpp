@@ -20,16 +20,6 @@ void Interface::updateKW() noexcept{        			//Aggiorna il numero di KW in uso
         KW += d;
     }
 }
-int Interface::searchID(std::string name) {			//Ritorna l'ID dato il nome
-	for (int i = 0; i < counterCP; i++) {
-		if (NSCcheck(devicesCP[i].getNome(), name)) return devicesCP[i].getID();	//Controllo i CP
-	}
-	for (int i = 0; i < counterM; i++) {
-		if (NSCcheck(devicesM[i].getNome(), name)) return devicesM[i].getID();	//Controllo gli M
-	}
-	throw NameNotFoundException();
-}
-
 bool Interface::allowAutoTurnOff(int id) {
     int pos = Mscan(id);
     return devicesM[pos].allowAutoTurnOff();
@@ -540,6 +530,15 @@ void Interface::uninstall(int id) {                     //Disinstalla un device
     throw DeviceIDOutOfBoundException();	//Il device non è presente tra i devices
 }
 
+int Interface::searchID(std::string name) {			//Ritorna l'ID dato il nome
+	for (int i = 0; i < counterCP; i++) {
+		if (NSCcheck(devicesCP[i].getNome(), name)) return devicesCP[i].getID();	//Controllo i CP
+	}
+	for (int i = 0; i < counterM; i++) {
+		if (NSCcheck(devicesM[i].getNome(), name)) return devicesM[i].getID();	//Controllo gli M
+	}
+	throw NameNotFoundException();
+}
 std::vector<int> Interface::turnOffSequence() {
     std::vector<int> sequence;
     std::vector<int> OnDevices;
