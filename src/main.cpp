@@ -233,7 +233,7 @@ int main(int argc, char* argv[]) {
                     }
 
                     if (tokens[2] == "on") {
-                        if (tokens.size() != 3) {
+                        if (tokens.size() < 3) {
                             throw std::invalid_argument("Utilizzo di set on non valido. Usa 'help' per i comandi disponibili");
                         }
 
@@ -242,11 +242,11 @@ int main(int argc, char* argv[]) {
                             if (arguments == 3) {
                                 system.turnOn(deviceId);    // Accensione immediata
                             } else if (arguments > 3 && arguments <= 5) {
-                                
                                 int start = 0;                              // Inizializzo start & end a 0
                                 int end   = 0;                              // per evitare errori di compilazione
                                 
                                 if (arguments == 4) {                       // Accensione immediata
+                                    std::cout << "Accensione programmata\n";
                                     start = parseTime(tokens[3]);           // Prendo orario di accesnsione
                                     system.turnOn(deviceId, start);         // Programmo l'accensione
                                 } else if (arguments == 5) {                // Accensione programmata
