@@ -18,8 +18,8 @@ private:
     const int maximumDV;            //Numero massimo di device dell'impianto
     const double maximumKW;         //KW massimi dell'impianto
     double KW;                      //KW attualmente in uso
-    int Mcounter;                   //Numero di device M
-    int CPcounter;                  //Numero di device CP
+    int counterM;                   //Numero di device M
+    int counterCP;                  //Numero di device CP
     int t;                          //tempo in minuti
     Timeline timeline;              //timeline degli eventi
 
