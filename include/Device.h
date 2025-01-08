@@ -15,7 +15,6 @@ protected:
     int ID;
     double consumo;
     bool on;
-    bool resetStatus;
     int exec;
 
 public:

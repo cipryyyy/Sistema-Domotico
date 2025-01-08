@@ -8,7 +8,7 @@
 #include "Interface.h"
 
 // Costanti di default per il sistema
-bool debug = true;
+bool debug = false;
 const double MAX_POWER = 3.5;       // Potenza massina del sistema, in kW
 const int MAX_DEVICES = 100;        // Numero massimo di dispositivi supportati
 
@@ -73,7 +73,7 @@ void displayHelp() {
     std::cout << "\nFunzioni disponibili:\n"
               << "set <device> on                          - Accende dispositivo\n"
               << "set <device> off                         - Spegne dispositivo\n"
-              << "set <device> on/off <start> [stop]       - Imposta timer dispositivo\n"
+              << "set <device> on <start> [stop]           - Imposta timer dispositivo\n"
               << "kill <device>                            - Spegni dispositivo forzatamente\n"
               << "rm <device>                              - Rimuovi timer dispositivo\n"
               << "show                                     - Mostra gli stati di tutti i dispositivi\n"
@@ -264,6 +264,7 @@ int main(int argc, char* argv[]) {
                                 try {
                                     int device = turnOffSequence.back();
                                     system.turnOff(device);
+                                    std::cout << std::endl;
                                     turnOffSequence.pop_back();        
                                     system.turnOn(deviceId);
                                     break;

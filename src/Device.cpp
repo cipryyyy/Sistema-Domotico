@@ -12,7 +12,6 @@ Device::Device(Timeline* timeline, int* t, std::string nome, int ID, double cons
         this->ID = ID;
         this->consumo = consumo;
         this->on = stato;
-        this->resetStatus = stato;
     }
 
 bool Device::isOn() {

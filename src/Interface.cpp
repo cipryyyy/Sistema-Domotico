@@ -272,6 +272,7 @@ void Interface::turnOn(int id, int start, int end) {    //routine
     }
 }
 
+// ? Mettere anche qua la possibilità di farlo con un timer
 void Interface::turnOff(int id) {                       //spegnimento
     updateKW();     //Aggiorno il numero di KW usati
 
@@ -313,12 +314,12 @@ void Interface::removeTimer(int id) {                   //Rimuove le routine di 
 	//Controllo che l'ID esista
 	if ((CPscan(id) == INT_MIN && Mscan(id) == INT_MIN)) throw DeviceIDOutOfBoundException();
     // ? t+1 per evitare di cancellare l'evento corrente
-    //TODO: controllare se è corretto
+    // TODO: controllare se è corretto
     timeline.forget(id, t);             //Elimino tutti gli eventi futuri legati all'elettrodomestico
 }
 
 void Interface::setTime(int time) {                     //Scorrimento del tempo
-//? TODO pulire accensioni e spegnimenti contemporanei dei device M
+// ? pulire accensioni e spegnimenti contemporanei dei device M
     timeCheck(t, time);                                                 // Controllo che il tempo sia valido
 
     std::vector<int> timestamps = timeline.getTimes(t,time);             // Vector con gli orari
@@ -540,7 +541,6 @@ bool Interface::allowAutoTurnOff(int id) {
     return devicesM[pos].allowAutoTurnOff();
 }
 
-//TODO CHECK CHECK CHECK CHECK CHECK CHECK
 std::vector<int> Interface::turnOffSequence() {
     std::vector<int> sequence;
     std::vector<int> OnDevices;
@@ -551,16 +551,17 @@ std::vector<int> Interface::turnOffSequence() {
             OnDevices.push_back(device.getID());
         }
     }
-    //std::cout << "S: " << IDreq.size() << std::endl;  //!DBG
-    for (int i = IDreq.size(); i >= 0; i--) {       //Controllo l'ordine di accensione, dal più recente al più vecchio
+    //std::cout << "S: " << IDreq.size() << std::endl;  // !DBG
+    for (int i = IDreq.size() - 1; i >= 0; i--) {       //Controllo l'ordine di accensione, dal più recente al più vecchio
+        std::cout << "SCAN: " << i << std::endl;
         for (int j : OnDevices) {
-            //std::cout << IDreq[i] << " | " << j;   //!DBG
+            //std::cout << IDreq[i] << " | " << j;   // !DBG
             if (IDreq[i] == j + maximumDV) {
-                //std::cout << " * * *" << std::endl;   //!DBG
+                //std::cout << " * * *" << std::endl;   // !DBG
                 sequence.push_back(j);
                 break;
             }
-            //std::cout << std::endl;   //!DBG
+            //std::cout << std::endl;   // !DBG
         }
         if (sequence.size() == OnDevices.size()) break;     //Se ho trovato la sequenza, esco
     }
@@ -583,10 +584,14 @@ void Interface::debugTOS() {
     std::cout << "CALCOLO TOS" << std::endl;
     std::vector<int> sequence = turnOffSequence();
     std::cout << std::endl;
-    std::cout << "#TOS [ ";
-    for (int i : sequence) {
-        std::cout << "\b" << i << " ";
+    if (sequence.size() == 0) {
+        std::cout << "[]" << std::endl;
+        return;
     }
-    std::cout << "\b]" << std::endl;
+    std::cout << "#TOS [";
+    for (int i : sequence) {
+        std::cout << i << ", ";
+    }
+    std::cout << "\b\b]" << std::endl;
     std::cout << "SIZE = " << sequence.size() << std::endl;
 }
