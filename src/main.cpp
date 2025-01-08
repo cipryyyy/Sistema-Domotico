@@ -42,7 +42,7 @@ bool isValidTimeFormat(const std::string& time) {
     if (time.size() == 5 && time[2] != ':') return false; // Verifica il delimitatore
     if (time.size() == 4 && time[1] != ':') return false; // Verifica il delimitatore
 
-    try {                                                           // Prova a estrarre ore e minuti, controllando che siano validi
+    try {                                                               // Prova a estrarre ore e minuti, controllando che siano validi
         int h = std::stoi(time.substr(0, time.size() == 5 ? 2 : 1));    // Ore
         int m = std::stoi(time.substr(time.size() == 5 ? 3 : 2));       // Minuti
         return h >= 0 && h <= 23 && m >= 0 && m <= 59;
@@ -71,21 +71,21 @@ int parseTime(const std::string& timeStr) {
 // Helper function per mostrare il help message con i comandi disponibili
 void displayHelp() {
     std::cout << "\nFunzioni disponibili:\n"
-              << "set <device> on                          - Accende dispositivo\n"
-              << "set <device> off                         - Spegne dispositivo\n"
-              << "set <device> on <start> [stop]           - Imposta timer dispositivo\n"
-              << "kill <device>                            - Spegni dispositivo forzatamente\n"
-              << "rm <device>                              - Rimuovi timer dispositivo\n"
-              << "show                                     - Mostra gli stati di tutti i dispositivi\n"
-              << "show <device>                            - Mostra lo stato di un singolo dispositivo\n"
-              << "install <device> <consumo> [on]          - Installa dispositivo\n"
-              << "install <device> <consumo> <durata> [on] - Installa dispositivo con ciclo programmato\n"
-              << "unistall <device>                        - Disinstalla dispositivo\n"
-              << "set time HH:MM                           - Imposta ora sistema\n"
-              << "reset time                               - Resetta ora a 00:00\n"
-              << "reset timers                             - Rimuovi tutti i timer\n"
-              << "reset all                                - Reset completo del sistema\n"
-              << "exit                                     - Esci dal programma"
+              << "set <device> on                               - Accende dispositivo\n"
+              << "set <device> off                              - Spegne dispositivo\n"
+              << "set <device> on <start> [stop]                - Imposta timer dispositivo\n"
+              << "kill <device>                                 - Spegni dispositivo forzatamente\n"
+              << "rm <device>                                   - Rimuovi timer dispositivo\n"
+              << "show                                          - Mostra gli stati di tutti i dispositivi\n"
+              << "show <device>                                 - Mostra lo stato di un singolo dispositivo\n"
+              << "install <device> <consumo> [on] [true/false]  - Installa dispositivo\n"
+              << "install <device> <consumo> [on] <durata>      - Installa dispositivo con ciclo programmato\n"
+              << "unistall <device>                             - Disinstalla dispositivo\n"
+              << "set time HH:MM                                - Imposta ora sistema\n"
+              << "reset time                                    - Resetta ora a 00:00\n"
+              << "reset timers                                  - Rimuovi tutti i timer\n"
+              << "reset all                                     - Reset completo del sistema\n"
+              << "exit                                          - Esci dal programma"
               << std::endl;
 }
 
@@ -160,6 +160,8 @@ int main(int argc, char* argv[]) {
             auto tokens = tokenize(command);
             if (tokens.empty()) continue;
 
+            int arguments = tokens.size();
+
             // Display help
             if(tokens[0] == "help" || tokens[0] == "h") {
                 displayHelp();
@@ -174,17 +176,20 @@ int main(int argc, char* argv[]) {
 
             // Commandi "show"
             if (tokens[0] == "show") {
-                if (tokens.size() == 1) {
-                    system.show();
-                } else if (tokens.size() == 2) {
-                    try {
-                        int deviceId = system.searchID(tokens[1]);
-                        system.show(deviceId);
-                    } catch (std::exception& e) {
-                        std::cerr << "Errore: " << e.what() << std::endl;
-                    }
-                } else {
-                    throw std::invalid_argument("Numero di argomenti non valido");
+                switch (arguments) {
+                    case 1: 
+                        system.show();
+                        break;
+                    case 2: 
+                        try {
+                            int deviceId = system.searchID(tokens[1]);
+                            system.show(deviceId);
+                        } catch (std::exception& e) {
+                            std::cerr << "Errore: " << e.what() << std::endl;
+                        }
+                        break;
+                    default:
+                        throw std::invalid_argument("Numero di argomenti non valido");
                 }
                 if (debug) {
                     std::cout << "Contatori: ";
@@ -196,14 +201,14 @@ int main(int argc, char* argv[]) {
 
             // Commandi "set"
             if (tokens[0] == "set") {
-                if (tokens.size() < 2) {
+                if (arguments < 2) {
                     throw std::invalid_argument("Utilizzo di set non valido. Usa 'help' per i comandi disponibili");
                     continue;
                 }
 
                 // Commando "set" per il tempo
                 if (tokens[1] == "time") {
-                    if (tokens.size() != 3) {
+                    if (arguments != 3) {
                         throw std::invalid_argument("Utilizzo di set time non valido. Usa 'help' per i comandi disponibili");
                     }
                     try {
@@ -228,17 +233,16 @@ int main(int argc, char* argv[]) {
                     int deviceId = system.searchID(tokens[1]);
                     if (debug) std::cout << "ID TROVATO: " << deviceId << std::endl;
 
-                    if (tokens.size() < 3) {
+                    if (arguments < 3) {
                         throw std::invalid_argument("Utilizzo di set non valido. Usa 'help' per i comandi disponibili");
                     }
 
                     if (tokens[2] == "on") {
-                        if (tokens.size() < 3) {
+                        if (arguments < 3) {
                             throw std::invalid_argument("Utilizzo di set on non valido. Usa 'help' per i comandi disponibili");
                         }
 
                         try {
-                            int arguments = tokens.size();
                             if (arguments == 3) {
                                 system.turnOn(deviceId);    // Accensione immediata
                             } else if (arguments > 3 && arguments <= 5) {
@@ -283,7 +287,7 @@ int main(int argc, char* argv[]) {
                         }
 
                     } else if (tokens[2] == "off") {
-                        if (tokens.size() != 3) {
+                        if (arguments != 3) {
                             throw std::invalid_argument("Utilizzo di set off non valido. Usa 'help' per i comandi disponibili");
                         }
                         system.turnOff(deviceId);
@@ -300,7 +304,7 @@ int main(int argc, char* argv[]) {
 
             // Commando "kill"
             if (tokens[0] == "kill") {
-                if (tokens.size() != 2) {
+                if (arguments != 2) {
                     throw std::invalid_argument("Utilizzo di kill non valido. Usa 'help' per i comandi disponibili");
                 }
                 try {
@@ -326,7 +330,7 @@ int main(int argc, char* argv[]) {
 
             // Commando "rm"
             if (tokens[0] == "rm") {
-                if (tokens.size() != 2) {
+                if (arguments != 2) {
                     throw std::invalid_argument("Utilizzo di rm non valido. Usa 'help' per i comandi disponibili");
                 }
                 try {
@@ -342,7 +346,7 @@ int main(int argc, char* argv[]) {
 
             // Commando "reset"
             if (tokens[0] == "reset") {
-                if (tokens.size() != 2) {
+                if (arguments != 2) {
                     throw std::invalid_argument("Utilizzo di reset non valido. Usa 'help' per i comandi disponibili");
                 }
                 if (tokens[1] == "time") {
@@ -362,29 +366,32 @@ int main(int argc, char* argv[]) {
 
             // Commandi "install"
             if (tokens[0] == "install") {
-                if (tokens.size() <= 3) {
+                if (arguments <= 3) {
                     throw std::invalid_argument("Utilizzo di install non valido. Usa 'help' per i comandi disponibili");
                 }
 
                 try {
-                    bool isOn = false;
-                    switch (tokens.size()) {
-                        case 4:
-                            if (tokens[2] == "on") {
-                                isOn = true;
-                            }
-                            system.installM(tokens[1], std::stod(tokens[2]), isOn);
-                            break;
-                        case 5:
-                            if (tokens[3] == "on") {
-                                isOn = true;
-                            }
-                            system.installCP(tokens[1], std::stod(tokens[2]), std::stoi(tokens[3]), isOn);
-                            break;
-                        default:
-                            throw std::invalid_argument("Numero di argomenti non valido");
-                            break;
+                    if (arguments != 5) throw std::invalid_argument("Numero di argomenti non valido");  // Controllo numero di argomenti
+                    if (tokens[3] != "on" && tokens[3] != "off") {                                      // Controllo validità stato
+                        throw std::invalid_argument("Stato non valido. Usa 'on' o 'off'");
                     }
+
+                    const std::string& name = tokens[1];            // Nome del dispositivo
+                    double consumo = std::stod(tokens[2]);          // Consumo del dispositivo
+                    bool isOn = tokens[3] == "on";                  // Stato del dispositivo
+
+                    // In base al quarto argomento, installo un dispositivo manuale o programmato
+                    if (tokens[4] == "true" || tokens[4] == "false") {      // Dispositivo manuale
+                        bool autoTurnOff = (tokens[4] == "true");
+                        system.installM(name, consumo, isOn, autoTurnOff);
+                    } else {                                                // Dispositivo programmato
+                        int durataCiclo = std::stoi(tokens[4]);
+                        if (durataCiclo <= 0 && durataCiclo > 1439) {
+                            throw std::invalid_argument("Durata ciclo non valida. Deve essere compresa tra 1 e 1439 minuti");
+                        }
+                        system.installCP(name, consumo, isOn, durataCiclo);
+                    }
+
                 } catch (std::exception& e) {
                     std::cerr << "Errore: " << e.what() << std::endl;
                 }
@@ -394,7 +401,7 @@ int main(int argc, char* argv[]) {
 
             // Commando "uninstall"
             if (tokens[0] == "uninstall") {
-                if (tokens.size() != 2) {
+                if (arguments != 2) {
                     throw std::invalid_argument("Utilizzo di uninstall non valido. Usa 'help' per i comandi disponibili");
                 }
                 try {

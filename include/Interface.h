@@ -51,7 +51,7 @@ public:
     void show(int id);                                  //Mostra lo stato di un singolo dispositivo
 
     void installM(std::string name, double consumo, bool isOn = false, bool autoTurnOff = true); //Installa un dispositivo manuale
-    void installCP(std::string name, double consumo, int durataCiclo, bool isOn = false);        //Installa un dispositivo CP
+    void installCP(std::string name, double consumo, bool isOn = false, int durataCiclo = 60);        //Installa un dispositivo CP
     void uninstall(int id);                                                                      //Rimuove un dispositivo
 
     //Accesso alle informazioni dei devices
