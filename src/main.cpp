@@ -71,22 +71,73 @@ int parseTime(const std::string& timeStr) {
 // Helper function per mostrare il help message con i comandi disponibili
 void displayHelp() {
     std::cout << "\nFunzioni disponibili:\n"
-              << "set <device> on                               - Accende dispositivo\n"
-              << "set <device> off                              - Spegne dispositivo\n"
-              << "set <device> on <start> [stop]                - Imposta timer dispositivo\n"
-              << "kill <device>                                 - Spegni dispositivo forzatamente\n"
-              << "rm <device>                                   - Rimuovi timer dispositivo\n"
-              << "show                                          - Mostra gli stati di tutti i dispositivi\n"
-              << "show <device>                                 - Mostra lo stato di un singolo dispositivo\n"
-              << "install <device> <consumo> [true/false] [off] - Installa dispositivo\n"
-              << "install <device> <consumo> <durata> [off]     - Installa dispositivo con ciclo programmato\n"
-              << "unistall <device>                             - Disinstalla dispositivo\n"
-              << "set time HH:MM                                - Imposta ora sistema\n"
-              << "reset time                                    - Resetta ora a 00:00\n"
-              << "reset timers                                  - Rimuovi tutti i timer\n"
-              << "reset all                                     - Reset completo del sistema\n"
-              << "exit                                          - Esci dal programma"
+              << "set <device> on                                   - Accende dispositivo\n"
+              << "set <device> off                                  - Spegne dispositivo\n"
+              << "set <device> on <start> [stop]                    - Imposta timer dispositivo\n"
+              << "kill <device>                                     - Spegni dispositivo forzatamente\n"
+              << "rm <device>                                       - Rimuovi timer dispositivo\n"
+              << "show                                              - Mostra gli stati di tutti i dispositivi\n"
+              << "show <device>                                     - Mostra lo stato di un singolo dispositivo\n"
+              << "install <device> <consumo> <on/off> <true/false>  - Installa dispositivo\n"
+              << "install <device> <consumo> <minuti> <on/off>      - Installa dispositivo con ciclo programmato\n"
+              << "unistall <device>                                 - Disinstalla dispositivo\n"
+              << "set time HH:MM                                    - Imposta ora sistema\n"
+              << "reset time                                        - Resetta ora a 00:00\n"
+              << "reset timers                                      - Rimuovi tutti i timer\n"
+              << "reset all                                         - Reset completo del sistema\n"
+              << "exit                                              - Esci dal programma"
               << std::endl;
+} 
+
+void displayHelp(const std::string& command) {
+    if (command == "set") {
+        std::cout << "Set serve per accendere, spegnere e programmare un dispositivo.\n"
+                  << "  set <device> on - Accende dispositivo\n"
+                  << "  set <device> off - Spegne dispositivo\n"
+                  << "  set <device> on <start> [stop] - Imposta timer dispositivo\n"
+                  << "Inoltre, è anche possibile cambiare l'orario del sistema con 'set time HH:MM'"
+                  << std::endl;
+    }
+    else if (command == "kill") {
+        std::cout << "Kill serve per spegnere forzatamente un dispositivo.\n"
+                  << "  kill <device> - Spegni dispositivo forzatamente"
+                  << std::endl;
+    } else if (command == "rm") {
+        std::cout << "Rm serve per rimuovere un timer di un dispositivo.\n"
+                  << "  rm <device> - Rimuovi timer dispositivo"
+                  << std::endl;
+    } else if (command == "show") {
+        std::cout << "Show serve per mostrare lo stato di tutti i dispositivi o di uno solo.\n"
+                  << "  show - Mostra gli stati di tutti i dispositivi\n"
+                  << "  show <dispositivo> - Mostra lo stato di un singolo dispositivo"
+                  << std::endl;
+    } else if (command == "install") {
+        std::cout << "Install serve per installare un nuovo dispositivo.\n"
+                  << "Puoi installare un dispositivo ad uso manuale, oppure un dispositivo con ciclo programmato.\n"
+                  << "Da notare, i dispositivi manuali possono accettare la politica di auto-spegnimento.\n"
+                  << "Possono essere installati dispositivi generatori, come pannelli solari o generatori eolici, inserendo un valore negativo come consumo.\n"
+                  << "Parametri politica auto-spegnimento: true = si, false = no\n"
+                  << "Parametri on/off: on = acceso, off = spento\n"
+                  << "  install <device> <consumo> <on/off> <true/false> - Installa dispositivo\n"
+                  << "  install <device> <consumo> <minuti> <on/off> - Installa dispositivo con ciclo programmato"
+                  << std::endl;
+    } else if (command == "unistall") {
+        std::cout << "Uninstall serve per disinstallare un dispositivo.\n"
+                  << "  uninstall <device> - Disinstalla dispositivo"
+                  << std::endl;
+    } else if (command == "reset") {
+        std::cout << "Reset serve per resettare il sistema.\n"
+                  << "  reset time - Resetta l'orario a 00:00\n"
+                  << "  reset timers - Rimuovi tutti i timer\n"
+                  << "  reset all - Reset completo del sistema"
+                  << std::endl;
+    } else if (command == "exit") {
+        std::cout << "Exit serve per uscire dal programma.\n"
+                  << "  exit - Esci dal programma"
+                  << std::endl;
+    } else {
+        std::cerr << "Comando non riconosciuto\n";
+    }
 }
 
 // Helper function per controllare se il valore della potenza massima è valido
@@ -166,6 +217,9 @@ int main(int argc, char* argv[]) {
             // Display help
             if(tokens[0] == "help" || tokens[0] == "h") {
                 displayHelp();
+                if (tokens[1] != "") {
+                    displayHelp(tokens[1]);
+                }
                 continue;
             }
 
@@ -258,7 +312,6 @@ int main(int argc, char* argv[]) {
                                 int end   = 0;                              // per evitare errori di compilazione
                                 
                                 if (arguments == 4) {                       // Accensione immediata
-                                    std::cout << "Accensione programmata\n";
                                     start = parseTime(tokens[3]);           // Prendo orario di accesnsione
                                     system.turnOn(deviceId, start);         // Programmo l'accensione
                                 } else if (arguments == 5) {                // Accensione programmata
