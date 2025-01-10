@@ -31,6 +31,7 @@ public:
         e.push_back(event);
         d.push_back(ID);
         k.push_back(KW);
+        r.push_back(routine);
     }
 
     std::vector<int> getTimes(int start = 0, int end = 1439) {      //Ritorna i timestamp in un lasso di tempo
@@ -119,15 +120,13 @@ public:
 
     void removeNonRoutines(int begin = 0, int end = 1439) {
         for (int i = 0; i < r.size(); i++) {
-            if (t[i] >= begin && t[i] <= end && r[i]) {
-                if (!r[i]) {
-                    t.erase(t.begin() + i);
-                    e.erase(e.begin() + i);
-                    d.erase(d.begin() + i);
-                    k.erase(k.begin() + i);
-                    r.erase(r.begin() + i);
-                    --i;
-                }
+            if (t[i] >= begin && t[i] <= end && !r[i]) {
+                t.erase(t.begin() + i);
+                e.erase(e.begin() + i);
+                d.erase(d.begin() + i);
+                k.erase(k.begin() + i);
+                r.erase(r.begin() + i);
+                --i;
             }
         }
     }

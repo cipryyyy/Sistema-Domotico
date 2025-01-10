@@ -216,7 +216,7 @@ void Interface::turnOn(int id, int start) {             //Accensione programmata
         //Controllo di avere abbastanza KW disponibili
         if (KWonCall + devicesM[Mpos].getConsumo() > maximumKW) throw OverKWException();
         //Cancello eventuali programmazioni future
-        timeline.forget(Mpos, start);
+        timeline.forget(id, start);
         std::cout << "Accensione di " << _cleaner(devicesM[Mpos].getNome()) + " impostata";
         timeline.addEvent(t, _cleaner(devicesM[Mpos].getNome()) + " acceso", devicesM[Mpos].getID() + maximumDV, devicesM[Mpos].getConsumo(), true);
     } else {
@@ -262,7 +262,7 @@ void Interface::turnOn(int id, int start, int end) {    //routine
             if (i == id) count--;
         }
         if (count != 0) throw TimerAlreadySetException();
-        timeline.forget(Mpos, start, end);        //Cancello queste programmazioni più corte
+        timeline.forget(id, start, end);        //Cancello queste programmazioni più corte
         //Controllo che non si superino i KW
         if (KWonCall + devicesM[Mpos].getConsumo() > maximumKW) throw OverKWException();
         if (MaxKWonCall + devicesM[Mpos].getConsumo() > maximumKW) throw OverKWException();
@@ -551,7 +551,7 @@ std::vector<int> Interface::turnOffSequence() {
     }
     //std::cout << "S: " << IDreq.size() << std::endl;  // !DBG
     for (int i = IDreq.size() - 1; i >= 0; i--) {       //Controllo l'ordine di accensione, dal più recente al più vecchio
-        std::cout << "SCAN: " << i << std::endl;
+        //std::cout << "SCAN: " << i << std::endl;
         for (int j : OnDevices) {
             //std::cout << IDreq[i] << " | " << j;   // !DBG
             if (IDreq[i] == j + maximumDV) {
