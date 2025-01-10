@@ -39,7 +39,7 @@ public:
     void turnOn(int id, int start);                     // Chiamato con 'set ${DEVICENAME} [start] on'
     void turnOn(int id, int start, int end);            // Chiamato con 'set ${DEVICENAME} [start]-[end]on'
     void turnOff(int id);                               // Chiamato con 'set ${DEVICENAME} off'
-    void forceOff(int id);                     // Spegnimento forzato dei devices CP
+    void forceOff(int id);                              // Spegnimento forzato dei devices CP
     void removeTimer(int id);                           // Chiamato con 'rm ${DEVICENAME}' 
 
     void setTime(int time);                             //Fa scorrere il tempo, chiamato con 'set time ${TIME}'
@@ -51,11 +51,11 @@ public:
     void show(int id);                                  //Mostra lo stato di un singolo dispositivo
 
     void installM(std::string name, double consumo, bool isOn = false, bool autoTurnOff = true); //Installa un dispositivo manuale
-    void installCP(std::string name, double consumo, bool isOn = false, int durataCiclo = 60);        //Installa un dispositivo CP
+    void installCP(std::string name, double consumo, int durataCiclo, bool isOn = false);        //Installa un dispositivo CP
     void uninstall(int id);                                                                      //Rimuove un dispositivo
 
     //Accesso alle informazioni dei devices
-    int searchID(std::string name);                     //Ritorna l'ID di un dispositivo dato il nome
+    int searchID(std::string name);                      //Ritorna l'ID di un dispositivo dato il nome
     std::vector<int> turnOffSequence();                  //Ritorna il primo dispositivo acceso
 
     //Funzioni di debug

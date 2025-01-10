@@ -113,6 +113,7 @@ int main(int argc, char* argv[]) {
         try {
             std::cout << "Inserire la potenza massima del sistema (kW): "; // Chiedo all'utente di inserire la potenza massima del sistema
             std::cin >> power;                                             // Salvo il valore inserito in power
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
             // Controllo se l'input è un numero
             if (std::cin.fail()) {
@@ -172,6 +173,13 @@ int main(int argc, char* argv[]) {
             if (tokens[0] == "exit" || tokens[0] == "q") {
                 logFile << "Exiting program\n";
                 break;
+            }
+
+            // Debug: mostra i token inseriti dall'utente
+            if (debug) {
+                for (auto& token : tokens) {
+                    std::cout << token << std::endl;
+                }
             }
 
             // Commandi "show"
@@ -372,24 +380,24 @@ int main(int argc, char* argv[]) {
 
                 try {
                     if (arguments != 5) throw std::invalid_argument("Numero di argomenti non valido");  // Controllo numero di argomenti
-                    if (tokens[3] != "on" && tokens[3] != "off") {                                      // Controllo validità stato
+                    if (tokens[4] != "on" && tokens[4] != "off") {                                      // Controllo validità stato
                         throw std::invalid_argument("Stato non valido. Usa 'on' o 'off'");
                     }
 
                     const std::string& name = tokens[1];            // Nome del dispositivo
                     double consumo = std::stod(tokens[2]);          // Consumo del dispositivo
-                    bool isOn = tokens[3] == "on";                  // Stato del dispositivo
+                    bool isOn = tokens[4] == "on";                  // Stato del dispositivo
 
-                    // In base al quarto argomento, installo un dispositivo manuale o programmato
-                    if (tokens[4] == "true" || tokens[4] == "false") {      // Dispositivo manuale
-                        bool autoTurnOff = (tokens[4] == "true");
-                        system.installM(name, consumo, isOn, autoTurnOff);
+                    // In base al terzo argomento, installo un dispositivo manuale o programmato
+                    if (tokens[3] == "true" || tokens[3] == "false") {      // Dispositivo manuale
+                        bool autoTurnOff = (tokens[3] == "true");
+                        system.installM(name, consumo, autoTurnOff, isOn);
                     } else {                                                // Dispositivo programmato
-                        int durataCiclo = std::stoi(tokens[4]);
+                        int durataCiclo = std::stoi(tokens[3]);
                         if (durataCiclo <= 0 && durataCiclo > 1439) {
                             throw std::invalid_argument("Durata ciclo non valida. Deve essere compresa tra 1 e 1439 minuti");
                         }
-                        system.installCP(name, consumo, isOn, durataCiclo);
+                        system.installCP(name, consumo, durataCiclo, isOn);
                     }
 
                 } catch (std::exception& e) {

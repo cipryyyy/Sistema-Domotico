@@ -457,7 +457,7 @@ void Interface::show(int id) {                          //Mostra un device
     }
 }
 
-void Interface::installM(std::string name, double consumo, bool isOn, bool autoTurnOff) {     //Installa device M
+void Interface::installM(std::string name, double consumo, bool autoTurnOff, bool isOn) {     //Installa device M
     //Controllo che non sia già presente
     for (int i = 0; i < counterM; i++) {
         if (NSCcheck(devicesM[i].getNome(), name)) throw DuplicateDeviceException();
@@ -479,7 +479,7 @@ void Interface::installM(std::string name, double consumo, bool isOn, bool autoT
         std::cout << "Installato " << _cleaner(name) << "[" << id << "] con consumo " << consumo << "KW";
     }
 }
-void Interface::installCP(std::string name, double consumo, bool isOn, int durataCiclo) {   //Installa device CP
+void Interface::installCP(std::string name, double consumo, int durataCiclo, bool isOn) {   //Installa device CP
     //Check che non sia già presente
     for (int i = 0; i < counterCP; i++) {
         if (NSCcheck(devicesCP[i].getNome(), name)) throw DuplicateDeviceException();
