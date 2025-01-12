@@ -23,6 +23,7 @@ private:
     int counterCP;                  //Numero di device CP
     int t;                          //tempo in minuti
     Timeline timeline;              //timeline degli eventi
+    Logger *log;                     //logger
 
     std::vector<int> freeID;                    //ID liberi
     std::vector<CPDevice> devicesCP;        //Vector di dispositivi CP
@@ -34,7 +35,7 @@ private:
     bool allowAutoTurnOff(int id);                      //Ritorna se il device supporta l'autoTurnOff in caso di OverKWException
 
 public:
-    Interface(double KW, bool init = true, int maxDV = 1024, int time = 0); //Costruttore
+    Interface(Logger *log, double KW, bool init = true, int maxDV = 1024, int time = 0); //Costruttore
 
     void turnOn(int id);                                // Chiamato con 'set ${DEVICENAME} on'
     void turnOn(int id, int start);                     // Chiamato con 'set ${DEVICENAME} [start] on'
@@ -61,7 +62,7 @@ public:
 
     //Funzioni di debug
     double debugKWs();                //Mostra i KW attualmente in uso
-    int debugTime();                  //Mostra il tempo attuale
+    int debugTime(bool logging = false);                  //Mostra il tempo attuale
     void debugCounters();             //Mostra il numero di device CP e M
     void debugTOS();                  //Mostra la sequenza di spegnimento in caso di OverKW
 };  
