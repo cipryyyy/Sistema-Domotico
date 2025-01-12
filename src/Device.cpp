@@ -75,3 +75,7 @@ void Device::setTempoDiEsecuzione(int time) {
 double Device::getConsumoTotale() {
     return getTempoDiEsecuzione() * (getConsumo()/60);
 }
+
+void Device::off() {
+    on = false;
+}

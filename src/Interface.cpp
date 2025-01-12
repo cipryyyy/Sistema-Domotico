@@ -434,6 +434,13 @@ void Interface::setTime(int time) {                     //Scorrimento del tempo
 
 void Interface::resetTime() {                           //Resetta il tempo
     t = 0;                  //Ritorno con il tempo a 0
+    //Setto tutti gli stati su off
+    for (auto &device : devicesCP) {
+        device.off();
+    }
+    for (auto &device : devicesM) {
+        device.off();
+    }
     timeline.removeNonRoutines();       //Pulisco la timeline
     for (int i : ActiveOnLaunch) {
         int Cpos = CPscan(i);
@@ -461,6 +468,13 @@ void Interface::resetTimers() {                         //Resetta tutte le routi
 void Interface::resetAll() {                         //Resetta tutte le routine
     t = 0;
     timeline.clear();
+    //Setto tutti gli stati su off
+    for (auto &device : devicesCP) {
+        device.off();
+    }
+    for (auto &device : devicesM) {
+        device.off();
+    }
     for (int i : ActiveOnLaunch) {
         int Cpos = CPscan(i);
         int Mpos = Mscan(i); 

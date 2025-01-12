@@ -36,6 +36,8 @@ public:
     int getTempoDiEsecuzione();
     void setTempoDiEsecuzione(int time);
     double getConsumoTotale();
+
+    void off();         // imposta on a false, serve per i reset time e reset all
 };
 
 #endif // DEVICE_H

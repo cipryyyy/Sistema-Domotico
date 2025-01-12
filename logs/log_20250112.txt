@@ -36,3 +36,15 @@
 [05:00] [INFO]:  	Stato dei devices mostrato
 [00:00] [INFO]:  	Reset del sistema effettuato
 [00:00] [INFO]:  	Stato dei devices mostrato
+
+[Applicazione avviata in modalità normale] [EVENT]:  	
+[00:00] [INFO]:  	Device on installato, ID: 11, consumo: 1.000000KW, autoTurnOff: 0, isOn: 1
+[00:00] [INFO]:  	Device off installato, ID: 12, consumo: 1.000000KW, autoTurnOff: 0, isOn: 0
+[02:00] [INFO]:  	Orario aggiornato a 02:00
+[02:00] [INFO]:  	Ricerca ID per nome off
+[02:00] [EVENT]:  	off acceso
+[02:00] [INFO]:  	Stato dei devices mostrato
+[03:00] [INFO]:  	Orario aggiornato a 03:00
+[03:00] [INFO]:  	Stato dei devices mostrato
+[00:00] [INFO]:  	Orario resettato a 0
+[00:00] [INFO]:  	Stato dei devices mostrato
