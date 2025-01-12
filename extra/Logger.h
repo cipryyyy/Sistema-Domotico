@@ -14,11 +14,11 @@ class Logger {
 
     // Funzione per ottenere il timestamp corrente
     std::string getTimestamp() {
-      std::time_t now = std::time(nullptr);
-      std::tm* localTime = std::localtime(&now);
-      char buffer[20];
-      std::strftime(buffer, sizeof(buffer), "%Y%m%d", localTime);
-      return std::string(buffer);
+      std::time_t now = std::time(nullptr);                                               // Ottiene il timestamp corrente
+      std::tm* localTime = std::localtime(&now);                                          // Ottiene il timestamp locale
+      char buffer[20];                                                                    // Buffer per il timestamp
+      std::strftime(buffer, sizeof(buffer), "%Y%m%d", localTime);                         // Formatta il timestamp
+      return std::string(buffer);                                                         // Ritorna il timestamp formattato
     }
 
   public: 
@@ -60,7 +60,7 @@ class Logger {
                  << message << std::endl;                                                      // Aggiunge il messaggio al messaggio di log
       } else {     
         logEntry << "[" << time << "] "                                                        // Aggiunge il timestamp al messaggio di log
-                << "[" << levelStr[level] << "]:  \t"                                            // Aggiunge il livello di log al messaggio di log
+                << "[" << levelStr[level] << "]:  \t"                                          // Aggiunge il livello di log al messaggio di log
                 << message << std::endl;                                                       // Aggiunge il messaggio al messaggio di log
       }    
     
@@ -69,7 +69,7 @@ class Logger {
     }          
     
     void close() {                                                                             // Funzione per chiudere il file di log
-      log(LogLevel::EVENT, "", std::string("Applicazione terminata con successo"));                // Scrive un messaggio di log
+      log(LogLevel::EVENT, "", std::string("Applicazione terminata con successo"));            // Scrive un messaggio di log
       if (logFile.is_open()) {                                                                 // Se il file di log è aperto
         logFile.close();                                                                       // Chiude il file di log
       }
