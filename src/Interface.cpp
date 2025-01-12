@@ -353,7 +353,6 @@ void Interface::turnOff(int id) {                       //spegnimento
         throw DeviceIDOutOfBoundException();        //ID non presente tra i dispositivi.
     }
 }
-
 void Interface::forceOff(int id) {
     updateKW();
     std::vector<int> IDreq = timeline.getIDs(t);

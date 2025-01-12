@@ -182,7 +182,6 @@ int main(int argc, char* argv[]) {
             power = MAX_POWER;
         }
     }
-
     // Inizializzo il sistema
     Interface system(&logger, power, true, MAX_DEVICES);
     if (debug) std::cout << "Avvio con " << power << " KW e " << MAX_DEVICES << " device." << std::endl; 
