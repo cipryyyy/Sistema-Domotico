@@ -428,12 +428,6 @@ void Interface::setTime(int time) {                     //Scorrimento del tempo
     log -> log(Logger::INFO, m2h(t), "Orario aggiornato a " + m2h(t));
 }
 
-// ! Siccome accende tutto e rimangono le routine, crea un problema con i KW, sistemare caffo
-/*
-TODO idea
-- Cerco il picco di KW con le routine
-- Attivo finché non supero il picco
-*/
 void Interface::resetTime() {                           //Resetta il tempo
     t = 0;                  //Ritorno con il tempo a 0
     //Setto tutti gli stati su off
@@ -443,14 +437,26 @@ void Interface::resetTime() {                           //Resetta il tempo
     for (auto &device : devicesM) {
         device.off();
     }
+    //Siccome mantengo le routine, accendo i device finché non raggiungo il picco di KW
+    std::vector<double> delta = timeline.getKWs();
+    double peak = 0;
+    double KWonCall = 0;
+    for (double d : delta) {
+        KWonCall += d;
+        if (KWonCall > peak) peak = KWonCall;
+    }
     timeline.removeNonRoutines();       //Pulisco la timeline
     for (int i : ActiveOnLaunch) {
         int Cpos = CPscan(i);
         int Mpos = Mscan(i); 
         if (Cpos != INT_MIN) {
+            if (peak + devicesCP[Cpos].getConsumo() > maximumKW) break;
+            peak += devicesCP[Cpos].getConsumo();
             timeline.addEvent(0, _cleaner(devicesCP[Cpos].getNome()) + " acceso", devicesCP[Cpos].getID() + maximumDV, devicesCP[Cpos].getConsumo(), false);
             timeline.addEvent(devicesCP[Cpos].getDurataCiclo(), _cleaner(devicesCP[Cpos].getNome()) + " spento", devicesCP[Cpos].getID(), devicesCP[Cpos].getConsumo(), false);
         } else {
+            if (peak + devicesM[Mpos].getConsumo() > maximumKW) break;
+            peak += devicesM[Mpos].getConsumo();
             timeline.addEvent(0, _cleaner(devicesM[i].getNome()) + " acceso", devicesM[Mpos].getID() + maximumDV, devicesM[i].getConsumo(), false);
         }
     }
