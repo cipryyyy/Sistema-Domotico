@@ -12,6 +12,7 @@ Autore: Cipriani Andrea
 #include "CPDevice.h"               // Per i dispositivi CP
 #include "ManualDevice.h"           // Per i dispositivi manuali
 #include "Timeline.h"               // Per la timeline
+#include "Logger.h"                 // Per il logger
 
 class Interface {
 private:

@@ -28,16 +28,12 @@ public:
             throw std::invalid_argument("Il tempo deve essere compreso tra 0 e 1439 minuti"); //24 h 
         }
         for (int i = 0; i < d.size(); i++) {
-            if ((std::abs(ID - d[i]) == 100) && t[i] == time) {
-                t.erase(t.begin() + i);
-                e.erase(e.begin() + i);
-                d.erase(d.begin() + i);
-                k.erase(k.begin() + i);
-                r.erase(r.begin() + i);
+            if ((std::abs(ID - d[i]) == 100) && t[i] == time) {         //Se ho faccio un accensione e uno spegnimento nello stesso momento, lo elimino
+                forget(ID, time, time);
                 return; 
             }
         }
-        t.push_back(time);
+        t.push_back(time);          //Altrimenti salvo l'evento
         e.push_back(event);
         d.push_back(ID);
         k.push_back(KW);
@@ -48,52 +44,52 @@ public:
         if (end < start || start < 0 || end > 1439) {
             throw std::invalid_argument("Valori inseriti non validi");
         }
-        std::vector<int> times;
-        for (int i = 0; i < t.size(); i++) {
-            if (t[i] >= start && t[i] <= end) {
-                times.push_back(t[i]);
+        std::vector<int> times;                 //Vettore di timestamp
+        for (int i = 0; i < t.size(); i++) {    //Scorro tutti i timestamp
+            if (t[i] >= start && t[i] <= end) { //Se il timestamp è nel lasso di tempo
+                times.push_back(t[i]);          //Lo aggiungo al vettore
             }
         }
-        return std::move(times);
+        return std::move(times);               //Ritorno il vettore con move semantics
     }
 
     std::vector<std::string> getEvents(int start = 0, int end = 1439) {     //Ritorna gli eventi in un lasso di tempo
         if (end < start || start < 0 || end > 1439) {
             throw std::invalid_argument("Valori inseriti non validi");
         }
-        std::vector<std::string> events;
-        for (int i = 0; i < e.size(); i++) {
-            if (t[i] >= start && t[i] <= end) {
-                events.push_back(e[i]);
+        std::vector<std::string> events;       //Vettore di eventi
+        for (int i = 0; i < e.size(); i++) {   //Scorro tutti gli eventi
+            if (t[i] >= start && t[i] <= end) { //Se l'evento è nel lasso di tempo
+                events.push_back(e[i]);        //Lo aggiungo al vettore
             }
         }
-        return std::move(events);
+        return std::move(events);              //Ritorno il vettore con move semantics
     }
 
     std::vector<int> getIDs(int start = 0, int end = 1439) {        //Ritorna gli id agenti in un lasso di tempo
         if (end < start || start < 0 || end > 1439) {
             throw std::invalid_argument("Valori inseriti non validi");
         }
-        std::vector<int> IDs;
-        for (int i = 0; i < e.size(); i++) {
-            if (t[i] >= start && t[i] <= end) {
-                IDs.push_back(d[i]);
+        std::vector<int> IDs;                       //Vettore di ID
+        for (int i = 0; i < e.size(); i++) {        //Scorro tutti gli ID
+            if (t[i] >= start && t[i] <= end) {     //Se l'ID è nel lasso di tempo
+                IDs.push_back(d[i]);                //Lo aggiungo al vettore
             }
         }
-        return std::move(IDs);
+        return std::move(IDs);                      //Ritorno il vettore con move semantics
     }
 
     std::vector<double> getKWs(int start = 0, int end = 1439) {     //Ritorna le variazioni in un lasso di tempo
         if (end < start || start < 0 || end > 1439) {
             throw std::invalid_argument("Valori inseriti non validi");
         }
-        std::vector<double> KWs;
-        for (int i = 0; i < e.size(); i++) {
-            if (t[i] >= start && t[i] <= end) {
-                KWs.push_back(k[i]);
+        std::vector<double> KWs;                    //Vettore di ΔKW
+        for (int i = 0; i < e.size(); i++) {        //Scorro tutti i ΔKW
+            if (t[i] >= start && t[i] <= end) {     //Se il ΔKW è nel lasso di tempo
+                KWs.push_back(k[i]);                //Lo aggiungo al vettore
             }
         }
-        return std::move(KWs);
+        return std::move(KWs);                  //Ritorno il vettore con move semantics
     }
 
     void forget(int id, int begin = 0, int end = 1439) {        //Elimina gli eventi di un device in un lasso di tempo
@@ -102,8 +98,8 @@ public:
                 clear();
                 return;
             }
-            if (t[i] >= begin && t[i] <= end && (d[i] == id || d[i] == (id+range))) {
-                t.erase(t.begin() + i);
+            if (t[i] >= begin && t[i] <= end && (d[i] == id || d[i] == (id+range))) { //Se l'evento è nel lasso di tempo e ha l'ID giusto (in accensione o spegnimento)
+                t.erase(t.begin() + i);                         //Elimino l'evento
                 e.erase(e.begin() + i);
                 d.erase(d.begin() + i);
                 k.erase(k.begin() + i);
@@ -121,16 +117,16 @@ public:
         r.clear();
     }
 
-    void setRange(int mid) {
+    void setRange(int mid) {    //Imposta il range
         range = mid;
     }
-    int getRange() const noexcept {
+    int getRange() const noexcept { //Ritorna il range
         return range;
     }
 
-    void removeNonRoutines(int begin = 0, int end = 1439) {
-        for (int i = 0; i < r.size(); i++) {
-            if (t[i] >= begin && t[i] <= end && !r[i]) {
+    void removeNonRoutines(int begin = 0, int end = 1439) {    //Rimuove azioni che non sono di routine
+        for (int i = 0; i < r.size(); i++) {                    //Scorro tutti gli eventi
+            if (t[i] >= begin && t[i] <= end && !r[i]) {        //Se l'evento è nel lasso di tempo e non è di routine
                 t.erase(t.begin() + i);
                 e.erase(e.begin() + i);
                 d.erase(d.begin() + i);
