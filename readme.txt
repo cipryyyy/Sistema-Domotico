@@ -9,6 +9,8 @@ L'intero progetto è stato fatto con l'utilizzo di github per il controllo versi
 
 # main.cpp:
 
+# Logger.h:
+
 # Interface.h / Interface.cpp
 Il modulo Interface si occupa di gestire la comunicazione tra l'input utente e i device, facendo lavorare in sicurezza l'intero sistema, si occupa di gestire
 gli oggetti di Timeline.h e Device.h.
