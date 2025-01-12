@@ -28,6 +28,7 @@ private:
     std::vector<int> freeID;                    //ID liberi
     std::vector<CPDevice> devicesCP;        //Vector di dispositivi CP
     std::vector<ManualDevice> devicesM;     //Vector di dispositivi M
+    std::vector<int> ActiveOnLaunch;    //Dispositivi attivi all'avvio
 
     int CPscan(int id) const noexcept;          //Ricerca di un device CP
     int Mscan(int M) const noexcept;            //Ricerca di un device M

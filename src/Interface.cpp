@@ -430,6 +430,9 @@ void Interface::setTime(int time) {                     //Scorrimento del tempo
 void Interface::resetTime() {                           //Resetta il tempo
     t = 0;                  //Ritorno con il tempo a 0
     timeline.removeNonRoutines();       //Pulisco la timeline
+    for (int i : ActiveOnLaunch) {
+        turnOn(i);          //Riaccendo i dispositivi che erano accesi
+    }
     std::cout << "[" << m2h(t) << "]: " << "Reset del tempo effettuato con successo" << std::endl;
     log -> log(Logger::INFO, m2h(t), "Orario resettato a 0");
 }
@@ -446,6 +449,9 @@ void Interface::resetTimers() {                         //Resetta tutte le routi
 void Interface::resetAll() {                         //Resetta tutte le routine
     t = 0;
     timeline.clear();
+    for (int i : ActiveOnLaunch) {
+        turnOn(i);          //Riaccendo i dispositivi che erano accesi
+    }
     std::cout << "[" << m2h(t) << "]: " << "Reset effettuato con successo" << std::endl;
     log -> log(Logger::INFO, m2h(t), "Reset del sistema effettuato");
 }
@@ -551,6 +557,7 @@ void Interface::show(int id) {                          //Mostra un device
 }
 
 void Interface::installM(std::string name, double consumo, bool autoTurnOff, bool isOn) {     //Installa device M
+    updateKW();
     //Controllo che non sia già presente
     for (int i = 0; i < counterM; i++) {
         if (NSCcheck(devicesM[i].getNome(), name)) {
@@ -564,6 +571,10 @@ void Interface::installM(std::string name, double consumo, bool autoTurnOff, boo
         log -> log(Logger::ERROR, m2h(t), "DeviceLimitException");
         throw DeviceLimitException(); // Eccezione, troppi Device installati
     }
+    if ((isOn) && (KW + consumo > maximumKW)) {
+        log -> log(Logger::ERROR, m2h(t), "OverKWException");
+        throw OverKWException(); // Eccezione, troppi KW richiesti
+    }
     counterM++;
     if (freeID.size() > 0) {			//Se ho degli id liberi, li uso
         id = freeID[0];
@@ -572,6 +583,7 @@ void Interface::installM(std::string name, double consumo, bool autoTurnOff, boo
         id = counterM+counterCP;		//Altrimenti, ne creo uno nuovo
     }
     devicesM.push_back(ManualDevice(&timeline, &t, name, id, consumo, autoTurnOff, isOn));
+    if (isOn) ActiveOnLaunch.push_back(id);
     if (consumo < 0) {
         std::cout << "[" << m2h(t) << "]: " << "Installato " << _cleaner(name) << "[" << id << "] con produzione " << -consumo << "KW";
     } else {
@@ -580,12 +592,17 @@ void Interface::installM(std::string name, double consumo, bool autoTurnOff, boo
     log -> log(Logger::INFO, m2h(t), "Device " + name + " installato, ID: " + std::to_string(id) + ", consumo: " + std::to_string(consumo) + "KW, autoTurnOff: " + std::to_string(autoTurnOff) + ", isOn: " + std::to_string(isOn));
 }
 void Interface::installCP(std::string name, double consumo, int durataCiclo, bool isOn) {   //Installa device CP
+    updateKW();
     //Check che non sia già presente
     for (int i = 0; i < counterCP; i++) {
         if (NSCcheck(devicesCP[i].getNome(), name)) {
             log -> log(Logger::ERROR, m2h(t), "DuplicateDeviceException");
             throw DuplicateDeviceException();
         }
+    }
+    if ((isOn) && (KW + consumo > maximumKW)) {
+        log -> log(Logger::ERROR, m2h(t), "OverKWException");
+        throw OverKWException(); // Eccezione, troppi KW richiesti
     }
 	//Creazione ID
     int id;
@@ -601,6 +618,7 @@ void Interface::installCP(std::string name, double consumo, int durataCiclo, boo
         id = counterM+counterCP;	//Altrimenti, ne creo uno nuovo
     }
     devicesCP.push_back(CPDevice(&timeline, &t, name, id, consumo, durataCiclo, isOn));
+    if (isOn) ActiveOnLaunch.push_back(id);
     if (consumo < 0) {
         std::cout << "[" << m2h(t) << "]: " << "Installato " << _cleaner(name) << "[" << id << "] con ciclo " << m2h(durataCiclo) << "h e produzione " << -consumo << "KW";
     } else {
@@ -610,6 +628,13 @@ void Interface::installCP(std::string name, double consumo, int durataCiclo, boo
 }
 void Interface::uninstall(int id) {                     //Disinstalla un device
     std::string name;
+
+    for (int i = 0; i < ActiveOnLaunch.size(); i++) {               //Se era un device attivo al lancio, lo rimuovo
+        if (ActiveOnLaunch[i] == id) {
+            ActiveOnLaunch.erase(ActiveOnLaunch.begin() + i);
+        }
+    }
+
     for (int i = 0; i < counterCP; i++) {			//Controllo se il device è CP
         if (devicesCP[i].getID() == id) {
             int pos = CPscan(id);
