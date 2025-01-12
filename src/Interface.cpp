@@ -276,7 +276,6 @@ void Interface::turnOn(int id, int start, int end) {    //routine
     }
 }
 
-// ? Mettere anche qua la possibilità di farlo con un timer
 void Interface::turnOff(int id) {                       //spegnimento
     updateKW();     //Aggiorno il numero di KW usati
 
@@ -316,10 +315,23 @@ void Interface::forceOff(int id) {
 
 void Interface::removeTimer(int id) {                   //Rimuove le routine di un device
 	//Controllo che l'ID esista
-	if ((CPscan(id) == INT_MIN && Mscan(id) == INT_MIN)) throw DeviceIDOutOfBoundException();
-    // ? t+1 per evitare di cancellare l'evento corrente
-    // TODO: controllare se è corretto
-    timeline.forget(id, t);             //Elimino tutti gli eventi futuri legati all'elettrodomestico
+    int Cpos = CPscan(id);
+    int Mpos = Mscan(id);
+
+	if ((Cpos == INT_MIN && Mpos == INT_MIN)) throw DeviceIDOutOfBoundException();
+
+    bool on;
+    if (Cpos != INT_MIN) {
+        on = devicesCP[Cpos].isOn();
+    } else {
+        on = devicesM[Mpos].isOn();
+    }
+
+    if (on) {
+        timeline.forget(id, t);
+        return;
+    }
+    timeline.forget(id, t+1);             //Elimino tutti gli eventi futuri legati all'elettrodomestico
 }
 
 void Interface::setTime(int time) {                     //Scorrimento del tempo

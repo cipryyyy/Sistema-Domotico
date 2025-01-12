@@ -35,7 +35,6 @@ bool Device::isOn() {
     return on;
 }
 
-
 std::string Device::getNome() const {
     return nome;
 }
