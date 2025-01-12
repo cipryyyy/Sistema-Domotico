@@ -39,7 +39,6 @@ Per quanto riguarda le funzioni di debug, queste vengono chiamate da main solo s
 
 L'unico 'spreco' di memoria (per quanto leggero), sono counterCP e counterM, sono banalmente equivalenti a Device.size(), ma 
 tuttora non riesco a far funzionare il programma se li sostituisco.
-Inoltre, i device quando vengono installati sono spenti, stesso discorso quando si resetta il tempo e il tempo (salvo la presenza di una routine che parte da mezzanotte)
 
 # Timeline.h
 

@@ -1,9 +1,5 @@
 #include "Interface.h"
 
-/* 
-TODO controllare tutti gli addEvent, forse c'è un problema conl'aggiunta degli ID
-*/
-
 //Funzioni helper
 int Interface::CPscan(int id) const noexcept {		    //Indice e appartenenza di un device alla categoria CP
     for (int i = 0; i < counterCP; i++) {
@@ -432,6 +428,12 @@ void Interface::setTime(int time) {                     //Scorrimento del tempo
     log -> log(Logger::INFO, m2h(t), "Orario aggiornato a " + m2h(t));
 }
 
+// ! Siccome accende tutto e rimangono le routine, crea un problema con i KW, sistemare caffo
+/*
+TODO idea
+- Cerco il picco di KW con le routine
+- Attivo finché non supero il picco
+*/
 void Interface::resetTime() {                           //Resetta il tempo
     t = 0;                  //Ritorno con il tempo a 0
     //Setto tutti gli stati su off
