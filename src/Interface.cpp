@@ -415,7 +415,9 @@ void Interface::setTime(int time) {                     //Scorrimento del tempo
     std::cout << "[" << m2h(t) << "]: L'orario attuale e' " << m2h(t) << std::endl;
     
     for (size_t i = 0; i < timestamps.size(); ++i) {
-        log -> log(Logger::EVENT, m2h(t), events[i]);
+        if (timestamps[i] != t) {
+            log -> log(Logger::EVENT, m2h(timestamps[i]), events[i]);
+        }
         std::cout << "[" << m2h(timestamps[i]) << "]: " << events[i] << std::endl;
     }
     
@@ -492,7 +494,7 @@ void Interface::show() {                                //Mostra tutti i device
             for (int i = 0; i < diff; i++) {
                 emptyspaces1 += " ";
             }
-            std::cout << "[" << m2h(t) << "]: " << "| " << _cleaner(devicesM[i].getNome()) << emptyspaces1 << " | " << (devicesM[i].isOn()? "acceso" : "spento") << " | " << std::fixed << std::setprecision(3) << devicesM[i].getConsumoTotale() << " | " << m2h(devicesM[i].getTempoDiEsecuzione()) << " |" << std::endl;
+            std::cout << "| " << _cleaner(devicesM[i].getNome()) << emptyspaces1 << " | " << (devicesM[i].isOn()? "acceso" : "spento") << " | " << std::fixed << std::setprecision(3) << devicesM[i].getConsumoTotale() << " | " << m2h(devicesM[i].getTempoDiEsecuzione()) << " |" << std::endl;
         }
     }
     for (int i = 0; i < counterCP; i++) {
@@ -508,7 +510,7 @@ void Interface::show() {                                //Mostra tutti i device
         for (int i = 0; i < diff; i++) {
             emptyspaces1 += " ";
         }
-        std::cout << "[" << m2h(t) << "]: " << "| " << _cleaner(devicesCP[i].getNome()) << emptyspaces1 << " | " << (devicesCP[i].isOn()? "acceso" : "spento") << " | " << std::fixed << std::setprecision(3) << devicesCP[i].getConsumoTotale() << " | " << m2h(devicesCP[i].getTempoDiEsecuzione()) << " |" << std::endl;
+        std::cout << "| " << _cleaner(devicesCP[i].getNome()) << emptyspaces1 << " | " << (devicesCP[i].isOn()? "acceso" : "spento") << " | " << std::fixed << std::setprecision(3) << devicesCP[i].getConsumoTotale() << " | " << m2h(devicesCP[i].getTempoDiEsecuzione()) << " |" << std::endl;
     }
     Lid(sum);
     for (int i = 0; i < production.size(); i++) {
