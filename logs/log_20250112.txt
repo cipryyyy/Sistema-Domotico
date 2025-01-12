@@ -1,46 +1,38 @@
 [Applicazione avviata in modalità normale] [EVENT]:  	
-[00:00] [INFO]:  	Device on installato, ID: 11, consumo: 1.000000KW, autoTurnOff: 0, isOn: 1
-[00:00] [INFO]:  	Device off installato, ID: 12, consumo: 1.000000KW, autoTurnOff: 0, isOn: 0
-[02:00] [INFO]:  	Orario aggiornato a 02:00
-[02:00] [INFO]:  	Stato dei devices mostrato
+[00:00] [INFO]:  	Device cycle installato, ID: 11, consumo: 0.500000KW, durataCiclo: 120h, isOn: 1
+[02:00] [EVENT]:  	cycle spento
+[03:00] [INFO]:  	Orario aggiornato a 03:00
 [00:00] [INFO]:  	Orario resettato a 0
-[00:00] [INFO]:  	Stato dei devices mostrato
-[00:00] [INFO]:  	Device prova installato, ID: 13, consumo: 1.000000KW, durataCiclo: 120h, isOn: 1
-[00:00] [INFO]:  	Stato dei devices mostrato
-[04:00] [INFO]:  	Orario aggiornato a 04:00
-[04:00] [INFO]:  	Stato dei devices mostrato
-[04:00] [INFO]:  	Ricerca ID per nome on
-[04:00] [ERROR]:  	DeviceIsRunningException
-[04:00] [INFO]:  	Ricerca ID per nome off
-[04:00] [INFO]:  	Device off disinstallato, ID: 12
-[04:00] [INFO]:  	Ricerca ID per nome on
-[04:00] [EVENT]:  	on spento
-[04:00] [INFO]:  	Ricerca ID per nome on
-[04:00] [INFO]:  	Device on disinstallato, ID: 11
-[00:00] [INFO]:  	Orario resettato a 0
-[00:00] [INFO]:  	Stato dei devices mostrato
-[02:00] [INFO]:  	Orario aggiornato a 02:00
-[02:00] [INFO]:  	Ricerca ID per nome prova
-[02:00] [INFO]:  	Stato dei devices mostrato
-[Applicazione avviata in modalità normale] [EVENT]:  	
-[00:00] [INFO]:  	Device on installato, ID: 10, consumo: 1.000000KW, autoTurnOff: 0, isOn: 1
-[00:00] [INFO]:  	Device off installato, ID: 11, consumo: 0.500000KW, autoTurnOff: 0, isOn: 0
-[02:00] [INFO]:  	Orario aggiornato a 02:00
-[02:00] [INFO]:  	Stato dei devices mostrato
-[00:00] [INFO]:  	Reset del sistema effettuato
-[00:00] [INFO]:  	Stato dei devices mostrato
-[00:00] [INFO]:  	Ricerca ID per nome off
-[00:00] [EVENT]:  	off acceso
+[02:00] [EVENT]:  	cycle spento
 [03:00] [INFO]:  	Orario aggiornato a 03:00
 [03:00] [INFO]:  	Stato dei devices mostrato
 [00:00] [INFO]:  	Reset del sistema effettuato
-[00:00] [INFO]:  	Ricerca ID per nome off
-[00:00] [ERROR]:  	DeviceIsRunningException
 [00:00] [INFO]:  	Stato dei devices mostrato
-[00:00] [INFO]:  	Ricerca ID per nome off
-[00:00] [EVENT]:  	off spento
+[02:00] [EVENT]:  	cycle spento
+[03:00] [INFO]:  	Orario aggiornato a 03:00
+[00:00] [INFO]:  	Orario resettato a 0
 [00:00] [INFO]:  	Stato dei devices mostrato
-[00:00] [INFO]:  	Ricerca ID per nome off
-[00:00] [EVENT]:  	off acceso
+[02:00] [EVENT]:  	cycle spento
 [03:00] [INFO]:  	Orario aggiornato a 03:00
 [03:00] [INFO]:  	Stato dei devices mostrato
+[03:00] [INFO]:  	Device on installato, ID: 12, consumo: 1.000000KW, autoTurnOff: 0, isOn: 1
+[03:00] [INFO]:  	Stato dei devices mostrato
+[00:00] [INFO]:  	Reset del sistema effettuato
+[00:00] [INFO]:  	Stato dei devices mostrato
+[02:00] [EVENT]:  	cycle spento
+[03:00] [INFO]:  	Orario aggiornato a 03:00
+[03:00] [INFO]:  	Stato dei devices mostrato
+[03:00] [INFO]:  	Device off installato, ID: 13, consumo: 1.000000KW, autoTurnOff: 0, isOn: 0
+[03:00] [INFO]:  	Stato dei devices mostrato
+[00:00] [INFO]:  	Reset del sistema effettuato
+[00:00] [INFO]:  	Stato dei devices mostrato
+[02:00] [EVENT]:  	cycle spento
+[03:00] [INFO]:  	Orario aggiornato a 03:00
+[03:00] [INFO]:  	Stato dei devices mostrato
+[03:00] [INFO]:  	Ricerca ID per nome off
+[03:00] [EVENT]:  	off acceso
+[03:00] [INFO]:  	Stato dei devices mostrato
+[05:00] [INFO]:  	Orario aggiornato a 05:00
+[05:00] [INFO]:  	Stato dei devices mostrato
+[00:00] [INFO]:  	Reset del sistema effettuato
+[00:00] [INFO]:  	Stato dei devices mostrato

@@ -44,6 +44,7 @@ class Logger {
 
     ~Logger() {                                                                           // Distruttore
         if (logFile.is_open()) {                                                          // Se il file di log è aperto
+            logFile << "\n";
             logFile.close();                                                              // Chiude il file di log
         }       
     }       
