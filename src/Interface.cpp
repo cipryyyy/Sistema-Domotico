@@ -437,15 +437,14 @@ void Interface::resetTime() {                           //Resetta il tempo
     timeline.removeNonRoutines();       //Pulisco la timeline
     for (int i : ActiveOnLaunch) {
         int Cpos = CPscan(i);
-        int Mpos = Mscan(i);
-        std::cout << Cpos << " <- C - M -> " << Mpos << std::endl;
+        int Mpos = Mscan(i); 
+
         if (Cpos != INT_MIN) {
             timeline.addEvent(0, _cleaner(devicesCP[Cpos].getNome()) + " acceso", devicesCP[Cpos].getID() + maximumDV, devicesCP[Cpos].getConsumo(), false);
         } else {
-            timeline.addEvent(0, _cleaner(devicesM[i].getNome()) + " acceso", devicesM[i].getID() + maximumDV, devicesM[i].getConsumo(), false);
+            timeline.addEvent(0, _cleaner(devicesM[i].getNome()) + " acceso", devicesM[Mpos].getID() + maximumDV, devicesM[i].getConsumo(), false);
         }
     }
-    std::vector<std::string> events = timeline.getEvents(0, t);
     std::cout << "[" << m2h(t) << "]: " << "Reset del tempo effettuato con successo" << std::endl;
     log -> log(Logger::INFO, m2h(t), "Orario resettato a 0");
 }
@@ -465,11 +464,12 @@ void Interface::resetAll() {                         //Resetta tutte le routine
     for (int i : ActiveOnLaunch) {
         int Cpos = CPscan(i);
         int Mpos = Mscan(i);
+
         if (Cpos != INT_MIN) {
             timeline.addEvent(0, _cleaner(devicesCP[Cpos].getNome()) + " acceso", devicesCP[Cpos].getID() + maximumDV, devicesCP[Cpos].getConsumo(), false);
         } 
         if (Mpos != INT_MIN) {
-            timeline.addEvent(0, _cleaner(devicesM[i].getNome()) + " acceso", devicesM[i].getID() + maximumDV, devicesM[i].getConsumo(), false);
+            timeline.addEvent(0, _cleaner(devicesM[Mpos].getNome()) + " acceso", devicesM[i].getID() + maximumDV, devicesM[i].getConsumo(), false);
         }
     }
     std::cout << "[" << m2h(t) << "]: " << "Reset effettuato con successo" << std::endl;

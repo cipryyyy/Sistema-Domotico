@@ -44,7 +44,6 @@ double Device::getConsumo() const {
 }
 
 int Device::getTempoDiEsecuzione() {
-    // Ottieni gli ID e i timestamp dal Timeline usando i puntatori
     std::vector<int> IDs = timeline->getIDs(0, *t);  // Usa '->' per accedere ai metodi di 'timeline', 'dereferenzia' 't'
     std::vector<int> timestamps = timeline->getTimes(0, *t);
     
@@ -52,9 +51,7 @@ int Device::getTempoDiEsecuzione() {
     int temp = -1;
     int exec = 0;
 
-    // Scorri tutti gli eventi
     for (int i = 0; i < IDs.size(); i++) {
-
         if (IDs[i] == ID + range) {
             temp = timestamps[i];
         } else if (IDs[i] == ID) {
@@ -68,7 +65,6 @@ int Device::getTempoDiEsecuzione() {
     if (isOn() && temp != -1) {
         exec += *t - temp;
     }
-
     return exec;
 }
 
