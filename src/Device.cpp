@@ -18,10 +18,6 @@ bool Device::isOn() {
     std::vector<int> IDs = timeline->getIDs(0, *t);
     int range = timeline->getRange();
 
-    if (IDs.empty()) {
-        on = false;
-    }
-
     for (int i = IDs.size() - 1; i >= 0; i--) {
         if (IDs[i] == ID) {
             on = false;
@@ -52,7 +48,7 @@ int Device::getTempoDiEsecuzione() {
     std::vector<int> IDs = timeline->getIDs(0, *t);  // Usa '->' per accedere ai metodi di 'timeline', 'dereferenzia' 't'
     std::vector<int> timestamps = timeline->getTimes(0, *t);
     
-    int range = timeline->getRange();
+    int range = timeline -> getRange();
     int temp = -1;
     int exec = 0;
 

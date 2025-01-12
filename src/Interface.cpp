@@ -1,5 +1,9 @@
 #include "Interface.h"
 
+/* 
+TODO controllare tutti gli addEvent, forse c'è un problema conl'aggiunta degli ID
+*/
+
 //Funzioni helper
 int Interface::CPscan(int id) const noexcept {		    //Indice e appartenenza di un device alla categoria CP
     for (int i = 0; i < counterCP; i++) {
@@ -100,18 +104,19 @@ Interface::Interface(Logger *log, double KW, bool init, int maxDV, int time): ma
         counterM = 4;
 
         devicesCP = {
-            CPDevice(&timeline, &t, "Lavatrice", 0, 2, 110),
-            CPDevice(&timeline, &t, "Lavastoviglie", 1, 1.5, 195),
-            CPDevice(&timeline, &t, "Forno_microonde", 2, 0.8, 2),
-            CPDevice(&timeline, &t, "Asciugatrice", 3, 0.5, 60),
-            CPDevice(&timeline, &t, "Tapparelle", 7, 0.3, 1),
-            CPDevice(&timeline, &t, "Televisore", 4, 0.2, 60)
+            //Parto da 1, l'ID 0 da problemi
+            CPDevice(&timeline, &t, "Lavatrice", 1, 2, 110),
+            CPDevice(&timeline, &t, "Lavastoviglie", 2, 1.5, 195),
+            CPDevice(&timeline, &t, "Forno_microonde", 3, 0.8, 2),
+            CPDevice(&timeline, &t, "Asciugatrice", 4, 0.5, 60),
+            CPDevice(&timeline, &t, "Tapparelle", 8, 0.3, 1),
+            CPDevice(&timeline, &t, "Televisore", 5, 0.2, 60)
         };
         devicesM = {
-            ManualDevice(&timeline, &t, "Impianto_fotovoltaico", 5, -1.5),     //Pannello al contrario perché aumenta la soglia di KW disponibili
-            ManualDevice(&timeline, &t, "Pompa_di_calore", 6, 2),
-            ManualDevice(&timeline, &t, "Scaldabagno", 8, 1),
-            ManualDevice(&timeline, &t, "Frigorifero", 9, 0.4, false)
+            ManualDevice(&timeline, &t, "Impianto_fotovoltaico", 6, -1.5),     //Pannello al contrario perché aumenta la soglia di KW disponibili
+            ManualDevice(&timeline, &t, "Pompa_di_calore", 7, 2),
+            ManualDevice(&timeline, &t, "Scaldabagno", 9, 1),
+            ManualDevice(&timeline, &t, "Frigorifero", 10, 0.4, false)
         };
     }
 }
@@ -431,8 +436,16 @@ void Interface::resetTime() {                           //Resetta il tempo
     t = 0;                  //Ritorno con il tempo a 0
     timeline.removeNonRoutines();       //Pulisco la timeline
     for (int i : ActiveOnLaunch) {
-        turnOn(i);          //Riaccendo i dispositivi che erano accesi
+        int Cpos = CPscan(i);
+        int Mpos = Mscan(i);
+        std::cout << Cpos << " <- C - M -> " << Mpos << std::endl;
+        if (Cpos != INT_MIN) {
+            timeline.addEvent(0, _cleaner(devicesCP[Cpos].getNome()) + " acceso", devicesCP[Cpos].getID() + maximumDV, devicesCP[Cpos].getConsumo(), false);
+        } else {
+            timeline.addEvent(0, _cleaner(devicesM[i].getNome()) + " acceso", devicesM[i].getID() + maximumDV, devicesM[i].getConsumo(), false);
+        }
     }
+    std::vector<std::string> events = timeline.getEvents(0, t);
     std::cout << "[" << m2h(t) << "]: " << "Reset del tempo effettuato con successo" << std::endl;
     log -> log(Logger::INFO, m2h(t), "Orario resettato a 0");
 }
@@ -450,7 +463,14 @@ void Interface::resetAll() {                         //Resetta tutte le routine
     t = 0;
     timeline.clear();
     for (int i : ActiveOnLaunch) {
-        turnOn(i);          //Riaccendo i dispositivi che erano accesi
+        int Cpos = CPscan(i);
+        int Mpos = Mscan(i);
+        if (Cpos != INT_MIN) {
+            timeline.addEvent(0, _cleaner(devicesCP[Cpos].getNome()) + " acceso", devicesCP[Cpos].getID() + maximumDV, devicesCP[Cpos].getConsumo(), false);
+        } 
+        if (Mpos != INT_MIN) {
+            timeline.addEvent(0, _cleaner(devicesM[i].getNome()) + " acceso", devicesM[i].getID() + maximumDV, devicesM[i].getConsumo(), false);
+        }
     }
     std::cout << "[" << m2h(t) << "]: " << "Reset effettuato con successo" << std::endl;
     log -> log(Logger::INFO, m2h(t), "Reset del sistema effettuato");
@@ -583,7 +603,10 @@ void Interface::installM(std::string name, double consumo, bool autoTurnOff, boo
         id = counterM+counterCP;		//Altrimenti, ne creo uno nuovo
     }
     devicesM.push_back(ManualDevice(&timeline, &t, name, id, consumo, autoTurnOff, isOn));
-    if (isOn) ActiveOnLaunch.push_back(id);
+    if (isOn) {
+        timeline.addEvent(t, _cleaner(name) + " acceso", id + maximumDV, consumo, false);
+        ActiveOnLaunch.push_back(id);
+    }
     if (consumo < 0) {
         std::cout << "[" << m2h(t) << "]: " << "Installato " << _cleaner(name) << "[" << id << "] con produzione " << -consumo << "KW";
     } else {
@@ -618,7 +641,10 @@ void Interface::installCP(std::string name, double consumo, int durataCiclo, boo
         id = counterM+counterCP;	//Altrimenti, ne creo uno nuovo
     }
     devicesCP.push_back(CPDevice(&timeline, &t, name, id, consumo, durataCiclo, isOn));
-    if (isOn) ActiveOnLaunch.push_back(id);
+    if (isOn) {
+        timeline.addEvent(t, _cleaner(name) + " acceso", id + maximumDV, consumo, false);
+        ActiveOnLaunch.push_back(id);
+    }
     if (consumo < 0) {
         std::cout << "[" << m2h(t) << "]: " << "Installato " << _cleaner(name) << "[" << id << "] con ciclo " << m2h(durataCiclo) << "h e produzione " << -consumo << "KW";
     } else {
