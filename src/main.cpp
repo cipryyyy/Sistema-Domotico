@@ -190,13 +190,6 @@ int main(int argc, char* argv[]) {
     if (debug) std::cout << "Avvio con " << power << " KW e " << MAX_DEVICES << " device." << std::endl; 
     std::string command;
     
-    // Apro file di log
-    std::ofstream logFile("system.log", std::ios::app);
-    if (!logFile.is_open()) {
-        std::cerr << "Errore nell'apertura del file di log\n";
-        return 1;
-    }
-    
     std::cout << "Smart Home Energy Management System\n";
     std::cout << "-------------------------------------------------\n";
     std::cout << "Scrivi 'help' per vedere le funzioni disponibili\n";
@@ -204,52 +197,48 @@ int main(int argc, char* argv[]) {
     std::cout << "-------------------------------------------------" << std::endl;
 
     while (true) {
-        std::cout << "\n>> ";
-        getline(std::cin, command);
-
-        // Loggo il comando
-        logFile << "[" << "] User input: " << command << std::endl;
+        std::cout << "\n>> ";                                                   // Carattere per l'input
+        getline(std::cin, command);                                             // Prendo l'input dell'utente
 
         try {
-            auto tokens = tokenize(command);
-            if (tokens.empty()) continue;
+            auto tokens = tokenize(command);                                    // Tokenizzo l'input
+            if (tokens.empty()) continue;                                       // Se non ci sono token, continuo
+            logger.log(Logger::LogLevel::USERINPUT, "", command);               // Loggo l'input dell'utente
 
-            int arguments = tokens.size();
+            int arguments = tokens.size();                                      // Numero di argomenti
 
             // Display help
-            if(tokens[0] == "help" || tokens[0] == "h") {
-                displayHelp();
-                if (tokens[1] != "") {
-                    displayHelp(tokens[1]);
+            if(tokens[0] == "help" || tokens[0] == "h") {                       // Se il comando è "help"
+                displayHelp();                                                  // Mostra i comandi disponibili
+                if (tokens[1] != "") {                                          // Se c'è un argomento oltre a "help"
+                    displayHelp(tokens[1]);                                     // Mostra l'help per quel comando
                 }
                 continue;
             }
 
             // Commando uscita
-            if (tokens[0] == "exit" || tokens[0] == "q") {
-                logFile << "Exiting program\n";
+            if (tokens[0] == "exit" || tokens[0] == "q") {                      // Se il comando è "exit"
                 break;
             }
 
-            // Debug: mostra i token inseriti dall'utente
-            if (debug) {
-                for (auto& token : tokens) {
-                    std::cout << token << std::endl;
+            if (debug) {                                                        // Debug: mostra i token inseriti dall'utente
+                for (auto& token : tokens) {                                    // Per ogni token
+                    std::cout << token << std::endl;                            // Stampa il token
                 }
             }
 
             // Commandi "show"
             if (tokens[0] == "show") {
-                switch (arguments) {
-                    case 1: 
-                        system.show();
+                switch (arguments) {                                            // Switch sul numero di argomenti
+                    case 1:                                                     // Se non ci sono argomenti
+                        system.show();                                          // Mostra lo stato di tutti i dispositivi
                         break;
-                    case 2: 
+                    case 2:                                                     // Se c'è un argomento
                         try {
-                            int deviceId = system.searchID(tokens[1]);
-                            system.show(deviceId);
-                        } catch (std::exception& e) {
-                            std::cerr << "Errore: " << e.what() << std::endl;
+                            int deviceId = system.searchID(tokens[1]);          // Cerca l'ID del dispositivo
+                            system.show(deviceId);                              // Mostra lo stato del dispositivo
+                        } catch (std::exception& e) {                           // Se c'è un errore
+                            std::cerr << "Errore: " << e.what() << std::endl;   // Stampa l'errore
                         }
                         break;
                     default:
@@ -276,17 +265,17 @@ int main(int argc, char* argv[]) {
                         throw std::invalid_argument("Utilizzo di set time non valido. Usa 'help' per i comandi disponibili");
                     }
                     try {
-                        int newTime = parseTime(tokens[2]);
-                        system.setTime(newTime);
-                    } catch (std::exception& e) {
-                        std::cerr << "Errore: " << e.what() << std::endl;
+                        int newTime = parseTime(tokens[2]);                     // Converto l'orario in minuti
+                        system.setTime(newTime);                                // Imposto il nuovo orario
+                    } catch (std::exception& e) {                               // Se c'è un errore
+                        std::cerr << "Errore: " << e.what() << std::endl;       // Stampa l'errore
                     }
-                    if (debug) {
-                        std::cout << "KW: ";
-                        system.debugKWs();
-                        std::cout << std::endl << "Time: ";
-                        system.debugTime();
-                        std::cout << std::endl;
+                    if (debug) {                                                // Se il debug è attivo
+                        std::cout << "KW: ";                                    // Stampa KW
+                        system.debugKWs();                                      // Mostra i KW attualmente in uso
+                        std::cout << std::endl << "Ora: ";                      // Stampa l'ora
+                        system.debugTime();                                     // Mostra l'ora attuale
+                        std::cout << std::endl;                                 // Stampa un newline
                     }
                     continue;
                 }
@@ -326,27 +315,27 @@ int main(int argc, char* argv[]) {
                             }
                         } catch (OverKWException& e) {
                             std::vector<int> turnOffSequence = system.turnOffSequence();    // Ottiene la sequenza di spegnimento
-                            // provo a spegnere un dispositivo alla volta e riprovo l'accensione
-                            while (!turnOffSequence.empty()) {
-                                try {
-                                    int device = turnOffSequence.back();
-                                    system.turnOff(device);
-                                    std::cout << std::endl;
-                                    turnOffSequence.pop_back();        
-                                    system.turnOn(deviceId);
+                            
+                            while (!turnOffSequence.empty()) {                                          // Cicla finché la sequenza non è vuota
+                                try {                                                                   // Prova a spegnere un dispositivo
+                                    int device = turnOffSequence.back();                                // Prende l'ultimo dispositivo acceso
+                                    system.turnOff(device);                                             // Spegne il dispositivo
+                                    std::cout << std::endl;                                             // Stampa un newline
+                                    turnOffSequence.pop_back();                                         // Rimuove il dispositivo dalla sequenza
+                                    system.turnOn(deviceId);                                            // Riaccende il dispositivo
                                     break;
-                                } catch (OverKWException& e) { 
-                                    if (turnOffSequence.empty()) {
-                                        std::cerr << "Non ci sono KW a sufficienza. prepuzio.." << std::endl;
+                                } catch (OverKWException& e) {                                          // Se c'è un'eccezione di OverKW
+                                    if (turnOffSequence.empty()) {                                      // Se la sequenza è vuota
+                                        std::cerr << "Non ci sono KW a sufficienza." << std::endl;      // Stampa un messaggio di errore
                                         break;
                                     }
-                                    continue; 
+                                    continue;                                                           // Altrimenti continua il ciclo
                                 }
                             }
-                        } catch (TimerAlreadySetException& e) {
-                            std::cerr << "Errore: " << e.what() << std::endl;
-                        } catch (std::exception& e) {
-                            std::cerr << "Errore: " << e.what() << std::endl;
+                        } catch (TimerAlreadySetException& e) {                                         // Se il timer è già impostato
+                            std::cerr << "C'è un timer già impostato!" << std::endl;                    // Stampa un messaggio di errore
+                        } catch (std::exception& e) {                                                   // Altrimenti se c'è qualche altro errore
+                            std::cerr << "Errore: " << e.what() << std::endl;                           // Stampa l'errore
                         }
 
                     } else if (tokens[2] == "off") {
@@ -360,8 +349,8 @@ int main(int argc, char* argv[]) {
                 } catch (std::exception& e) {
                     std::cerr << "Errore: " << e.what() << std::endl;
                 }
-                if (debug) system.debugKWs();
-                if (debug) system.debugTOS();
+                if (debug) system.debugKWs();   // Mostra i KW attualmente in uso
+                if (debug) system.debugTOS();   // Mostra la sequenza di spegnimento in caso di OverKW
                 continue;
             }
 
@@ -371,17 +360,17 @@ int main(int argc, char* argv[]) {
                     throw std::invalid_argument("Utilizzo di kill non valido. Usa 'help' per i comandi disponibili");
                 }
                 try {
-                    int deviceId = system.searchID(tokens[1]);
-                    char choice;
-                    std::cout << "Sei sicuro di voler spegnere il dispositivo " << tokens[1] << "? (y/n): ";
-                    std::cin >> choice;
-                    switch (choice) {
-                        case 'y':
-                            system.forceOff(deviceId);
+                    int deviceId = system.searchID(tokens[1]);                                                  // Cerca l'ID del dispositivo
+                    char choice;                                                                                // Variabile per la scelta dell'utente
+                    std::cout << "Sei sicuro di voler spegnere il dispositivo " << tokens[1] << "? (y/n): ";    // Chiede conferma
+                    std::cin >> choice;                                                                         // Legge la scelta dell'utente
+                    switch (choice) {                                                                           // Switch sulla scelta
+                        case 'y':                                                                               // Se la scelta è affermativa
+                            system.forceOff(deviceId);                                                          // Spegni forzatamente il dispositivo
                             break;
-                        case 'n':
-                            std::cout << "Operazione annullata\n";
-                            break;
+                        case 'n':                                                                               // Se la scelta è negativa
+                            std::cout << "Operazione annullata\n";                                              // Stampa un messaggio di annullamento
+                            break;                                                                              // Termina il case
                         default:
                             break;
                     }
@@ -397,10 +386,10 @@ int main(int argc, char* argv[]) {
                     throw std::invalid_argument("Utilizzo di rm non valido. Usa 'help' per i comandi disponibili");
                 }
                 try {
-                    if (debug) std::cout << "Ricerca di: " << tokens[1] << std::endl;
-                    int deviceId = system.searchID(tokens[1]);
-                    if (debug) std::cout << "ID TROVATO: " << deviceId << std::endl;
-                    system.removeTimer(deviceId);
+                    if (debug) std::cout << "Ricerca di: " << tokens[1] << std::endl;                           // DEBUG: Stampa ricerca dispositivo
+                    int deviceId = system.searchID(tokens[1]);                                                  // Cerca l'ID del dispositivo
+                    if (debug) std::cout << "ID TROVATO: " << deviceId << std::endl;                            // DEBUG: Stampa l'ID del dispositivo
+                    system.removeTimer(deviceId);                                                               // Rimuove il timer del dispositivo
                 } catch (std::exception& e) {
                     std::cerr << "Errore: " << e.what() << std::endl;
                 }
@@ -412,14 +401,14 @@ int main(int argc, char* argv[]) {
                 if (arguments != 2) {
                     throw std::invalid_argument("Utilizzo di reset non valido. Usa 'help' per i comandi disponibili");
                 }
-                if (tokens[1] == "time") {
-                    system.resetTime();
+                if (tokens[1] == "time") {                                                                      // Se il comando è "reset time"
+                    system.resetTime();                                                                         // Resetta l'orario
                 }
-                else if (tokens[1] == "timers") {
-                    system.resetTimers();
+                else if (tokens[1] == "timers") {                                                               // Se il comando è "reset timers"
+                    system.resetTimers();                                                                       // Resetta i timer
                 }
-                else if (tokens[1] == "all") {
-                    system.resetAll();
+                else if (tokens[1] == "all") {                                                                  // Se il comando è "reset all"
+                    system.resetAll();                                                                          // Resetta tutto
                 }
                 else {
                     throw std::invalid_argument("Comando non riconosciuto. Usa 'help' per i comandi disponibili");
@@ -468,10 +457,10 @@ int main(int argc, char* argv[]) {
                     throw std::invalid_argument("Utilizzo di uninstall non valido. Usa 'help' per i comandi disponibili");
                 }
                 try {
-                    int deviceId = system.searchID(tokens[1]);
-                    system.uninstall(deviceId);
-                } catch (std::exception& e) {
-                    std::cerr << "Errore: " << e.what() << std::endl;
+                    int deviceId = system.searchID(tokens[1]);                          // Cerca l'ID del dispositivo
+                    system.uninstall(deviceId);                                         // Disinstalla il dispositivo
+                } catch (std::exception& e) {                                           // Se c'è un errore
+                    std::cerr << "Errore: " << e.what() << std::endl;                   // Stampa l'errore
                 }
                 continue;
             }
@@ -480,6 +469,6 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    logFile.close();
-    return 0;
+    logger.close();     // Chiudo il file di log
+    return 0;           // Chiudo il programma
 }
