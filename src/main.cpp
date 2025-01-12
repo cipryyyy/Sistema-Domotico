@@ -147,6 +147,9 @@ bool isValidPower(double power) {
 
 int main(int argc, char* argv[]) {
 
+    // Inizializzo il logger
+    Logger logger = Logger(debug);
+
     // Inizializzo la potenza massima del sistema
     double power;       // Variabile potenza massima del sistema
     if (argc > 1) {     // Se è stato passato un argomento
