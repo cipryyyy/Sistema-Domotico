@@ -75,7 +75,44 @@ Le funzioni più importanti sono:
  - removeNonRoutines,               esegue quanto detto in (**)
 
 # Device.h / Device.cpp
+    Questa libreria serve a rappresentare dei device elettrici di uso domestico/industriale.
+    Classe padre di ManualDevice e CPDevice, racchiude tutte le caratteristiche che i device hanno in comune.
+    Utilizza la libreria Timeline per gestire lo scorrere del tempo.
+    La libreria Device.h rende disponibili le seguenti funzioni:
+        -   isOn()                      Ritorna True/False, se il device è acceso o spento 
+        -   getNome()                   Ritorna il nome del device
+        -   getID()                     Ritorna l'ID del device 
+        -   getConsumo()                Ritorna il consumo del device 
+        -   getTempoDiEsecuzione()      Ritorna quanto tempo è stato acceso il device durante la giornata, in minuti 
+        -   getConsumoTotale()          Ritorna quanto il device ha consumato durante la giornata 
+        -   setTempoDiEsecuzione()      Serve per modificare la durata di esecuzione dei device 
+
+        Gli altri attributi vengono impostati solo dal costruttore per scelta progettuale.
+
+        Sia la funzione isOn che getTempoDiEsecuzione sfruttano la libreria Timeline per capire quando e quanto il device è stato acceso,
+        e calcolare la propria richiesta.
+        Queste due funzioni potevano essere sviluppate in maniera differente, rendendole meno dipendenti da Timeline e aumentando così l'incapsulamento,
+        ma abbiamo scelto questo approccio per questione di tempo e di praticità del codice.
+
 
 # ManualDevice.h / ManualDevice.cpp
 
+    Questa classe estende la classe Device per rappresentare al meglio i device manuali.
+    Implementa un attributo (autoTurnOff) che serve a indicare se il device supporta la politica di spegnimento automatico.
+     
+    Es: nel caso di overKW, alcuni device possono essere spenti mentre altri non possono.
+    a scelta del utilizzatore.
+
+
 # CPDevice.h / CPDevice.cpp
+
+    Questa classe estende la classe Device e serve a rappresentare i device a ciclo preimpostato.
+    Include un attributo durataCiclo, che indica quanto dura l'esecuzione di un device CP.
+    Allo scadere del tempo il device si spegne automaticamente.
+    (Questo è gestito dall'esterno della classe).
+
+    Questa classe può lanciare un'eccezione se il valore inserito come durata del ciclo non è valido.
+    Eccezione = ValoreNonValido().
+
+
+
