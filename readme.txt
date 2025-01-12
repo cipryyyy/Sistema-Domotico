@@ -1,9 +1,9 @@
 Note per la consegna
 
 SUDDIVISIONE DEL PROGETTO:
-* Buso Riccardo: Progettazione dei moduli Device, ManualDevice, CPDevice, creazione dei log e del CMakeLists.txt
+* Buso Riccardo: Progettazione dei moduli Device, ManualDevice, CPDevice e del CMakeLists.txt
 * Cipriani Andrea: Progettazione dei moduli Interface e Timeline
-* Giorgi Giacomo: Progettazione di main, correzioni di Timeline
+* Giorgi Giacomo: Progettazione di main e Logger
 
 L'intero progetto è stato fatto con l'utilizzo di github per il controllo versione.
 
