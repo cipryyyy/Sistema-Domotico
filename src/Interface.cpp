@@ -415,6 +415,7 @@ void Interface::setTime(int time) {                     //Scorrimento del tempo
     std::cout << "[" << m2h(t) << "]: L'orario attuale e' " << m2h(t) << std::endl;
     
     for (size_t i = 0; i < timestamps.size(); ++i) {
+        log -> log(Logger::EVENT, m2h(t), events[i]);
         std::cout << "[" << m2h(timestamps[i]) << "]: " << events[i] << std::endl;
     }
     
