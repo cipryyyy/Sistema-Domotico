@@ -105,18 +105,18 @@ Interface::Interface(Logger *log, double KW, bool init, int maxDV, int time): ma
 
         devicesCP = {
             //Parto da 1, l'ID 0 da problemi
-            CPDevice(&timeline, &t, "Lavatrice", 1, 2, 110),
-            CPDevice(&timeline, &t, "Lavastoviglie", 2, 1.5, 195),
-            CPDevice(&timeline, &t, "Forno_microonde", 3, 0.8, 2),
-            CPDevice(&timeline, &t, "Asciugatrice", 4, 0.5, 60),
-            CPDevice(&timeline, &t, "Tapparelle", 8, 0.3, 1),
-            CPDevice(&timeline, &t, "Televisore", 5, 0.2, 60)
+            CPDevice(&timeline, &t, "Lavatrice", 0, 2, 110),
+            CPDevice(&timeline, &t, "Lavastoviglie", 1, 1.5, 195),
+            CPDevice(&timeline, &t, "Forno_microonde", 2, 0.8, 2),
+            CPDevice(&timeline, &t, "Asciugatrice", 3, 0.5, 60),
+            CPDevice(&timeline, &t, "Tapparelle", 7, 0.3, 1),
+            CPDevice(&timeline, &t, "Televisore", 4, 0.2, 60)
         };
         devicesM = {
-            ManualDevice(&timeline, &t, "Impianto_fotovoltaico", 6, -1.5),     //Pannello al contrario perché aumenta la soglia di KW disponibili
-            ManualDevice(&timeline, &t, "Pompa_di_calore", 7, 2),
-            ManualDevice(&timeline, &t, "Scaldabagno", 9, 1),
-            ManualDevice(&timeline, &t, "Frigorifero", 10, 0.4, false)
+            ManualDevice(&timeline, &t, "Impianto_fotovoltaico", 5, -1.5),     //Pannello al contrario perché aumenta la soglia di KW disponibili
+            ManualDevice(&timeline, &t, "Pompa_di_calore", 6, 2),
+            ManualDevice(&timeline, &t, "Scaldabagno", 8, 1),
+            ManualDevice(&timeline, &t, "Frigorifero", 9, 0.4, false)
         };
     }
 }
@@ -438,9 +438,9 @@ void Interface::resetTime() {                           //Resetta il tempo
     for (int i : ActiveOnLaunch) {
         int Cpos = CPscan(i);
         int Mpos = Mscan(i); 
-
         if (Cpos != INT_MIN) {
             timeline.addEvent(0, _cleaner(devicesCP[Cpos].getNome()) + " acceso", devicesCP[Cpos].getID() + maximumDV, devicesCP[Cpos].getConsumo(), false);
+            timeline.addEvent(devicesCP[Cpos].getDurataCiclo(), _cleaner(devicesCP[Cpos].getNome()) + " spento", devicesCP[Cpos].getID(), devicesCP[Cpos].getConsumo(), false);
         } else {
             timeline.addEvent(0, _cleaner(devicesM[i].getNome()) + " acceso", devicesM[Mpos].getID() + maximumDV, devicesM[i].getConsumo(), false);
         }
@@ -463,13 +463,12 @@ void Interface::resetAll() {                         //Resetta tutte le routine
     timeline.clear();
     for (int i : ActiveOnLaunch) {
         int Cpos = CPscan(i);
-        int Mpos = Mscan(i);
-
+        int Mpos = Mscan(i); 
         if (Cpos != INT_MIN) {
             timeline.addEvent(0, _cleaner(devicesCP[Cpos].getNome()) + " acceso", devicesCP[Cpos].getID() + maximumDV, devicesCP[Cpos].getConsumo(), false);
-        } 
-        if (Mpos != INT_MIN) {
-            timeline.addEvent(0, _cleaner(devicesM[Mpos].getNome()) + " acceso", devicesM[i].getID() + maximumDV, devicesM[i].getConsumo(), false);
+            timeline.addEvent(devicesCP[Cpos].getDurataCiclo(), _cleaner(devicesCP[Cpos].getNome()) + " spento", devicesCP[Cpos].getID(), devicesCP[Cpos].getConsumo(), false);
+        } else {
+            timeline.addEvent(0, _cleaner(devicesM[i].getNome()) + " acceso", devicesM[Mpos].getID() + maximumDV, devicesM[i].getConsumo(), false);
         }
     }
     std::cout << "[" << m2h(t) << "]: " << "Reset effettuato con successo" << std::endl;
@@ -600,7 +599,7 @@ void Interface::installM(std::string name, double consumo, bool autoTurnOff, boo
         id = freeID[0];
         freeID.erase(freeID.begin());
     } else {
-        id = counterM+counterCP;		//Altrimenti, ne creo uno nuovo
+        id = counterM + counterCP - 1;		//Altrimenti, ne creo uno nuovo
     }
     devicesM.push_back(ManualDevice(&timeline, &t, name, id, consumo, autoTurnOff, isOn));
     if (isOn) {
@@ -638,11 +637,12 @@ void Interface::installCP(std::string name, double consumo, int durataCiclo, boo
         id = freeID[0];
         freeID.erase(freeID.begin());
     } else {
-        id = counterM+counterCP;	//Altrimenti, ne creo uno nuovo
+        id = counterM + counterCP - 1;	//Altrimenti, ne creo uno nuovo
     }
     devicesCP.push_back(CPDevice(&timeline, &t, name, id, consumo, durataCiclo, isOn));
     if (isOn) {
         timeline.addEvent(t, _cleaner(name) + " acceso", id + maximumDV, consumo, false);
+        timeline.addEvent(t + durataCiclo, _cleaner(name) + " spento", id, consumo, false);
         ActiveOnLaunch.push_back(id);
     }
     if (consumo < 0) {
