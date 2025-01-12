@@ -8,6 +8,7 @@ Autori: Cipriani Andrea, Giorgi Giacomo
 #include <iostream>
 #include <vector>
 #include <string>
+#include <cmath>
 #include <stdexcept>
 
 class Timeline{
@@ -26,7 +27,16 @@ public:
         if (time < 0 || time > 1439) {
             throw std::invalid_argument("Il tempo deve essere compreso tra 0 e 1439 minuti"); //24 h 
         }
-        //Salvo tutti i dati
+        for (int i = 0; i < d.size(); i++) {
+            if ((std::abs(ID - d[i]) == 100) && t[i] == time) {
+                t.erase(t.begin() + i);
+                e.erase(e.begin() + i);
+                d.erase(d.begin() + i);
+                k.erase(k.begin() + i);
+                r.erase(r.begin() + i);
+                return; 
+            }
+        }
         t.push_back(time);
         e.push_back(event);
         d.push_back(ID);

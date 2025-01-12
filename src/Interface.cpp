@@ -323,7 +323,6 @@ void Interface::removeTimer(int id) {                   //Rimuove le routine di 
 }
 
 void Interface::setTime(int time) {                     //Scorrimento del tempo
-// ? pulire accensioni e spegnimenti contemporanei dei device M
     timeCheck(t, time);                                                 // Controllo che il tempo sia valido
 
     std::vector<int> timestamps = timeline.getTimes(t,time);             // Vector con gli orari
