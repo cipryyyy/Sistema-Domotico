@@ -1,34 +1,3 @@
-/*
-Logger: Classe per la gestione del logging in un'applicazione C++
-
-Inizializzazione:
-Logger logger(bool debug = false);
-- debug: flag opzionale per attivare la modalità debug (default: false)
-
-Esempio di utilizzo:
-try {
-  Logger logger(true);  // Inizializza logger in modalità debug
-  
-  // Log di diversi tipi di messaggi usando i livelli disponibili:
-  logger.log(Logger::DEBUG, "Messaggio di debug");      // Solo in modalità debug
-  logger.log(Logger::USERINPUT, "Input utente");       // Log input utente
-  logger.log(Logger::EVENT, "Evento applicazione");     // Log eventi
-  logger.log(Logger::ERROR, "Messaggio di errore");    // Log errori
-  logger.log(Logger::INFO, "Messaggio informativo");   // Log info generiche
-  
-  // Chiusura manuale del logger (opzionale, avviene anche nel distruttore)
-  logger.close();
-} catch (const std::ios_base::failure& e) {
-  // Gestione errore apertura file di log
-}
-
-Note:
-- I file di log vengono salvati nella directory '../logs/' con nome 'log_YYYYMMDD-HHMM.txt'
-- La classe non è copiabile ma è movibile
-- In modalità non-debug, i messaggi di tipo DEBUG vengono ignorati
-- Ogni messaggio include automaticamente timestamp e livello di logging
-*/
-
 //Autore: Giacomo Giorgi
 #include <iostream>
 #include <fstream>
@@ -49,7 +18,7 @@ class Logger {
       std::tm* localTime = std::localtime(&now);
       char buffer[20];
       if (isFileTitle) {
-        std::strftime(buffer, sizeof(buffer), "%Y%m%d-%H%M", localTime);
+        std::strftime(buffer, sizeof(buffer), "%Y%m%d", localTime);
       } else {
         std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", localTime);
       }
@@ -83,15 +52,20 @@ class Logger {
         }       
     }       
 
-    void log(LogLevel level, const std::string& message) {                                // Funzione per scrivere un messaggio di log
+    void log(LogLevel level,const std::string& time = "", const std::string& message) {   // Funzione per scrivere un messaggio di log
       if (!logFile.is_open() || (level == DEBUG && !debugMode)) return;                   // Se il file di log non è aperto o il livello di log è DEBUG e la modalità debug è disattivata, esce
 
       static const char* levelStr[] = { "DEBUG", "USERINPUT", "EVENT", "ERROR", "INFO" }; // Array di stringhe per i livelli di log
       std::ostringstream logEntry;                                                        // Stream per il messaggio di log
 
-      logEntry << "[" << getTimestamp() << "] "                                           // Aggiunge il timestamp al messaggio di log
-               << "[" << levelStr[level] << "] "                                          // Aggiunge il livello di log al messaggio di log
-               << message << std::endl;                                                   // Aggiunge il messaggio al messaggio di log
+      if (time.empty()) {                                                                 // Se il timestamp non è specificato
+        logEntry << "[" << levelStr[level] << "] "                                        // Aggiunge il livello di log al messaggio di log
+                 << message << std::endl;                                                 // Aggiunge il messaggio al messaggio di log
+      } else {
+        logEntry << "[" << time << "] "                                                   // Aggiunge il timestamp al messaggio di log
+                << "[" << levelStr[level] << "] "                                         // Aggiunge il livello di log al messaggio di log
+                << message << std::endl;                                                  // Aggiunge il messaggio al messaggio di log
+      }
 
       logFile << logEntry.str();                                                          // Scrive il messaggio sul file di log
       logFile.flush();                                                                    // Svuota il buffer del file di log
