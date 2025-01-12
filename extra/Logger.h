@@ -59,7 +59,7 @@ class Logger {
                  << message << std::endl;                                                      // Aggiunge il messaggio al messaggio di log
       } else {     
         logEntry << "[" << time << "] "                                                        // Aggiunge il timestamp al messaggio di log
-                << "[" << levelStr[level] << "]: "                                             // Aggiunge il livello di log al messaggio di log
+                << "[" << levelStr[level] << "]:  \t"                                            // Aggiunge il livello di log al messaggio di log
                 << message << std::endl;                                                       // Aggiunge il messaggio al messaggio di log
       }    
     
