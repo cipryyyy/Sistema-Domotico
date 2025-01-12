@@ -32,7 +32,7 @@ class Logger {
             std::cerr << "Impossibile aprire file: " << logFileName << std::endl;         // Stampa un messaggio di errore
             throw std::ios_base::failure("Impossibile aprire file di log");               // E lancia un'eccezione
           }
-          log(LogLevel::EVENT, std::string("Applicazione avviata in modalità ") + (debug ? "debug" : "normale"));
+          log(LogLevel::EVENT, "", std::string("Applicazione avviata in modalità ") + (debug ? "debug" : "normale"));
     }
 
     // Costruttori e operatori di assegnazione disabilitati
@@ -69,7 +69,7 @@ class Logger {
     }          
     
     void close() {                                                                             // Funzione per chiudere il file di log
-      log(LogLevel::EVENT, std::string("Applicazione terminata con successo"));                // Scrive un messaggio di log
+      log(LogLevel::EVENT, "", std::string("Applicazione terminata con successo"));                // Scrive un messaggio di log
       if (logFile.is_open()) {                                                                 // Se il file di log è aperto
         logFile.close();                                                                       // Chiude il file di log
       }
