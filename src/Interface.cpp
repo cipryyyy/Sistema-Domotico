@@ -1,7 +1,5 @@
 #include "Interface.h"
 
-// TODO riscrivere i log per bene, programmato e blablabla
-
 //Funzioni helper
 int Interface::CPscan(int id) const noexcept {		    //Indice e appartenenza di un device alla categoria CP
     for (int i = 0; i < counterCP; i++) {
