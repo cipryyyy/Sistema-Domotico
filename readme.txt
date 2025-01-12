@@ -8,8 +8,50 @@ SUDDIVISIONE DEL PROGETTO:
 L'intero progetto è stato fatto con l'utilizzo di github per il controllo versione.
 
 # main.cpp:
+    Il file main.cpp rappresenta il punto di ingresso del sistema e implementa l'interfaccia utente del programma di gestione energetica. La sua architettura è organizzata attorno a diverse funzioni helper chiave che facilitano l'interazione con l'utente e la gestione dei comandi:
+        La gestione dell'input utente è gestita attraverso funzioni specializzate:
+
+        - tokenize(): scompone i comandi inseriti in token separati, gestendo correttamente gli spazi e permettendo un'analisi precisa dei comandi
+        - isValidTimeFormat(): verifica che il formato del tempo inserito rispetti gli standard HH:MM o H:MM
+        - parseTime(): converte le stringhe temporali nel formato interno del sistema (minuti dalla mezzanotte)
+        - displayHelp(): fornisce documentazione dettagliata dei comandi, sia generale che specifica per comando
+
+        Il sistema offre due modalità di configurazione della potenza massima:
+        1. Tramite argomento da riga di comando all'avvio del programma
+        2. Tramite input utente al primo avvio del sistema
+
+        La struttura del programma include:
+        - Costanti di sistema configurabili (MAX_POWER, MAX_DEVICES)
+        - Sistema di logging per tracciare le operazioni
+        - Gestione completa delle eccezioni per garantire la robustezza del sistema
+        - Modalità debug attivabile per il troubleshooting
+
+    Il main loop del programma processa continuamente i comandi dell'utente, interpretandoli e instradandoli alle appropriate funzioni di gestione, mantenendo un sistema di logging attivo per tracciare tutte le operazioni eseguite.
 
 # Logger.h:
+    Il file Logger.h implementa un sistema di logging robusto e flessibile per tracciare le operazioni del sistema di gestione energetica.
+    La classe Logger è progettata con particolare attenzione alla gestione delle risorse e alla sicurezza:
+    - Utilizza il RAII (Resource Acquisition Is Initialization) per la gestione del file di log
+    - Implementa la Rule of Five: disabilita la copia (costruttore e operatore di assegnazione), mentre permette il movimento degli oggetti
+    - Gestisce correttamente le eccezioni durante l'apertura dei file
+
+    Caratteristiche principali:
+    - Supporta diversi livelli di log (DEBUG, USERINPUT, EVENT, ERROR, INFO)
+    - Genera automaticamente nomi file basati sulla data corrente
+    - Include timestamp nei messaggi di log
+    - Supporta una modalità debug attivabile/disattivabile
+    - Gestisce automaticamente l'apertura e chiusura dei file
+
+    Funzionalità specifiche:
+    - getTimestamp(): genera timestamp nel formato YYYYMMDD per i nomi dei file
+    - log(): metodo principale per la registrazione dei messaggi, con supporto per diversi livelli di dettaglio
+    - Flushing automatico dopo ogni operazione di scrittura per garantire la persistenza dei dati
+    - Gestione efficiente delle risorse con chiusura automatica dei file nel distruttore
+    Il sistema è progettato per essere thread-safe e per gestire correttamente le risorse di sistema, con particolare attenzione alla gestione della memoria e dei file.
+    Ho deciso di far generare un singolo file di log al giorno e non un file per ogni avvio per una questione di praticità. Nell'eventualità che questo programma venga avviato
+    nel mondo reale, è molto più pratico avere un singolo file per quel giorno, rendendo più facile capire dove si trova un eventuale problema. Qualora si volesse rendere più
+    granulare il sistema di logging, basta aggiungere alla generazione di getTimestamp gli shorthand per ora/minuti/secondi alla stringa e di conseguenza si genereranno più file,
+    in base a quante volte viene spento e riacceso il programma durante la giornata.
 
 # Interface.h / Interface.cpp
 Il modulo Interface si occupa di gestire la comunicazione tra l'input utente e i device, facendo lavorare in sicurezza l'intero sistema, si occupa di gestire
