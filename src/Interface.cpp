@@ -24,7 +24,6 @@ bool Interface::allowAutoTurnOff(int id) {          //Controllo se il dispositiv
     int pos = Mscan(id);
     return devicesM[pos].allowAutoTurnOff();
 }
-
 void timeCheck(int t, int start = INT_MIN, int end = INT_MIN) {     //Controllo della validità del tempo
     if (t < 0 || t > 1439) throw InvalidTimeException();				//tempo di input
 	if (start != INT_MIN) {												//check di inizio routine
@@ -71,7 +70,7 @@ void sortTimeBased(std::vector<int>& timestamps, std::vector<std::string>& event
         events[j + 1] = event;
     }
 }
-std::string _cleaner(std::string raw) {     //Rimuove gli underscore dai nomi in output
+std::string _cleaner(const std::string& raw) {     //Rimuove gli underscore dai nomi in output
     std::string output = "";
     for (char c : raw) {
         if (c == '_') output+=" ";
@@ -114,6 +113,7 @@ Interface::Interface(Logger *log, double KW, bool init, int maxDV, int time): ma
             ManualDevice(&timeline, &t, "Scaldabagno", 9, 1),
             ManualDevice(&timeline, &t, "Frigorifero", 10, 0.4, false)
         };
+        log -> log(Logger::INFO, m2h(t), "Impianto avviato, standard init = " + std::to_string(init) + ", KW = " + std::to_string(maximumKW) + ", maxDV = " + std::to_string(maximumDV));
     }
 }
 

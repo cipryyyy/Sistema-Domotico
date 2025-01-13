@@ -1,0 +1,42 @@
+[EVENT]Applicazione avviata in modalità normale
+[00:00] [INFO]:  	Impianto avviato, standard init = 1, KW = 3.500000, maxDV = 100
+[USERINPUT]help
+[USERINPUT]set Lavastoviglie on 2:00 
+[00:00] [INFO]:  	Ricerca ID per nome Lavastoviglie
+[00:00] [EVENT]:  	Accensione di Lavastoviglie impostata
+[USERINPUT]set time 5:00
+[02:00] [EVENT]:  	Lavastoviglie acceso
+[05:00] [INFO]:  	Orario aggiornato a 05:00
+[USERINPUT]reset time
+[00:00] [INFO]:  	Orario resettato a 0
+[USERINPUT]set time 5:00
+[02:00] [EVENT]:  	Lavastoviglie acceso
+[05:00] [INFO]:  	Orario aggiornato a 05:00
+[USERINPUT]reset all
+[00:00] [INFO]:  	Reset del sistema effettuato
+[USERINPUT]set time 5:00
+[05:00] [INFO]:  	Orario aggiornato a 05:00
+[USERINPUT]set Scaldabagno on 1:00 3:00
+[05:00] [INFO]:  	Ricerca ID per nome Scaldabagno
+[USERINPUT]reset all
+[00:00] [INFO]:  	Reset del sistema effettuato
+[USERINPUT]set scaldabagno on 1:00 3:00
+[00:00] [INFO]:  	Ricerca ID per nome scaldabagno
+[00:00] [EVENT]:  	Routine di Scaldabagno impostata
+[USERINPUT]set frigorifero on 1:00 3:00
+[00:00] [INFO]:  	Ricerca ID per nome frigorifero
+[00:00] [EVENT]:  	Routine di Frigorifero impostata
+[USERINPUT]rm frigorifero
+[00:00] [INFO]:  	Ricerca ID per nome frigorifero
+[00:00] [INFO]:  	Timer di ID 10 rimosso dall'ora 1
+[USERINPUT]set time 4:00
+[01:00] [EVENT]:  	Scaldabagno acceso
+[03:00] [EVENT]:  	Scaldabagno spento
+[04:00] [INFO]:  	Orario aggiornato a 04:00
+[USERINPUT]reset all
+[00:00] [INFO]:  	Reset del sistema effettuato
+[USERINPUT]reset timer
+[USERINPUT]reset timers
+[00:00] [INFO]:  	Timer resettati
+[USERINPUT]exit
+[EVENT]Applicazione terminata con successo

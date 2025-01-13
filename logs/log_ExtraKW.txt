@@ -1,0 +1,33 @@
+[EVENT]Applicazione avviata in modalità normale
+[00:00] [INFO]:  	Impianto avviato, standard init = 1, KW = 1.000000, maxDV = 100
+[USERINPUT]install device 1 0.5 true off
+[USERINPUT]install device1 0.5 true off
+[00:00] [INFO]:  	Device device1 installato, ID: 11, consumo: 0.500000KW, autoTurnOff: 1, isOn: 0
+[USERINPUT]install device2 0.3 true off
+[00:00] [INFO]:  	Device device2 installato, ID: 12, consumo: 0.300000KW, autoTurnOff: 1, isOn: 0
+[USERINPUT]install device3 0.2 true off
+[00:00] [INFO]:  	Device device3 installato, ID: 13, consumo: 0.200000KW, autoTurnOff: 1, isOn: 0
+[USERINPUT]install extra 0.4 true off
+[00:00] [INFO]:  	Device extra installato, ID: 14, consumo: 0.400000KW, autoTurnOff: 1, isOn: 0
+[USERINPUT]set device1 on
+[00:00] [INFO]:  	Ricerca ID per nome device1
+[00:00] [EVENT]:  	device1 acceso
+[USERINPUT]set device2 on
+[00:00] [INFO]:  	Ricerca ID per nome device2
+[00:00] [EVENT]:  	device2 acceso
+[USERINPUT]set device3 on
+[00:00] [INFO]:  	Ricerca ID per nome device3
+[00:00] [EVENT]:  	device3 acceso
+[USERINPUT]set time 1:00
+[01:00] [INFO]:  	Orario aggiornato a 01:00
+[USERINPUT]set extra on
+[01:00] [INFO]:  	Ricerca ID per nome extra
+[01:00] [ERROR]:  	OverKWException
+[01:00] [EVENT]:  	device3 spento
+[01:00] [ERROR]:  	OverKWException
+[01:00] [EVENT]:  	device2 spento
+[01:00] [EVENT]:  	extra acceso
+[USERINPUT]show
+[01:00] [INFO]:  	Stato dei devices mostrato
+[USERINPUT]exit
+[EVENT]Applicazione terminata con successo

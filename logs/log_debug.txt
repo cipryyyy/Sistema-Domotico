@@ -1,0 +1,39 @@
+[EVENT]Applicazione avviata in modalità debug
+[00:00] [INFO]:  	Impianto avviato, standard init = 1, KW = 1.000000, maxDV = 100
+[USERINPUT]install dev1 0.8 true on
+[00:00] [INFO]:  	Device dev1 installato, ID: 11, consumo: 0.800000KW, autoTurnOff: 1, isOn: 1
+[USERINPUT]install dev2 0.1 true on
+[00:00] [INFO]:  	Device dev2 installato, ID: 12, consumo: 0.100000KW, autoTurnOff: 1, isOn: 1
+[USERINPUT]install dev3 0.2 true off
+[00:00] [INFO]:  	Device dev3 installato, ID: 13, consumo: 0.200000KW, autoTurnOff: 1, isOn: 0
+[USERINPUT]set device1 on
+[00:00] [INFO]:  	Ricerca ID per nome device1
+[00:00] [ERROR]:  	NameNotFoundException
+[00:00] [DEBUG]:  	KW attuali: 0.900000
+[00:00] [DEBUG]:  	Calcolo TOS
+[00:00] [DEBUG]:  	TOS: 
+[00:00] [DEBUG]:  	11
+[00:00] [DEBUG]:  	12
+[00:00] [DEBUG]:  	SIZE = 2
+[USERINPUT]set dev1 on
+[00:00] [INFO]:  	Ricerca ID per nome dev1
+[00:00] [ERROR]:  	DeviceAlreadyOnException
+[00:00] [DEBUG]:  	KW attuali: 0.900000
+[00:00] [DEBUG]:  	Calcolo TOS
+[00:00] [DEBUG]:  	TOS: 
+[00:00] [DEBUG]:  	11
+[00:00] [DEBUG]:  	12
+[00:00] [DEBUG]:  	SIZE = 2
+[USERINPUT]set dev3 on
+[00:00] [INFO]:  	Ricerca ID per nome dev3
+[00:00] [ERROR]:  	OverKWException
+[00:00] [EVENT]:  	dev2 spento
+[00:00] [EVENT]:  	dev3 acceso
+[00:00] [DEBUG]:  	KW attuali: 1.000000
+[00:00] [DEBUG]:  	Calcolo TOS
+[00:00] [DEBUG]:  	TOS: 
+[00:00] [DEBUG]:  	11
+[00:00] [DEBUG]:  	13
+[00:00] [DEBUG]:  	SIZE = 2
+[USERINPUT]exit
+[EVENT]Applicazione terminata con successo

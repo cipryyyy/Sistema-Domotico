@@ -1,0 +1,18 @@
+[EVENT]Applicazione avviata in modalità normale
+[00:00] [INFO]:  	Impianto avviato, standard init = 1, KW = 2.000000, maxDV = 100
+[USERINPUT]install cycle 1 120 off
+[00:00] [INFO]:  	Device cycle installato, ID: 11, consumo: 1.000000KW, durataCiclo: 120h, isOn: 0
+[USERINPUT]install generatore -2.5 false off
+[00:00] [INFO]:  	Device generatore installato, ID: 12, consumo: -2.500000KW, autoTurnOff: 0, isOn: 0
+[USERINPUT]set generatore on
+[00:00] [INFO]:  	Ricerca ID per nome generatore
+[00:00] [EVENT]:  	generatore acceso
+[USERINPUT]uninstall generatore
+[00:00] [INFO]:  	Ricerca ID per nome generatore
+[00:00] [ERROR]:  	DeviceIsRunningException
+[USERINPUT]set time 2:15
+[02:15] [INFO]:  	Orario aggiornato a 02:15
+[USERINPUT]reset all
+[00:00] [INFO]:  	Reset del sistema effettuato
+[USERINPUT]exit
+[EVENT]Applicazione terminata con successo

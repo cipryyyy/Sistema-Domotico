@@ -1,0 +1,42 @@
+[EVENT]Applicazione avviata in modalità normale
+[00:00] [INFO]:  	Impianto avviato, standard init = 1, KW = 4.000000, maxDV = 100
+[USERINPUT]install luci_esterne 0.05 true off
+[00:00] [INFO]:  	Device luci_esterne installato, ID: 11, consumo: 0.050000KW, autoTurnOff: 1, isOn: 0
+[USERINPUT]show
+[00:00] [INFO]:  	Stato dei devices mostrato
+[USERINPUT]set luci_esterne on 1:00 3:00
+[00:00] [INFO]:  	Ricerca ID per nome luci_esterne
+[00:00] [EVENT]:  	Routine di luci esterne impostata
+[USERINPUT]set frigorifero on
+[00:00] [INFO]:  	Ricerca ID per nome frigorifero
+[00:00] [EVENT]:  	Frigorifero acceso
+[USERINPUT]set Asciugatrice on
+[00:00] [INFO]:  	Ricerca ID per nome Asciugatrice
+[00:00] [EVENT]:  	Asciugatrice avviato
+[USERINPUT]set Lavatrice on 2:00
+[00:00] [INFO]:  	Ricerca ID per nome Lavatrice
+[00:00] [EVENT]:  	Accensione di Lavatrice impostata
+[USERINPUT]set televisore on 4:00
+[00:00] [INFO]:  	Ricerca ID per nome televisore
+[00:00] [EVENT]:  	Accensione di Televisore impostata
+[USERINPUT]set time 7:30
+[01:00] [EVENT]:  	luci esterne acceso
+[01:00] [EVENT]:  	Asciugatrice spento
+[02:00] [EVENT]:  	Lavatrice acceso
+[03:00] [EVENT]:  	luci esterne spento
+[03:50] [EVENT]:  	Lavatrice spento
+[04:00] [EVENT]:  	Televisore acceso
+[05:00] [EVENT]:  	Televisore spento
+[07:30] [INFO]:  	Orario aggiornato a 07:30
+[USERINPUT]show
+[07:30] [INFO]:  	Stato dei devices mostrato
+[USERINPUT]set Scaldabagno on
+[07:30] [INFO]:  	Ricerca ID per nome Scaldabagno
+[07:30] [EVENT]:  	Scaldabagno acceso
+[USERINPUT]set SCaldabagno off
+[07:30] [INFO]:  	Ricerca ID per nome SCaldabagno
+[07:30] [EVENT]:  	Scaldabagno spento
+[USERINPUT]set time 8:00
+[08:00] [INFO]:  	Orario aggiornato a 08:00
+[USERINPUT]exit
+[EVENT]Applicazione terminata con successo
