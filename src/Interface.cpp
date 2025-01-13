@@ -332,7 +332,6 @@ void Interface::turnOn(int id, int start, int end) {    //Accensione con routine
     }
 }
 
-//TODO controlla che cosa accade quando spegni un routine e fai un resetTime
 void Interface::turnOff(int id) {                       //spegnimento
     updateKW();     //Aggiorno il numero di KW usati
 
@@ -358,13 +357,14 @@ void Interface::turnOff(int id) {                       //spegnimento
         std::cout << "[" << m2h(t) << "]: " << msg;                      //Log
         log -> log(Logger::EVENT, m2h(t), msg);
 
-        //Aggiorno la timeline
-        timeline.addEvent(t, _cleaner(devicesM[Mpos].getNome()) + " spento", devicesM[Mpos].getID(), -devicesM[Mpos].getConsumo(), false);
+        //Aggiorno la timeline, metto il comando come di routine sennò non lo spegne con il reset time
+        timeline.addEvent(t, _cleaner(devicesM[Mpos].getNome()) + " spento", devicesM[Mpos].getID(), -devicesM[Mpos].getConsumo(), true);
     } else {
         log -> log(Logger::ERROR, m2h(t), "ID non presente tra i dispositivi");
         throw DeviceIDOutOfBoundException();        //ID non presente tra i dispositivi.
     }
 }
+
 void Interface::forceOff(int id) {      //Termina i cicli dei devicesCP in anticipo
     updateKW();                                 //Aggiorno il numero di KW usati
     std::vector<int> IDreq = timeline.getIDs(t);
@@ -381,6 +381,17 @@ void Interface::forceOff(int id) {      //Termina i cicli dei devicesCP in antic
             throw DeviceAlreadyOffException();
         }
         if (IDreq[i] == id) {
+            //Dovrò ripristinare gli orari di spegnimento corretti con il resetTime
+            //Cerco l'ora in cui si dovevano spegnere
+            std::vector<int> IDreq = timeline.getIDs(t+1);              //richiedo gli ID e i timestamp
+            std::vector<int> timestamps = timeline.getTimes(t+1);
+            KilledProcess.push_back(id);                                //Salvo l'ID
+            for (int i = 0; i < IDreq.size(); i++) {                    //Scorro gli ID
+                if (IDreq[i] == id) {                                   //Quando trovo l'Id in spegnimento
+                    KilledTime.push_back(timestamps[i]);                //salvo il corrispondente timestamp
+                }
+            }
+
             timeline.forget(id, t+1, timestamps[i]);        // Aggiorno l'orario di spegnimento
             std::string msg = _cleaner(devicesCP[Cpos].getNome()) + " interrotto";  //Log
             std::cout << "[" << m2h(t) << "]: " << msg;
@@ -460,6 +471,15 @@ void Interface::resetTime() {                           //Resetta il tempo
     }
 
     timeline.removeNonRoutines();       //Pulisco la timeline dalle azioni non di routine (accensioni e spegnimenti manuali)
+    for (int i = 0; i < KilledProcess.size(); i++) {
+        int Cpos = CPscan(KilledProcess[i]);
+        int Mpos = Mscan(KilledProcess[i]);
+        if (Cpos != INT_MIN) {
+            timeline.addEvent(KilledTime[i], _cleaner(devicesCP[Cpos].getNome()) + " spento", devicesCP[Cpos].getID(), -devicesCP[i].getConsumo(), true);
+        } else {
+            timeline.addEvent(KilledTime[i], _cleaner(devicesM[Mpos].getNome()) + " spento", devicesM[Mpos].getID(), -devicesM[i].getConsumo(), true);
+        }
+    }
     for (int i : ActiveOnLaunch) {
         int Cpos = CPscan(i);       //Controllo se sono CP o M
         int Mpos = Mscan(i); 

@@ -9,3 +9,88 @@
 [00:00] [INFO]:  	Device Lavastoviglie disinstallato, ID: 2
 [USERINPUT]install prova 1 false on
 [00:00] [ERROR]:  	DeviceLimitException
+[EVENT]Applicazione avviata in modalità normale
+[00:00] [INFO]:  	Impianto avviato, standard init = 1, KW = 4.000000, maxDV = 100
+[USERINPUT]install prova 1 120 off
+[00:00] [INFO]:  	Device prova installato, ID: 11, consumo: 1.000000KW, durataCiclo: 120h, isOn: 0
+[USERINPUT]set prova on 1:00
+[00:00] [INFO]:  	Ricerca ID per nome prova
+[00:00] [EVENT]:  	Accensione di prova impostata
+[USERINPUT]set time 2:00
+[01:00] [EVENT]:  	prova acceso
+[02:00] [INFO]:  	Orario aggiornato a 02:00
+[USERINPUT]kill prova
+[02:00] [INFO]:  	Ricerca ID per nome prova
+[02:00] [EVENT]:  	prova interrotto
+[USERINPUT]reset time
+[00:00] [INFO]:  	Orario resettato a 0
+[USERINPUT]set time 5:00
+[01:00] [EVENT]:  	prova acceso
+[05:00] [INFO]:  	Orario aggiornato a 05:00
+[USERINPUT]show
+[05:00] [INFO]:  	Stato dei devices mostrato
+[USERINPUT]exit
+[EVENT]Applicazione terminata con successo
+[EVENT]Applicazione avviata in modalità normale
+[00:00] [INFO]:  	Impianto avviato, standard init = 1, KW = 5.000000, maxDV = 20
+[USERINPUT]set Scaldabagno on 1:00 3:00
+[00:00] [INFO]:  	Ricerca ID per nome Scaldabagno
+[00:00] [EVENT]:  	Routine di Scaldabagno impostata
+[USERINPUT]set time 2:00
+[01:00] [EVENT]:  	Scaldabagno acceso
+[02:00] [INFO]:  	Orario aggiornato a 02:00
+[USERINPUT]set Scaldabagno off
+[02:00] [INFO]:  	Ricerca ID per nome Scaldabagno
+[02:00] [EVENT]:  	Scaldabagno spento
+[USERINPUT]reset time
+[00:00] [INFO]:  	Orario resettato a 0
+[USERINPUT]set time 8:00
+[01:00] [EVENT]:  	Scaldabagno acceso
+[02:00] [EVENT]:  	Scaldabagno spento
+[08:00] [INFO]:  	Orario aggiornato a 08:00
+[USERINPUT]exit
+[EVENT]Applicazione terminata con successo
+[EVENT]Applicazione avviata in modalità normale
+[00:00] [INFO]:  	Impianto avviato, standard init = 1, KW = 4.000000, maxDV = 40
+[USERINPUT]set Lavatrice on 1:00
+[00:00] [INFO]:  	Ricerca ID per nome Lavatrice
+[00:00] [EVENT]:  	Accensione di Lavatrice impostata
+[USERINPUT]set time 2:00
+[01:00] [EVENT]:  	Lavatrice acceso
+[02:00] [INFO]:  	Orario aggiornato a 02:00
+[USERINPUT]kill Lavatrice
+[02:00] [INFO]:  	Ricerca ID per nome Lavatrice
+[02:00] [EVENT]:  	Lavatrice interrotto
+[USERINPUT]reset time
+[00:00] [INFO]:  	Orario resettato a 0
+[USERINPUT]set time 4:00
+[01:00] [EVENT]:  	Lavatrice acceso
+[02:00] [EVENT]:  	Lavatrice spento
+[04:00] [INFO]:  	Orario aggiornato a 04:00
+[USERINPUT]set Lavatrice on
+[04:00] [INFO]:  	Ricerca ID per nome Lavatrice
+[04:00] [EVENT]:  	Lavatrice avviato
+[USERINPUT]set time 6:00
+[05:50] [EVENT]:  	Lavatrice spento
+[06:00] [INFO]:  	Orario aggiornato a 06:00
+[USERINPUT]exit
+[EVENT]Applicazione terminata con successo
+[EVENT]Applicazione avviata in modalità normale
+[00:00] [INFO]:  	Impianto avviato, standard init = 1, KW = 4.000000, maxDV = 100
+[USERINPUT]set Lavatrice on 1:00
+[00:00] [INFO]:  	Ricerca ID per nome Lavatrice
+[00:00] [EVENT]:  	Accensione di Lavatrice impostata
+[USERINPUT]set time 1:30
+[01:00] [EVENT]:  	Lavatrice acceso
+[01:30] [INFO]:  	Orario aggiornato a 01:30
+[USERINPUT]kill Lavatrice 
+[01:30] [INFO]:  	Ricerca ID per nome Lavatrice
+[01:30] [EVENT]:  	Lavatrice interrotto
+[USERINPUT]reset time
+[00:00] [INFO]:  	Orario resettato a 0
+[USERINPUT]set time 10:00
+[01:00] [EVENT]:  	Lavatrice acceso
+[01:30] [EVENT]:  	Lavatrice spento
+[10:00] [INFO]:  	Orario aggiornato a 10:00
+[USERINPUT]exit
+[EVENT]Applicazione terminata con successo

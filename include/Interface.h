@@ -29,6 +29,8 @@ private:
     std::vector<CPDevice> devicesCP;        //Vector di dispositivi CP
     std::vector<ManualDevice> devicesM;     //Vector di dispositivi M
     std::vector<int> ActiveOnLaunch;        //Dispositivi attivi all'avvio
+    std::vector<int> KilledProcess;         //Processi che hanno terminato il ciclo in anticipo
+    std::vector<int> KilledTime;            //Orario in cui si dovevano fermare, serve per il resetTime
 
     int CPscan(int id) const noexcept;  //Ricerca di un device CP
     int Mscan(int M) const noexcept;    //Ricerca di un device M

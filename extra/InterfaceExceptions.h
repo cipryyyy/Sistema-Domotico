@@ -1,8 +1,5 @@
 /*
 Autore: Cipriani Andrea
-
-Eccezioni che possono essere lanciate dalla classe Interface, per ore sono tutte derivate dalla exception standard
-Appena ho tempo e voglia magari metto un errore più specifico.
 */
 #ifndef INTERFACEEXCEPTIONS_H
 #define INTERFACEEXCEPTIONS_H
@@ -120,6 +117,5 @@ struct IllegalGeneratorShutdownException : public std::exception {
         return "Il generatore non può essere spento.";
     }
 };
-
 
 #endif
