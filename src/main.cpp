@@ -239,7 +239,7 @@ int main(int argc, char* argv[]) {
 
             // Display help
             if(tokens[0] == "help" || tokens[0] == "h") {                       // Se il comando è "help"
-                displayHelp();                                                  // Mostra i comandi disponibili
+                if (tokens.size() == 1) displayHelp();                          // Mostra i comandi disponibili
                 if (tokens[1] != "") {                                          // Se c'è un argomento oltre a "help"
                     displayHelp(tokens[1]);                                     // Mostra l'help per quel comando
                 }
