@@ -1,0 +1,30 @@
+[EVENT]Applicazione avviata in modalità normale
+[00:00] [INFO]:  	Impianto avviato, standard init = 1, KW = 3.000000, maxDV = 100
+[USERINPUT]set Scaldabagno on 1:00 3:00
+[00:00] [INFO]:  	Ricerca ID per nome Scaldabagno
+[00:00] [EVENT]:  	Routine di Scaldabagno impostata
+[USERINPUT]set Scaldabagno on 1:30 2:30
+[00:00] [INFO]:  	Ricerca ID per nome Scaldabagno
+[00:00] [ERROR]:  	TimerAlreadySetException
+[USERINPUT]set Scaldabagno on 00:30 2:30
+[00:00] [INFO]:  	Ricerca ID per nome Scaldabagno
+[00:00] [ERROR]:  	TimerAlreadySetException
+[USERINPUT]set Scaldabagno on 1:30 3:30
+[00:00] [INFO]:  	Ricerca ID per nome Scaldabagno
+[00:00] [ERROR]:  	TimerAlreadySetException
+[USERINPUT]set Scaldabagno on 00:30 3:30
+[00:00] [INFO]:  	Ricerca ID per nome Scaldabagno
+[00:00] [ERROR]:  	TimerAlreadySetException
+[USERINPUT]set scaldabagno on 00:30 1:00
+[00:00] [INFO]:  	Ricerca ID per nome scaldabagno
+[00:00] [ERROR]:  	TimerAlreadySetException
+[USERINPUT]set SCaldabagno on 3:00 3:30
+[00:00] [INFO]:  	Ricerca ID per nome SCaldabagno
+[00:00] [ERROR]:  	TimerAlreadySetException
+[USERINPUT]set SCaldabagno on 1:300
+[00:00] [INFO]:  	Ricerca ID per nome SCaldabagno
+[USERINPUT]set scaldabagno on 1:30 3:00
+[00:00] [INFO]:  	Ricerca ID per nome scaldabagno
+[00:00] [ERROR]:  	TimerAlreadySetException
+[USERINPUT]exit
+[EVENT]Applicazione terminata con successo

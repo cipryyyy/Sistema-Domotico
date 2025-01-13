@@ -20,22 +20,22 @@ protected:
 public:
     Device(Timeline* timeline, int* t, std::string nome, int ID, double consumo, bool stato = false);
 
-    // Member functions
+    // Ritorna se il device è attivo
     virtual bool isOn();
 
-    // Getter and Setter for nome
+    // Getter for nome
     std::string getNome() const;
 
-    // Getter and Setter for ID
+    // Getter for ID
     int getID() const; 
 
-    // Getter and Setter for consumo
+    // Getter for consumo
     double getConsumo() const;
 
     // Getter and Setter for tempoDiEsecuzione
-    int getTempoDiEsecuzione();
+    int getTempoDiEsecuzione();             //Tempo di esecuzione nella giornata
     void setTempoDiEsecuzione(int time);
-    double getConsumoTotale();
+    double getConsumoTotale();              //Consumo totale nella giornata
 
     void off();         // imposta on a false, serve per i reset time e reset all
 };

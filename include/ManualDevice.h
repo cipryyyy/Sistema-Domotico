@@ -8,9 +8,11 @@
 
 class ManualDevice : public Device {
 private:
-    bool autoTurnOff;
+    bool autoTurnOff;   //Il device supporta la politica di spegnimento automatico?
 public:
+    //Costruttore
     ManualDevice(Timeline* timeline, int* t, std::string nome, int ID, double consumo, bool autoTurnOff = true, bool stato = false);
+    //Ritorna se supporta la politica
     bool allowAutoTurnOff();
 };
 
