@@ -16,9 +16,16 @@ L'intero progetto è stato fatto con l'utilizzo di github per il controllo versi
         - parseTime(): converte le stringhe temporali nel formato interno del sistema (minuti dalla mezzanotte)
         - displayHelp(): fornisce documentazione dettagliata dei comandi, sia generale che specifica per comando
 
-        Il sistema offre due modalità di configurazione della potenza massima:
+        Il sistema offre due modalità di configurazione della potenza massima, dispositivi massimi:
         1. Tramite argomento da riga di comando all'avvio del programma
+            - Il una volta compilato, si può eseguire con il seguente prompt: ./SmartHome <Max KW> <Max Dispositivi> <debug>
+                - dove i tre argomenti sono facoltativi. Si possono inserire le seguenti combinazioni:
+                    - ./SmartHome
+                    - ./SmartHome <Max KW> 
+                    - ./SmartHome <Max KW> <Max Dispositivi>
         2. Tramite input utente al primo avvio del sistema
+
+        Da notare, per attivare la modalità di debug, basta appendere alla fine del prompt di avvio la parola chiave "debug".
 
         La struttura del programma include:
         - Costanti di sistema configurabili (MAX_POWER, MAX_DEVICES)
