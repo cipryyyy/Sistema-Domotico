@@ -1,5 +1,3 @@
-//Autore: Giorgi Giacomo
-
 #include <iostream>
 #include <string>
 #include <sstream>

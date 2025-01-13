@@ -1,5 +1,3 @@
-//autore: Buso Riccardo
-
 #include "ManualDevice.h"
 #include <string>
 
