@@ -201,8 +201,8 @@ int main(int argc, char* argv[]) {
                 throw std::invalid_argument("Valore non numerico");                 // Solleva eccezione
             }
 
-            if (maxDevices <= 0 && maxDevices > 1024) {                             // Controllo che il numero di dispositivi inserito sia valido
-                throw std::invalid_argument("Il numero di dispositivi deve essere positivo e massimo 1024");
+            if (maxDevices <= 0) {                                                  // Controllo che il numero di dispositivi inserito sia valido
+                throw std::invalid_argument("Il numero di dispositivi deve essere positivo");
             }
 
         } catch (const std::exception& e) {
