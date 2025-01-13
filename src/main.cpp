@@ -172,6 +172,10 @@ int main(int argc, char* argv[]) {
         if (!isValidPower(power)) {
             throw std::invalid_argument("La potenza deve essere positiva e massimo 10 kW.");
         }
+
+        if (maxDevices < 10) {                                                      // Controllo che il numero di dispositivi sia valido
+            throw std::invalid_argument("Il numero di dispositivi deve essere maggiore di 10.");
+        }
         
     } else {                                                                        // Se non è stato passato alcun argomento
         try {
@@ -201,8 +205,8 @@ int main(int argc, char* argv[]) {
                 throw std::invalid_argument("Valore non numerico");                 // Solleva eccezione
             }
 
-            if (maxDevices <= 0) {                                                  // Controllo che il numero di dispositivi inserito sia valido
-                throw std::invalid_argument("Il numero di dispositivi deve essere positivo");
+            if (maxDevices < 10) {                                                  // Controllo che il numero di dispositivi inserito sia valido
+                throw std::invalid_argument("Il numero di dispositivi deve essere maggiore di 10");
             }
 
         } catch (const std::exception& e) {
