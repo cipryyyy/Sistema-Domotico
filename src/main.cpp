@@ -151,22 +151,32 @@ int main(int argc, char* argv[]) {
     Logger logger = Logger(debug);
 
     // Inizializzo la potenza massima del sistema
-    double power;       // Variabile potenza massima del sistema
+    double power = MAX_POWER;           // Variabile potenza massima del sistema
+    int maxDevices = MAX_DEVICES;       // Variabile numero massimo di dispositivi
+
     if (argc > 1) {     // Se è stato passato un argomento
-        try {
-            power = std::stod(argv[1]);  // Converto l'argomento in double
-            if (!isValidPower(power)) {  // Controllo che la potenza inserita sia valida
-                throw std::invalid_argument("La potenza deve essere positiva e massimo 10 kW");
-            }
-        } catch (const std::exception& e) {
-            std::cerr << "Errore: " << e.what() << "\n";
-            std::cerr << "Impostato limite massimo di potenza al valore predefinito di " << MAX_POWER << " kW\n";
-            power = MAX_POWER;
+        if (argc > 1 && strcmp(argv[argc - 1], "debug") == 0) {                     // Controllo presenza dell'argomento "debug"
+            debug = true;                                                           // Attivo il debug
+            if (debug) std::cout << "Modalità debug attiva.\n";
+            argc--;                                                                 // Ignoro l'ultimo argomento per il resto della logica
         }
-    } else {            // Se non è stato passato alcun argomento
+
+        if (argc >= 2) {                                                            // Gestione degli argomenti numerici
+            power = std::stod(argv[1]);                                             // Prendo la potenza massima dal primo argomento
+            if (argc >= 3) {
+                maxDevices = std::stoi(argv[2]);                                    // Prendo il numero massimo di dispositivi dal secondo argomento
+            }
+        }
+
+        // Validazione della potenza
+        if (!isValidPower(power)) {
+            throw std::invalid_argument("La potenza deve essere positiva e massimo 10 kW.");
+        }
+        
+    } else {                                                                        // Se non è stato passato alcun argomento
         try {
-            std::cout << "Inserire la potenza massima del sistema (kW): "; // Chiedo all'utente di inserire la potenza massima del sistema
-            std::cin >> power;                                             // Salvo il valore inserito in power
+            std::cout << "Inserire la potenza massima del sistema (kW): ";          // Chiedo all'utente di inserire la potenza massima del sistema
+            std::cin >> power;                                                      // Salvo il valore inserito in power
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
             // Controllo se l'input è un numero
@@ -179,6 +189,22 @@ int main(int argc, char* argv[]) {
             if (!isValidPower(power)) {  // Controllo che la potenza inserita sia valida
                 throw std::invalid_argument("La potenza deve essere positiva e massimo 10 kW");
             }
+
+            std::cout << "Inserire il numero massimo di dispositivi: ";             // Chiedo all'utente di inserire il numero massimo di dispositivi
+            std::cin >> maxDevices;                                                 // Salvo il valore inserito in maxDevices
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+            // Controllo se l'input è un numero
+            if (std::cin.fail()) {
+                std::cin.clear();                                                   // Resetta lo stato del cin
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Ignora input non valido
+                throw std::invalid_argument("Valore non numerico");                 // Solleva eccezione
+            }
+
+            if (maxDevices <= 0 && maxDevices > 1024) {                             // Controllo che il numero di dispositivi inserito sia valido
+                throw std::invalid_argument("Il numero di dispositivi deve essere positivo e massimo 1024");
+            }
+
         } catch (const std::exception& e) {
             std::cerr << "Errore: " << e.what() << "\n";
             std::cerr << "Utilizzo il valore predefinito " << MAX_POWER << " kW\n";
@@ -186,8 +212,8 @@ int main(int argc, char* argv[]) {
         }
     }
     // Inizializzo il sistema
-    Interface system(&logger, power, true, MAX_DEVICES);
-    if (debug) std::cout << "Avvio con " << power << " KW e " << MAX_DEVICES << " device." << std::endl; 
+    Interface system(&logger, power, true, maxDevices);
+    if (debug) std::cout << "Avvio con " << power << " KW e " << maxDevices << " device." << std::endl; // Stampa potenza massima e numero di dispositivi
     std::string command;
     
     std::cout << "Smart Home Energy Management System\n";
