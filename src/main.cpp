@@ -78,7 +78,7 @@ void displayHelp() {
               << "rm <device>                                       - Rimuovi timer dispositivo\n"
               << "show                                              - Mostra gli stati di tutti i dispositivi\n"
               << "show <device>                                     - Mostra lo stato di un singolo dispositivo\n"
-              << "install <device> <consumo> <on/off> <true/false>  - Installa dispositivo\n"
+              << "install <device> <consumo> <true/false> <on/off>  - Installa dispositivo\n"
               << "install <device> <consumo> <minuti> <on/off>      - Installa dispositivo con ciclo programmato\n"
               << "unistall <device>                                 - Disinstalla dispositivo\n"
               << "set time HH:MM                                    - Imposta ora sistema\n"
@@ -118,7 +118,7 @@ void displayHelp(const std::string& command) {
                   << "Possono essere installati dispositivi generatori, come pannelli solari o generatori eolici, inserendo un valore negativo come consumo.\n"
                   << "Parametri politica auto-spegnimento: true = si, false = no\n"
                   << "Parametri on/off: on = acceso, off = spento\n"
-                  << "  install <device> <consumo> <on/off> <true/false> - Installa dispositivo\n"
+                  << "  install <device> <consumo> <true/false> <on/off> - Installa dispositivo\n"
                   << "  install <device> <consumo> <minuti> <on/off> - Installa dispositivo con ciclo programmato"
                   << std::endl;
     } else if (command == "unistall") {
