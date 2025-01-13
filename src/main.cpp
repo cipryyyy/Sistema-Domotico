@@ -78,7 +78,7 @@ void displayHelp() {
               << "rm <device>                                       - Rimuovi timer dispositivo\n"
               << "show                                              - Mostra gli stati di tutti i dispositivi\n"
               << "show <device>                                     - Mostra lo stato di un singolo dispositivo\n"
-              << "install <device> <consumo> <on/off> <true/false>  - Installa dispositivo\n"
+              << "install <device> <consumo> <true/false> <on/off>  - Installa dispositivo\n"
               << "install <device> <consumo> <minuti> <on/off>      - Installa dispositivo con ciclo programmato\n"
               << "unistall <device>                                 - Disinstalla dispositivo\n"
               << "set time HH:MM                                    - Imposta ora sistema\n"
@@ -118,7 +118,7 @@ void displayHelp(const std::string& command) {
                   << "Possono essere installati dispositivi generatori, come pannelli solari o generatori eolici, inserendo un valore negativo come consumo.\n"
                   << "Parametri politica auto-spegnimento: true = si, false = no\n"
                   << "Parametri on/off: on = acceso, off = spento\n"
-                  << "  install <device> <consumo> <on/off> <true/false> - Installa dispositivo\n"
+                  << "  install <device> <consumo> <true/false> <on/off> - Installa dispositivo\n"
                   << "  install <device> <consumo> <minuti> <on/off> - Installa dispositivo con ciclo programmato"
                   << std::endl;
     } else if (command == "unistall") {
@@ -172,6 +172,10 @@ int main(int argc, char* argv[]) {
         if (!isValidPower(power)) {
             throw std::invalid_argument("La potenza deve essere positiva e massimo 10 kW.");
         }
+
+        if (maxDevices < 10) {                                                      // Controllo che il numero di dispositivi sia valido
+            throw std::invalid_argument("Il numero di dispositivi deve essere maggiore di 10.");
+        }
         
     } else {                                                                        // Se non è stato passato alcun argomento
         try {
@@ -201,8 +205,8 @@ int main(int argc, char* argv[]) {
                 throw std::invalid_argument("Valore non numerico");                 // Solleva eccezione
             }
 
-            if (maxDevices <= 0) {                                                  // Controllo che il numero di dispositivi inserito sia valido
-                throw std::invalid_argument("Il numero di dispositivi deve essere positivo");
+            if (maxDevices < 10) {                                                  // Controllo che il numero di dispositivi inserito sia valido
+                throw std::invalid_argument("Il numero di dispositivi deve essere maggiore di 10");
             }
 
         } catch (const std::exception& e) {
@@ -212,7 +216,7 @@ int main(int argc, char* argv[]) {
         }
     }
     // Inizializzo il sistema
-    Interface system(&logger, power, true, maxDevices);
+    Interface system(&logger, power, !debug, maxDevices);
     if (debug) std::cout << "Avvio con " << power << " KW e " << maxDevices << " device." << std::endl; // Stampa potenza massima e numero di dispositivi
     std::string command;
     
@@ -235,7 +239,7 @@ int main(int argc, char* argv[]) {
 
             // Display help
             if(tokens[0] == "help" || tokens[0] == "h") {                       // Se il comando è "help"
-                displayHelp();                                                  // Mostra i comandi disponibili
+                if (tokens.size() == 1) displayHelp();                          // Mostra i comandi disponibili
                 if (tokens[1] != "") {                                          // Se c'è un argomento oltre a "help"
                     displayHelp(tokens[1]);                                     // Mostra l'help per quel comando
                 }

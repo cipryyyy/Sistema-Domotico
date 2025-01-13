@@ -1,16 +1,11 @@
 [EVENT]Applicazione avviata in modalità normale
-[00:00] [INFO]:  	Impianto avviato, standard init = 1, KW = 3.000000, maxDV = 100
+[00:00] [INFO]:  	Impianto avviato, standard init = 1, KW = 5.000000, maxDV = 3
 [USERINPUT]show
 [00:00] [INFO]:  	Stato dei devices mostrato
-[USERINPUT]exit
-[EVENT]Applicazione terminata con successo
-[EVENT]Applicazione avviata in modalità normale
-[00:00] [INFO]:  	Impianto avviato, standard init = 1, KW = 3.000000, maxDV = 100
-[USERINPUT]show
-[00:00] [INFO]:  	Stato dei devices mostrato
-[USERINPUT]exit
-[EVENT]Applicazione terminata con successo
-[EVENT]Applicazione avviata in modalità normale
-[00:00] [INFO]:  	Impianto avviato, standard init = 1, KW = 3.000000, maxDV = 100
-[USERINPUT]show
-[00:00] [INFO]:  	Stato dei devices mostrato
+[USERINPUT]install prova 1 false on
+[00:00] [ERROR]:  	DeviceLimitException
+[USERINPUT]uninstall Lavastoviglie
+[00:00] [INFO]:  	Ricerca ID per nome Lavastoviglie
+[00:00] [INFO]:  	Device Lavastoviglie disinstallato, ID: 2
+[USERINPUT]install prova 1 false on
+[00:00] [ERROR]:  	DeviceLimitException
